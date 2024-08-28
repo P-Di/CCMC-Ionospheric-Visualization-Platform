@@ -84,4 +84,4 @@ tec_change_plot(data7['arr_0'], data7['arr_1'], data7['arr_2'],
 #np.savez("foF2_202111_storm", C2_foF2_map=data9["arr_0"],All_model_fof2=data9["arr_1"], RP_par=RP_par2, MP_par=MP_par2,CC=CC2, Alldata=np.load("csmc2_rcpm_foF2.npy"), allphase=np.load('csmc2_nSS_foF2.npy'), All_nss=np.load('csmc2_tnSS_foF2.npy'))
 #np.savez("hmF2_202111_storm", C2_hmF2_map=data8["arr_0"],All_model_hmf2=data8["arr_1"], RP_par=RP_par3, MP_par=MP_par3,CC=CC3, Alldata=np.load("csmc2_rcpm_hmF2.npy"), allphase=np.load('csmc2_nSS_hmF2.npy'), All_nss=np.load('csmc2_tnSS_hmF2.npy'))
 #np.savez("MTEC_201303_storm", TEC_all = pic, RP_par=RP_par, MP_par=MP_par, CC = CC, Alldata=Alldata, allphase=allphase, All_nss=All_nss)
-np.savez("dst_scatter_map", dst_2013= dst_2013, dst_2021=dst_2021, z_2013=z13, z_2021=z21, z_foF2=zfo,z_hmF2=zhm,  c2_lon=data3['arr_0'], c2_lat=data3['arr_1'], II_list=data3['arr_2'])
+#np.savez("dst_scatter_map", dst_2013= dst_2013, dst_2021=dst_2021, z_2013=z13, z_2021=z21, z_foF2=zfo,z_hmF2=zhm,  c2_lon=data3['arr_0'], c2_lat=data3['arr_1'], II_list=data3['arr_2'])
