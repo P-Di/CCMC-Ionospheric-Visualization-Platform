@@ -22,14 +22,12 @@ def ctec_plot(TEC_all, flag, year, multi, xy_range, TITLES, obs_type, c_max_min)
             colorbar=dict(title = unit, ticks='outside', outlinecolor='black', outlinewidth=1),
         ))
 
-    #fig.layout.annotations[0].update(text=year+' '+TITLES[flag]+obs_type)
+
     fig.update_yaxes(title='MLat', range=[-50, 56], tickvals =np.arange(-50,55,25), showgrid=False, 
                      showline=True, linewidth=1, linecolor='black',ticks="outside", mirror=True, title_standoff = 4)
     fig.update_xaxes(title_text="MLT (hr)", showgrid=False,  showline=True, linewidth=2, linecolor='black', 
                      mirror=True,tickmode = 'array',tickvals = np.arange(0, 73, 12), ticks="outside", ticktext = np.mod(np.arange(0,73,12),24))
 
-
-    print("Graph 2 almost done")
     if not multi:
         fig['layout']['annotations'] += ( 
             dict(x=14, y=50,xref='x', yref='y',text='Quiet',showarrow=False, font_size=32, font_color='red'),

@@ -52,23 +52,17 @@ def tec_plot(TEC_all, year, des_model, multi, TITLES):
         fig['layout']['annotations'] += ( 
             dict(x=14, y=47,xref='x', yref='y',text='Main',showarrow=False, font_size=32, font_color='red'),
             dict(x=37, y=47,xref='x', yref='y',text='Recovery',showarrow=False, font_size=32, font_color='red'),
-        #    dict(x=58, y=47, xref='x', yref='y', text='Recovery',showarrow=False, font_size=32, font_color='red')
         )
         b = 70
-        #t = 100
     else:
         fig['layout']['annotations'] += ( 
             dict(x=14, y=47,xref='x', yref='y',text='Main',showarrow=False, font_size=11, font_color='red'),
             dict(x=37, y=47,xref='x', yref='y',text='Recovery',showarrow=False, font_size=11, font_color='red'),
-        #    dict(x=58, y=47, xref='x', yref='y', text='Recovery',showarrow=False, font_size=11, font_color='red')
         )
         fig.update_traces(colorbar_thickness=10, colorbar_len=1.4)
         fig.update_yaxes(title_standoff = 0)
         b = 10
-        #t = 10
     fig.update_layout(plot_bgcolor='white', showlegend=False, margin=dict(
-        #l = 30,   left margin
-        #r = 15,   right margin
         b=b,  # bottom margin
         t=b,  # top margin
         pad=1

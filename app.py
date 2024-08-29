@@ -84,7 +84,7 @@ app.layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, ch
                                                  style={ 'top': '0', 'width': '100%', 'height': '100px', 'object-fit': 'cover'}),
                                         html.Div(id='text_overlay',
                                                 children=[
-                                                    html.P("CCMC Ionospheric Visualization Platform",id='text_box', 
+                                                    html.P("CCMC Ionospheric Validation Campaign",id='text_box', 
                                                            style={'position': 'absolute', 'top': '10px', 'left': '10px', 
                                                                   'color': 'white', 'font-size': '54px', 'overflowX': 'hidden', 'white-space': 'nowrap'})])
                                             ],style={'padding': '0', 'margin': '0', 'width': '100%', 'height': '100%', 
@@ -210,7 +210,7 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
 
     # These are conditionals to set up the TEC plot children. They are specially set up to 
     #   contain multiple different graphs since multiple TEC plots can be selected at once.
-    child_multi, child_tec, comp, multi = multiFunc.tec_formatting(multi, obs, task, [chosen_year, TEC_foF2, TEC_hmF2], year, TITLES, dstyles)
+    child_multi, child_tec, comp, multi, child_compare = multiFunc.tec_formatting(multi, obs, task, [chosen_year, TEC_foF2, TEC_hmF2], year, TITLES, dstyles, dst_scatter_map)
 
     # If no values have been selected for plot, change it to an empty string
     if plot == None:
@@ -228,10 +228,13 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
                     dcc.Graph(style=dstyles[7], figure=heatSssmPlot.heatmap_sssm_plot(csmc2_foF2['allphase'], "foF2", '2021', TITLES[1])),
                     dcc.Graph(style=dstyles[3], figure=sssmPlot.skill_scores_sum_plot(csmc2_foF2['All_nss'], '2021', TITLES[1], "foF2")),
                     dcc.Graph(style=dstyles[3], figure=tecRccPlot.tec_rcc_plot(csmc2_foF2['CC'], csmc2_foF2['RP_par'], csmc2_foF2['MP_par'], '2021', TITLES[1], [[0, 200], [0, 100], ["Ratio(95th-5th)", "Ratio_95th",  "RD_95th", "RD(95th)-RD(5th)", "foF2"]])),
-                    dcc.Graph(style=dstyles[3], figure=comparePlot.model_comparison_plot(TEC_foF2[0], TEC_foF2[comp], TITLES[1], comp, dst_scatter_map['z_foF2'][comp-1]))
+                    child_compare
+                    # dcc.Graph(style=dstyles[3], figure=comparePlot.model_comparison_plot(TEC_foF2[0], TEC_foF2[comp], TITLES[1], comp, dst_scatter_map['z_foF2'][comp-1]))
                 ]
         if comp == 0:
             graphs[-1] = error
+        elif isinstance(child_compare, list):
+            graphs[-1] = child_compare
 
         chl = plotSelection.plot_selection_format(plot, plot_options, graphs)
         return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6],chl[7], multi, options_list[3], options_list[0], True, True, False
@@ -245,10 +248,13 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
                     dcc.Graph(style=dstyles[7], figure=heatSssmPlot.heatmap_sssm_plot(csmc2_hmF2['allphase'], "hmF2", '2021', TITLES[1])),
                     dcc.Graph(style=dstyles[3], figure=sssmPlot.skill_scores_sum_plot(csmc2_hmF2['All_nss'], '2021', TITLES[1], "hmF2")),
                     dcc.Graph(style=dstyles[3], figure=tecRccPlot.tec_rcc_plot(csmc2_hmF2['CC'], csmc2_hmF2['RP_par'], csmc2_hmF2['MP_par'], '2021', TITLES[1], [[0, 150], [0, 100], ["Ratio(90th-10th)", "Ratio_90th", "TC_90th", "TC(90th)-TC(10th)", "hmF2"]])),
-                    dcc.Graph(style=dstyles[3], figure=comparePlot.model_comparison_plot(TEC_hmF2[0], TEC_hmF2[comp], TITLES[1], comp, dst_scatter_map['z_hmF2'][comp-1]))
+                    child_compare
+                    #dcc.Graph(style=dstyles[3], figure=comparePlot.model_comparison_plot(TEC_hmF2[0], TEC_hmF2[comp], TITLES[1], comp, dst_scatter_map['z_hmF2'][comp-1]))
                 ]
         if comp == 0:
             graphs[-1] = error
+        elif isinstance(child_compare, list):
+            graphs[-1] = child_compare
    
         chl = plotSelection.plot_selection_format(plot, plot_options, graphs)
         return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6],chl[7], multi, options_list[3], options_list[0], True, True, False
@@ -264,22 +270,26 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
                         dcc.Graph(style=dstyles[7], figure=heatSssmPlot.heatmap_sssm_plot(chosen_year['allphase'], "TEC", year, TITLES[0])),
                         dcc.Graph(style=dstyles[3], figure=sssmPlot.skill_scores_sum_plot(chosen_year['All_nss'], year, TITLES[0], "TEC")),
                         dcc.Graph(style=dstyles[3], figure=tecRccPlot.tec_rcc_plot(chosen_year['CC'], chosen_year['RP_par'], chosen_year['MP_par'], year, TITLES[0], [[0, 200], [0, 200], ["Ratio(80th-20th)", "Ratio(80th)", "TC_80th", "TC(80th)-TC(20th)", "TEC"]])),
-                        dcc.Graph(style=dstyles[3], figure=comparePlot.model_comparison_plot(chosen_year['TEC_all'][0], chosen_year['TEC_all'][comp],TITLES[0],comp, dst_scatter_map['z_'+year][comp-1]))
+                        child_compare
+                        #dcc.Graph(style=dstyles[3], figure=comparePlot.model_comparison_plot(chosen_year['TEC_all'][0], chosen_year['TEC_all'][comp],TITLES[0],comp, dst_scatter_map['z_'+year][comp-1]))
                     ]
             if comp == 0:
                 graphs[-1] = error
+            elif isinstance(child_compare, list):
+                graphs[-1] = child_compare
             
             plot_options = ['DEF_F1', 'DK_F','DEF_F2', 'MS_F', 'SN_F1', 'SN_F2', 'RCC','SC_F',]
             chl = plotSelection.plot_selection_format(plot, plot_options, graphs)
 
-            return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6],chl[7], multi, options_list[2], options_list[1], False, False, False
+            return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6], chl[7], multi, options_list[2], options_list[1], False, False, False
 
         else:
             child1 = dcc.Graph(style=dstyles[3], figure=fig1)
             child3 = dcc.Graph(style=dstyles[3], figure=rcpmPlot.rcpm_plot(chosen_year['Alldata'], year, TITLES[0], [[0, 30], [-15, 15], [0, 1.2], [-25, 25], "TEC"]))
             child4 = dcc.Graph(style=dstyles[7], figure=heatSssmPlot.heatmap_sssm_plot(chosen_year['allphase'], "TEC", year, TITLES[0]))
             child5 = dcc.Graph(style=dstyles[3], figure=sssmPlot.skill_scores_sum_plot(chosen_year['All_nss'], year, TITLES[0], "TEC"))
-            child6 = dcc.Graph(style=dstyles[3], figure=comparePlot.model_comparison_plot(chosen_year['TEC_all'][0], chosen_year['TEC_all'][comp],TITLES[0],comp, dst_scatter_map['z_'+year][comp-1]))
+            child6 = child_compare
+            #child6 = dcc.Graph(style=dstyles[3], figure=comparePlot.model_comparison_plot(chosen_year['TEC_all'][0], chosen_year['TEC_all'][comp],TITLES[0],comp, dst_scatter_map['z_'+year][comp-1]))
             if comp == 0:
                 child6 = error   
 
@@ -287,12 +297,3 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
         
 if __name__ == '__main__':
     app.run_server(debug=False)
-'''
-
-    if observ_type == 1:
-        format = [[0,10],[-5,5],[0,1.2],[-5,5], "foF2"]
-    elif observ_type == 2:
-        format = [[0,200],[-50,100],[0,1],[-100,100], "hmF2"]
-    else:
-        format = [[0, 30], [-15, 15], [0, 1.2], [-25, 25], "TEC"]
-'''

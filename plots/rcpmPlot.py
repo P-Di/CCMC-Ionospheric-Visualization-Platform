@@ -16,16 +16,15 @@ def rcpm_plot(Alldata, year, TITLES, format):
     np.round(p[0][:, 0], 2)
     fig.add_trace(go.Bar(x=x, y=np.round(Alldata[0][:, 0], 2), name=PHASE[0],marker_color='steelblue'))
     fig.add_trace(go.Bar(x=x, y=np.round(Alldata[0][:,1],2), name=PHASE[1],marker_color='orange'))
-    fig.add_trace(go.Bar(x=x, y=np.round(Alldata[0][:,2], 2), name=PHASE[2],marker_color='green'))#Take out the ,1,1 because its only one graph
-    fig.update_yaxes(title='RMSE (TECu)', range=format[0])#range=[0,30]
+    fig.add_trace(go.Bar(x=x, y=np.round(Alldata[0][:,2], 2), name=PHASE[2],marker_color='green'))
+    fig.update_yaxes(title='RMSE (TECu)', range=format[0])
     fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor='white')
     fig.update_layout(title = format[4] + " scores for the " + str(year) + " storm",title_x=0.5, barmode="group", margin=dict(
         b=40,  # bottom margin
         t=80,  # top margin
         pad=1
-    ))#taken out: , xaxis_tickangle=-70
+    ))
     fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='white', tickmode = 'array', showticklabels=True, ticktext =TITLES, ticks="outside", tickvals= x)
-    print("RCPM Almost done\n")
 
     # Buttons is a list that updates what is displayed on the y-axis only. It changes
     buttons=list([
@@ -44,10 +43,9 @@ def rcpm_plot(Alldata, year, TITLES, format):
                 showactive=True,
                 x=-0.25,
                 xanchor="left",
-                y=1.3,#LOWER THIS TO FIX. it was 1.5, now is 1, havent tested.
+                y=1.3,
                 yanchor="top"
             ),
         ]
     )
     return fig
-    #fig.show()

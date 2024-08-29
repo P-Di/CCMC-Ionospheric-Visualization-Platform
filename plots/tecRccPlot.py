@@ -12,26 +12,6 @@ def tec_rcc_plot(CC, RP_par, MP_par, year, TITLES, format):
     range1 = format[0]
     range2 = format[1]
     observation = format[2]
-    '''
-    #TEC Observation range and titles
-    if type == 0:
-        range1 = [0, 200]
-        range2 = range1
-        TITLES = TITLES[0]
-        observation = ["Ratio(80th-20th)", "Ratio(80th)", "TC_80th", "TC(80th)-TC(20th)", "TEC"]
-    #foF2 Observation range and titles
-    elif type == 1:
-        range1 = [0, 200]
-        range2 = [0, 100]
-        TITLES = TITLES[1]
-        observation = ["Ratio(95th-5th)", "Ratio_95th",  "RD_95th", "RD(95th)-RD(5th)", "foF2"]
-    #hmF2 Observation range and titles
-    elif type == 2:
-        range1 = [0, 150]
-        range2 = [0, 100]
-        TITLES = TITLES[1]
-        observation = ["Ratio(90th-10th)", "Ratio_90th", "TC_90th", "TC(90th)-TC(10th)", "hmF2"]
-    '''
     M_PE_diff= MP_par[1,:]-MP_par[2,:]
     R_PE_diff= RP_par[1,:]-RP_par[2,:]
     M_ratio_diff8020=M_PE_diff/M_PE_diff[0]
@@ -76,7 +56,6 @@ def tec_rcc_plot(CC, RP_par, MP_par, year, TITLES, format):
     fig.update_yaxes(range=[-2.5, 3], secondary_y = False, ticks="outside", title=observation[0], row=1, col=1)
     fig.update_yaxes(range=range1, secondary_y = True, showgrid=False,zeroline=False, ticks="outside", title=observation[3], row=1, col=1)
     fig.update_xaxes(tickmode = 'array', showticklabels=True, ticktext = TITLES, showgrid=True,ticks="outside", tickvals= x1, row=1, col=1)
-    #fig.update_layout(showlegend=False, title = year+' Storm', title_x=0.5,)
     # Create an interactive button to enable switching between graphs types.
     buttons=list([
         dict(args=[{'visible': [True, True, True, True, False, False, False, False, False, False]}, 

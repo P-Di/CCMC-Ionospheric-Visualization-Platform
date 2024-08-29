@@ -4,7 +4,6 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 def dst_kp_plot(YR, dstdata):
-    print("Graph 1 started")
     YR=[YR]
     dst_ut=np.arange(24*3)
     #Create a 2x2 subplot with the two upper plots given an extra y axis, 
@@ -52,7 +51,6 @@ def dst_kp_plot(YR, dstdata):
         fig.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
 
     fig.update_layout(plot_bgcolor= "white", paper_bgcolor= "white")
-    print("Graph 1 almost done")
     fig.update_layout(showlegend=False)
     fig['layout'].update(annotations=[
         dict(x=15, y=13,xref='x', yref='y',text='Quiet phase',showarrow=False, font_size=16),

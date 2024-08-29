@@ -10,7 +10,6 @@ def heatmap_sssm_plot(allphase, tt, year, TITLES): #remove YY if working
     PHASE=['Quiet time','Main phase','Recovery phase']
     TITLES = TITLES[1:]
     fig = make_subplots(3, 1, specs=[[{}], [{}], [{}]],subplot_titles=(PHASE[0], PHASE[1], PHASE[2]), vertical_spacing=0.12, horizontal_spacing=0.02)
-    #flagrow=1
     flagcol=0
     for z,c in zip(allphase,range(3)):
         
@@ -28,7 +27,6 @@ def heatmap_sssm_plot(allphase, tt, year, TITLES): #remove YY if working
             ), flagcol, 1)
         
         fig.update(layout_coloraxis_showscale=False)
-        #p = df.iloc[::-1]
         
 
     x = np.arange(len(TITLES))  # the label locations
@@ -45,7 +43,6 @@ def heatmap_sssm_plot(allphase, tt, year, TITLES): #remove YY if working
     fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor='white')
     fig.update_layout(showlegend=False, margin=dict(
         l = 160,   #left margin
-        #r = 150,   #right margin
         b=20,  # bottom margin
         t=65,  # top margin
         pad=0

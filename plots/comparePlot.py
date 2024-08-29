@@ -15,9 +15,11 @@ def model_comparison_plot(TEC1, TEC2, TITLES, comp, z):
             x = np.delete(x, -1)
     x1 =  np.array_split(x, 3)
     y1 =  np.array_split(y, 3)
+
     for i in range(3):
         x = x1[i]
         y = y1[i]
+        x2 = np.arange((np.min(x)-5), (np.max(x)+5))
         a, b = np.polyfit(x, y, 1)
         if i == 0: 
             fig = go.Figure(data=(
@@ -27,8 +29,8 @@ def model_comparison_plot(TEC1, TEC2, TITLES, comp, z):
                 mode='markers',
                 marker=dict(color= z[0],
                         colorscale='Viridis', size=14, colorbar=dict(thickness=20, title='Prob. Distr.'))), 
-                go.Scatter(x=(np.arange((np.min(x)-5), (np.max(x)+5))), y=(a*np.arange((np.min(x)-5), (np.max(x)+5))+b)),
-                go.Scatter(x=x, y=x, visible = "legendonly")))
+                go.Scatter(x=x2, y=(a*np.arange((np.min(x)-5), (np.max(x)+5))+b), mode='lines', line=dict(color='red'), hovertext="y = "+str(round(a, 3))+"*x + "+str(round(b, 3)), hoverinfo='text'),
+                go.Scatter(x=x2, y=x2, mode='lines', line=dict(color='black'), hovertext="y = x", hoverinfo='text')))
         else:
             fig.add_trace(go.Scatter(
                 x=x,
@@ -38,10 +40,10 @@ def model_comparison_plot(TEC1, TEC2, TITLES, comp, z):
                 marker=dict(color= z[i], 
                         colorscale='Viridis', size=14, colorbar=dict(thickness=20, title='Prob. Distr.'))))
             x = np.arange((np.min(x)-5), (np.max(x)+5))
-            fig.add_trace(go.Scatter(x=(x), y=(a*np.arange((np.min(x)-5), (np.max(x)+5))+b), visible = "legendonly"))
-            fig.add_trace(go.Scatter(x=x, y=x, visible = "legendonly"))
+            fig.add_trace(go.Scatter(x=(x), y=(a*np.arange((np.min(x)-5), (np.max(x)+5))+b), visible = "legendonly", mode='lines', line=dict(color='red'),  hovertext="y = "+str(round(a, 3))+"*x + "+str(round(b, 3)), hoverinfo='text'))
+            fig.add_trace(go.Scatter(x=x, y=x, visible = "legendonly", mode='lines', line=dict(color='black'), hovertext="y = x", hoverinfo='text'))
 
-    fig.update_traces(marker=dict(size=4), line={'width': 4, 'color': 'black'})
+    fig.update_traces(marker=dict(size=4), line={'width': 3})
     fig.update_layout(coloraxis_colorbar_title_text = 'Probability Distribution')
     fig.update_yaxes(title=TITLES[comp], showline=True, linewidth=2, linecolor='black', mirror=True, title_standoff = 4)
     fig.update_xaxes(title_text=TITLES[0], showline=True, linewidth=2, linecolor='black', mirror=True)
@@ -70,5 +72,3 @@ def model_comparison_plot(TEC1, TEC2, TITLES, comp, z):
                 )])
 
     return fig
-
-#model_comparison_plot(pic, pic2,'GloTEC ', dataz)

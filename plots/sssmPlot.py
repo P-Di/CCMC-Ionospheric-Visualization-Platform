@@ -7,14 +7,11 @@ def skill_scores_sum_plot(All_nss1, year, TITLES, tt):
     A function to plot the summation of normalized skill scores for each model. 
     """
 
-    # plot Figure 4
-
     fig = make_subplots(1, 3, specs=[
             [{"colspan": 3}, None, None]])
 
 
     x = np.arange(len(TITLES))  # the label locations
-      # the width of the bars
     fig.add_trace(go.Bar(x=x, y=All_nss1[4][:,0],name="Quiet phase", marker_color='steelblue'), row=1, col=1)
     fig.add_trace(go.Bar(x=x, y=All_nss1[4][:,1],name="Main phase", marker_color='orange'))
     fig.add_trace(go.Bar(x=x, y=All_nss1[4][:,2],name="Recovery phase", marker_color='green'))
