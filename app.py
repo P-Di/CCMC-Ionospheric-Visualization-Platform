@@ -179,6 +179,9 @@ app.layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, ch
          Output('multi', 'value'),
          Output('multi', 'options'),
          Output('plot', 'options'),
+         Output('year', 'disabled'),
+         Output('task', 'disabled'),
+         Output('plot', 'disabled'),
          ],
         [Input('multi', 'value'),
          Input('year', 'value'),
@@ -231,7 +234,7 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
             graphs[-1] = error
 
         chl = plotSelection.plot_selection_format(plot, plot_options, graphs)
-        return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6],chl[7], multi, options_list[3], options_list[0]
+        return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6],chl[7], multi, options_list[3], options_list[0], True, True, False
     elif obs == 'HC2':
 
         graphs = [
@@ -248,7 +251,7 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
             graphs[-1] = error
    
         chl = plotSelection.plot_selection_format(plot, plot_options, graphs)
-        return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6],chl[7], multi, options_list[3], options_list[0]
+        return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6],chl[7], multi, options_list[3], options_list[0], True, True, False
     
 
     else:
@@ -269,7 +272,7 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
             plot_options = ['DEF_F1', 'DK_F','DEF_F2', 'MS_F', 'SN_F1', 'SN_F2', 'RCC','SC_F',]
             chl = plotSelection.plot_selection_format(plot, plot_options, graphs)
 
-            return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6],chl[7], multi, options_list[2], options_list[1]
+            return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6],chl[7], multi, options_list[2], options_list[1], False, False, False
 
         else:
             child1 = dcc.Graph(style=dstyles[3], figure=fig1)
@@ -280,7 +283,7 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
             if comp == 0:
                 child6 = error   
 
-            return child1, child_multi, child3, child4, child5, child6, None, None, multi, options_list[2], options_list[1]
+            return child1, child_multi, child3, child4, child5, child6, None, None, multi, options_list[2], options_list[1], False, False, True
         
 if __name__ == '__main__':
     app.run_server(debug=False)
