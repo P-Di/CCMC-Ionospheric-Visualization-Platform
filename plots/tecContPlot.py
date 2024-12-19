@@ -23,12 +23,12 @@ def tec_plot(TEC_all, year, des_model, multi, TITLES):
                 go.Contour(
                     x = np.arange(0,52,.5), # X range chosen to display full range of Contour
                     y = np.arange(-45,40.5,.55), # Y range which displays full range of Contour
-                    z=(err1), 
+                    z=(err1),
                     y0=-50,
                     colorbar=dict(title = "%", ticks='outside', outlinecolor='black', outlinewidth=1), # Format colorbar with black outline and ticks showing.
                     colorscale="RdBu_r", # Create red and blue colorscheme for the Contour
                     contours=dict( # Change the range of the contours from 100 to -100
-                    start = -100, 
+                    start = -100,
                     end = 100,
                     size = 50,
                     coloring = 'heatmap',
