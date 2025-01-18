@@ -103,17 +103,46 @@ app.layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, ch
         target="picture_bg", 
         placement="bottom"
     ),
-    html.Div(id='img_container', children=[ #Airflow Image and text.
-                                        html.Img(id = 'picture_bg', src=image_paths[1],
-                                                 style={"zIndex": "3", 'top': '0', 'width': '100%', 'height': '100px', 'object-fit': 'cover'}),
-                                        html.Div(id='text_overlay',
-                                                children=[
-                                                    html.P("CCMC Ionospheric Validation Campaign",id='text_box', 
-                                                           style={"zIndex": "4",'position': 'absolute', 'top': '10px', 'left': '10px', 
-                                                                  'color': 'white', 'font-size': '54px', 'overflowX': 'hidden', 'white-space': 'nowrap'})])
-                                            ],style={"zIndex": "3", 'padding': '0', 'margin': '0', 'width': '100%', 'height': '100%', 
-                                                  'position': 'relative', 'margin-left': '20%','overflowX': 'hidden', 'width':'80%'}),
-
+    html.Div(
+        id='img_container', 
+        children=[ #Airflow Image and text.
+            html.Img(
+                id = 'picture_bg', 
+                src=image_paths[1],
+                style={"zIndex": "3", 'top': '0', 'width': '100%', 'height': '100px', 'object-fit': 'cover'}
+            ),
+            html.Div(
+                id='text_overlay',
+                children=[
+                    html.P(
+                        "CCMC Ionospheric Validation Campaign", 
+                        id='text_box', 
+                        style={
+                            "zIndex": "4",
+                            'position': 'absolute', 
+                            'top': '10px', 
+                            'left': '10px', 
+                            'color': 'white', 
+                            'font-size': '54px', 
+                            'overflowX': 'hidden', 
+                            'white-space': 'nowrap'
+                        }
+                    )
+                ]
+            )
+        ],
+        style={
+            "zIndex": "3", 
+            'padding': '0', 
+            'margin': '0', 
+            'width': '100%', 
+            'height': '100%', 
+            'position': 'relative', 
+            'margin-left': '20%',
+            'overflowX': 'hidden', 
+            'width':'80%'
+        }
+    ),
     # Format the window on the left of the webpage to include all the dropdown menus.
     html.Div([
                 html.Div(children=[html.B(children='Project')], style=dstyles[2]),
