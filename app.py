@@ -19,6 +19,10 @@ import multiFunc
 import plotSelection
 import plots.comparisonPlot as comparisonPlot
 
+# import thermosphere page layout
+import plotly.express as px
+from thermosphere_layout import thermosphere_layout, ap_thresholds, f107_thresholds, thermosphere_df
+
 #Import data.
 csmc2_foF2 = np.load('data/foF2_202111_storm.npz')
 csmc2_hmF2 = np.load('data/hmF2_202111_storm.npz')
@@ -86,7 +90,7 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.config.suppress_callback_exceptions = True
 
 #Define the layout: Set the background to a light gray, delete all margines.
-app.layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, children=[  
+ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, children=[  
     html.Div( #Create a background for the CCMC logo image.
         style={'width': '20%', 'background-color': '#f4f6f7', 
                       'height': '200px', 'position': 'fixed',
@@ -146,10 +150,16 @@ app.layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, ch
     # Format the window on the left of the webpage to include all the dropdown menus.
     html.Div([
                 html.Div(children=[html.B(children='Project')], style=dstyles[2]),
-                dcc.Dropdown(id='project', options=[
-                    {'label': 'Ionosphere Model Validation', 'value': 'IMV'},
-                    {'label': 'Ray Tracing', 'value': 'RT', 'disabled': True},
-                    {'label': 'GPS Positioning', 'value': 'GPS', 'disabled': True},], value = 'IMV'),
+                dcc.Dropdown(
+                    id='project',
+                    options=[
+                        {'label': 'Ionosphere Model Validation', 'value': 'IMV'},
+                        {'label': 'Thermosphere Neutral Density Assessment', 'value': "TNDA"},
+                        {'label': 'Ray Tracing', 'value': 'RT', 'disabled': True},
+                        {'label': 'GPS Positioning', 'value': 'GPS', 'disabled': True}
+                    ], 
+                    value = 'IMV'
+                ),
                 html.Div(children=[html.B(children='Storm ID')], style=dstyles[2]),
                 dcc.Dropdown(id='year', options=[
                     {'label': '2013-03-TP-01', 'value': '201303'},
@@ -228,6 +238,22 @@ app.layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, ch
                 "bottom": 0,
                 "width": "80%",})
 ])
+
+app.layout = html.Div(
+    id="main-content",
+    children=ionosphere_layout
+) 
+
+# create a callback to select which project to display
+@app.callback(
+        Output("main-content", "children"),
+        Input("project", "value")
+)
+def select_project(project):
+    if (project == "TNDA"):
+        return thermosphere_layout
+    elif (project == "IMV"):
+        return ionosphere_layout
 
 
 # Create one callback to handle all graphs, with the input from all the sidebar buttons.
@@ -365,5 +391,63 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
 
             return child1, child_multi, child3, child4, child5, child6, None, None, multi, options_list[2], options_list[1], obs_op, yearid, False, False, True
         
+# create a callback to handle updates for the thermosphere page
+@app.callback(
+    Output("thermosphere-main-content", "children"),
+    Input("tabs", "value")
+)
+def update_thermosphere_content(tab):
+    if tab == "home":
+        return [
+            html.H1("Thermospheric Analysis Home Page"),
+            html.P("This is the home page for all things thermospheric analysis/neutral density related."),
+            html.P("I'm actually kidding, this is just a way for me to familiarize myself with the dash framework.")
+        ]
+    elif tab == "dashboard":
+        return [
+            html.Div(
+                style={
+                    "margin-top": "10px", 
+                    "padding-left": "10px", 
+                    "width": "80%",
+                    "margin-left": "auto",
+                    "margin-right": "auto"
+                },
+                children=[
+                    html.P(["Select the ", html.B("peak Ap threshold"), ": greater or equal to"]),
+                    dcc.Slider(
+                        0, 4, 1, 
+                        marks={key: str(value) for key, value in enumerate(ap_thresholds)}, 
+                        value=0,
+                        persistence=True, 
+                        persistence_type="session",
+                        included=False
+                    ),
+                    html.P(["Select the ", html.B("peak F107 threshold"), ": greater or equal to"]),
+                    dcc.Slider(
+                        0, 4, 1,
+                        marks={key: str(value) for key, value in enumerate(f107_thresholds)},
+                        value=0,
+                        persistence=True,
+                        persistence_type="session",
+                        included=False
+                    )
+                ],
+            ),
+            dcc.Graph(
+                id="example-graph"
+            )
+        ]
+    elif tab == "benchmark":
+        pass
+
+@app.callback(
+    Output("example-graph", "figure"),
+    Input("parameter_selection", "value")
+)
+def display_plots(parameter):
+    return px.box(thermosphere_df, x=parameter, y="satellite")
+
+
 if __name__ == '__main__':
-    app.run_server(debug=False)
+    app.run_server(debug=True, port=3000)
