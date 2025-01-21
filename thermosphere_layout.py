@@ -86,6 +86,7 @@ data_selection = html.Div(
         html.Div([
             html.Div(html.B("Satellites")),
             dcc.Checklist(
+                id="satellites",
                 options=satellites,
                 value=satellites
             )
@@ -126,7 +127,6 @@ thermosphere_layout = html.Div(
                 'width': 'auto%', 
                 'position': 'fixed',
                 'background-color': '#f4f6f7  ',
-                # 'padding-right': '6%'
             }
         ),
         dbc.Tooltip( #Airflow Image Credits.

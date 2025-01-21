@@ -398,11 +398,14 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
 )
 def update_thermosphere_content(tab):
     if tab == "home":
-        return [
-            html.H1("Thermospheric Analysis Home Page"),
-            html.P("This is the home page for all things thermospheric analysis/neutral density related."),
-            html.P("I'm actually kidding, this is just a way for me to familiarize myself with the dash framework.")
-        ]
+        return html.Div(
+            style={"padding-left": "10px"},
+            children=[
+                html.H1("Thermospheric Analysis Home Page"),
+                html.P("This is the home page for all things thermospheric analysis/neutral density related."),
+                html.P("I'm actually kidding, this is just a way for me to familiarize myself with the dash framework.")
+            ]
+        )
     elif tab == "dashboard":
         return [
             html.Div(
@@ -443,9 +446,13 @@ def update_thermosphere_content(tab):
 
 @app.callback(
     Output("example-graph", "figure"),
-    Input("parameter_selection", "value")
+    [Input("parameter_selection", "value"),
+     Input("category_selections", "value"),
+     Input("satellites", "value")]
 )
-def display_plots(parameter):
+def display_plots(parameter, category, satallites):
+    print(thermosphere_df.head())
+
     return px.box(thermosphere_df, x=parameter, y="satellite")
 
 
