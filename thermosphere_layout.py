@@ -18,7 +18,10 @@ files = [
 formatted_data = {
     "model": [],
     "TP": [],
+    "category": [],
     "satellite": [],
+    "ap_max": [],
+    "f107_max": [],
     "mean_OC": [],
     "debias_mean_OC": [],
     "stddev_OC": [],
@@ -32,7 +35,10 @@ for file in files:
             for satellite in data["events"][key]["satellites"]:
                 formatted_data["model"].append(model)
                 formatted_data["TP"].append(data["events"][key]["TP"])
+                formatted_data["category"].append(data["events"][key]["category"])
                 formatted_data["satellite"].append(satellite)
+                formatted_data["ap_max"].append(data["events"][key]["ap_max"])
+                formatted_data["f107_max"].append(data["events"][key]["f107_max"])
                 formatted_data["mean_OC"].append(data["events"][key]["satellites"][satellite]["total"]["mean_OC"])
                 formatted_data["debias_mean_OC"].append(data["events"][key]["satellites"][satellite]["total"]["debias_mean_OC"])
                 formatted_data["stddev_OC"].append(data["events"][key]["satellites"][satellite]["total"]["stddev_OC"])
@@ -72,11 +78,11 @@ data_selection = html.Div(
             html.Div(html.B("Select Event Category")),
             dcc.Dropdown(
                 options=[
-                    "All", 
-                    "Single Peak", 
-                    "Multiple Peak"
+                    {"label": "All", "value": "all"},
+                    {"label": "Single Peak", "value": "single_peak"},
+                    {"label": "Multiple Peak", "value": "multiple_peak"}
                 ], 
-                value="All", 
+                value="all", 
                 id="category_selections",
                 style={
                     "margin-top": "10px", 
@@ -219,9 +225,7 @@ thermosphere_layout = html.Div(
                         dcc.Tab(label="Benchmark", value="benckmark", style={"background-color": "white", "color": "#e59b1c"}, 
                             selected_style={"background-color": "#e59b1c", "color": "white", "border": "none"})
                     ]),
-                html.Div(
-                    id="thermosphere-main-content",
-                )
+                html.Div(id="thermosphere-main-content")
             ]
         )
     ]

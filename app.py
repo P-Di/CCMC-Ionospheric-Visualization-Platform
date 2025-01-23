@@ -421,6 +421,7 @@ def update_thermosphere_content(tab):
                     dcc.Slider(
                         0, 4, 1, 
                         marks={key: str(value) for key, value in enumerate(ap_thresholds)}, 
+                        id="ap_max_slider",
                         value=0,
                         persistence=True, 
                         persistence_type="session",
@@ -430,6 +431,7 @@ def update_thermosphere_content(tab):
                     dcc.Slider(
                         0, 4, 1,
                         marks={key: str(value) for key, value in enumerate(f107_thresholds)},
+                        id="f107_max_slider",
                         value=0,
                         persistence=True,
                         persistence_type="session",
@@ -448,12 +450,21 @@ def update_thermosphere_content(tab):
     Output("example-graph", "figure"),
     [Input("parameter_selection", "value"),
      Input("category_selections", "value"),
+     Input("ap_max_slider", "value"),
+     Input("f107_max_slider", "value"),
      Input("satellites", "value")]
 )
-def display_plots(parameter, category, satallites):
-    print(thermosphere_df.head())
+def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites):
+    satellites = [satellite.strip() for satellite in satellites] 
+    filtered_df = thermosphere_df.copy()
 
-    return px.box(thermosphere_df, x=parameter, y="satellite")
+    if category != "all":
+        filtered_df = filtered_df[filtered_df["category"] == category]
+    filtered_df = filtered_df[filtered_df["satellite"].isin(satellites)]
+    filtered_df = filtered_df[filtered_df["ap_max"].ge(ap_thresholds[ap_max_threshold])]
+    filtered_df = filtered_df[filtered_df["f107_max"].ge(f107_thresholds[f107_max_threshold])]
+
+    return px.scatter(filtered_df, x=parameter, y="model", color="category")
 
 
 if __name__ == '__main__':
