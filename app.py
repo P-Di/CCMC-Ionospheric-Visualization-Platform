@@ -21,6 +21,7 @@ import plots.comparisonPlot as comparisonPlot
 
 # import thermosphere page layout
 import plotly.express as px
+import plotly.graph_objects as go
 from thermosphere_layout import thermosphere_layout, ap_thresholds, f107_thresholds, thermosphere_df
 
 #Import data.
@@ -402,19 +403,18 @@ def update_thermosphere_content(tab):
             style={"padding-left": "10px"},
             children=[
                 html.H1("Thermospheric Analysis Home Page"),
-                html.P("This is the home page for all things thermospheric analysis/neutral density related."),
-                html.P("I'm actually kidding, this is just a way for me to familiarize myself with the dash framework.")
             ]
         )
     elif tab == "dashboard":
         return [
             html.Div(
                 style={
-                    "margin-top": "10px", 
+                    "padding-top": "10px", 
                     "padding-left": "10px", 
-                    "width": "80%",
-                    "margin-left": "auto",
-                    "margin-right": "auto"
+                    "width": "100%",
+                    "padding-left": "10%",
+                    "padding-right": "10%",
+                    "background-color": "#f4f6f7"
                 },
                 children=[
                     html.P(["Select the ", html.B("peak Ap threshold"), ": greater or equal to"]),
@@ -439,9 +439,16 @@ def update_thermosphere_content(tab):
                     )
                 ],
             ),
-            dcc.Graph(
-                id="example-graph"
-            )
+            html.Div(
+                style={
+                    "width": "70%",
+                    "margin-left": "auto",
+                    "margin-right": "auto"
+                },
+                children=dcc.Graph(
+                    id="example-graph"
+                )
+            )   
         ]
     elif tab == "benchmark":
         pass
@@ -463,9 +470,9 @@ def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, sat
     filtered_df = filtered_df[filtered_df["satellite"].isin(satellites)]
     filtered_df = filtered_df[filtered_df["ap_max"].ge(ap_thresholds[ap_max_threshold])]
     filtered_df = filtered_df[filtered_df["f107_max"].ge(f107_thresholds[f107_max_threshold])]
-
-    return px.scatter(filtered_df, x=parameter, y="model", color="category")
+    
+    return px.box(filtered_df, x=parameter, y="model", color="category")
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True, port=3000)
+    app.run_server(debug=False, port=3000)

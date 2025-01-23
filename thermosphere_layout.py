@@ -212,6 +212,8 @@ thermosphere_layout = html.Div(
             style={
                 "width": "80%",
                 "margin-left": "20%",
+                "margin-bottom": "100px",
+                "background": "white"
             },
             children=[
                 dcc.Tabs(
@@ -227,6 +229,24 @@ thermosphere_layout = html.Div(
                     ]),
                 html.Div(id="thermosphere-main-content")
             ]
+        ),
+        html.Footer(
+            children=[
+                html.A("Accessibility", href='https://www.nasa.gov/accessibility', target="_blank"), 
+                html.Span(children=" | "),
+                html.A("Privacy Policy", href='https://www.nasa.gov/privacy/', target="_blank"),
+                html.Span(children=" | Curators: Paul DiMarzio and Dr. Min-Yang Chou | NASA Official: Maria Kuznetsova")
+            ],
+            style={
+                'margin-left' : '20%',
+                "margin-top": "100px",
+                "textAlign": "center",
+                "padding": "10px",
+                "backgroundColor": "#f1f1f1",
+                "position": "fixed", 
+                "bottom": 0,
+                "width": "80%"
+            }
         )
     ]
 )
