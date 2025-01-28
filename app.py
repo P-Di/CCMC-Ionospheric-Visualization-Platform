@@ -19,10 +19,7 @@ import multiFunc
 import plotSelection
 import plots.comparisonPlot as comparisonPlot
 
-# import thermosphere page layout
-import plotly.express as px
-import plotly.graph_objects as go
-from thermosphere_layout import thermosphere_layout, ap_thresholds, f107_thresholds, thermosphere_df
+import thermosphere_page as tp
 
 #Import data.
 csmc2_foF2 = np.load('data/foF2_202111_storm.npz')
@@ -243,7 +240,7 @@ ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '
 app.layout = html.Div(
     id="main-content",
     children=ionosphere_layout
-) 
+)
 
 # create a callback to select which project to display
 @app.callback(
@@ -252,7 +249,7 @@ app.layout = html.Div(
 )
 def select_project(project):
     if (project == "TNDA"):
-        return thermosphere_layout
+        return tp.thermosphere_layout
     elif (project == "IMV"):
         return ionosphere_layout
 
@@ -274,8 +271,7 @@ def select_project(project):
          Output('year', 'value'),
          Output('year', 'disabled'),
          Output('task', 'disabled'),
-         Output('plot', 'disabled')
-         ],
+         Output('plot', 'disabled')],
         [Input('multi', 'value'),
          Input('year', 'value'),
          Input('task', 'value'),
@@ -288,8 +284,7 @@ def select_project(project):
          State('child5', 'children'),
          State('child6', 'children'),
          State('child7', 'children'),
-         State('child8', 'children')
-         ]
+         State('child8', 'children')]
 )
 def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4, child5, child6, child7, child8):
 
@@ -315,15 +310,15 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
     if obs == 'FC2':
         # A list of all possible selected graphs.
         graphs = [ 
-                    child1,
-                    child_multi,
-                    dcc.Graph(style=dstyles[3], figure=fig1),
-                    dcc.Graph(style=dstyles[3], figure=rcpmPlot.rcpm_plot(csmc2_foF2['Alldata'], '2021', TITLES[1], [[0,10],[-5,5],[0,1.2],[-5,5], "foF2"])),
-                    dcc.Graph(style=dstyles[7], figure=heatSssmPlot.heatmap_sssm_plot(csmc2_foF2['allphase'], "foF2", '2021', TITLES[1])),
-                    dcc.Graph(style=dstyles[3], figure=sssmPlot.skill_scores_sum_plot(csmc2_foF2['All_nss'], '2021', TITLES[1], "foF2")),
-                    dcc.Graph(style=dstyles[3], figure=tecRccPlot.tec_rcc_plot(csmc2_foF2['CC'], csmc2_foF2['RP_par'], csmc2_foF2['MP_par'], '2021', TITLES[1], [[0, 200], [0, 100], ["Ratio(95th-5th)", "Ratio_95th",  "RD_95th", "RD(95th)-RD(5th)", "foF2"]])),
-                    child_multi #Placeholder for model_comparison_plot
-                ]
+            child1,
+            child_multi,
+            dcc.Graph(style=dstyles[3], figure=fig1),
+            dcc.Graph(style=dstyles[3], figure=rcpmPlot.rcpm_plot(csmc2_foF2['Alldata'], '2021', TITLES[1], [[0,10],[-5,5],[0,1.2],[-5,5], "foF2"])),
+            dcc.Graph(style=dstyles[7], figure=heatSssmPlot.heatmap_sssm_plot(csmc2_foF2['allphase'], "foF2", '2021', TITLES[1])),
+            dcc.Graph(style=dstyles[3], figure=sssmPlot.skill_scores_sum_plot(csmc2_foF2['All_nss'], '2021', TITLES[1], "foF2")),
+            dcc.Graph(style=dstyles[3], figure=tecRccPlot.tec_rcc_plot(csmc2_foF2['CC'], csmc2_foF2['RP_par'], csmc2_foF2['MP_par'], '2021', TITLES[1], [[0, 200], [0, 100], ["Ratio(95th-5th)", "Ratio_95th",  "RD_95th", "RD(95th)-RD(5th)", "foF2"]])),
+            child_multi #Placeholder for model_comparison_plot
+        ]
         # Generate the comparison graph based off all selected model excluding comparison model.
         cm = list(map(int, cm))
         if len(cm) == 1 and cm[0] == 0: graphs[-1] = error 
@@ -336,15 +331,15 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
     elif obs == 'HC2':
 
         graphs = [
-                    child1,
-                    child_multi,
-                    dcc.Graph(style=dstyles[3], figure=fig1),
-                    dcc.Graph(style=dstyles[3], figure=rcpmPlot.rcpm_plot(csmc2_hmF2['Alldata'], '2021', TITLES[1], [[0,200],[-50,100],[0,1],[-100,100], "hmF2"])),
-                    dcc.Graph(style=dstyles[7], figure=heatSssmPlot.heatmap_sssm_plot(csmc2_hmF2['allphase'], "hmF2", '2021', TITLES[1])),
-                    dcc.Graph(style=dstyles[3], figure=sssmPlot.skill_scores_sum_plot(csmc2_hmF2['All_nss'], '2021', TITLES[1], "hmF2")),
-                    dcc.Graph(style=dstyles[3], figure=tecRccPlot.tec_rcc_plot(csmc2_hmF2['CC'], csmc2_hmF2['RP_par'], csmc2_hmF2['MP_par'], '2021', TITLES[1], [[0, 150], [0, 100], ["Ratio(90th-10th)", "Ratio_90th", "TC_90th", "TC(90th)-TC(10th)", "hmF2"]])),
-                    child_multi #Placeholder for model_comparison_plot
-                ]
+            child1,
+            child_multi,
+            dcc.Graph(style=dstyles[3], figure=fig1),
+            dcc.Graph(style=dstyles[3], figure=rcpmPlot.rcpm_plot(csmc2_hmF2['Alldata'], '2021', TITLES[1], [[0,200],[-50,100],[0,1],[-100,100], "hmF2"])),
+            dcc.Graph(style=dstyles[7], figure=heatSssmPlot.heatmap_sssm_plot(csmc2_hmF2['allphase'], "hmF2", '2021', TITLES[1])),
+            dcc.Graph(style=dstyles[3], figure=sssmPlot.skill_scores_sum_plot(csmc2_hmF2['All_nss'], '2021', TITLES[1], "hmF2")),
+            dcc.Graph(style=dstyles[3], figure=tecRccPlot.tec_rcc_plot(csmc2_hmF2['CC'], csmc2_hmF2['RP_par'], csmc2_hmF2['MP_par'], '2021', TITLES[1], [[0, 150], [0, 100], ["Ratio(90th-10th)", "Ratio_90th", "TC_90th", "TC(90th)-TC(10th)", "hmF2"]])),
+            child_multi #Placeholder for model_comparison_plot
+        ]
         # Generate the comparison graph based off all selected model excluding comparison model.
         cm = list(map(int, cm))
         if len(cm) == 1 and cm[0] == 0: graphs[-1] = error 
@@ -358,15 +353,15 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
     else:
         if task == 'SCE':
             graphs = [
-                        child_multi,
-                        dcc.Graph(style=dstyles[3], figure=fig1),
-                        child_tec, 
-                        dcc.Graph(style=dstyles[3], figure=rcpmPlot.rcpm_plot(chosen_year['Alldata'], year, TITLES[0], [[0, 30], [-15, 15], [0, 1.2], [-25, 25], "TEC"])),
-                        dcc.Graph(style=dstyles[7], figure=heatSssmPlot.heatmap_sssm_plot(chosen_year['allphase'], "TEC", year, TITLES[0])),
-                        dcc.Graph(style=dstyles[3], figure=sssmPlot.skill_scores_sum_plot(chosen_year['All_nss'], year, TITLES[0], "TEC")),
-                        dcc.Graph(style=dstyles[3], figure=tecRccPlot.tec_rcc_plot(chosen_year['CC'], chosen_year['RP_par'], chosen_year['MP_par'], year, TITLES[0], [[0, 200], [0, 200], ["Ratio(80th-20th)", "Ratio(80th)", "TC_80th", "TC(80th)-TC(20th)", "TEC"]])),
-                        child_tec #Placeholder for model_comparison_plot
-                    ]
+                child_multi,
+                dcc.Graph(style=dstyles[3], figure=fig1),
+                child_tec, 
+                dcc.Graph(style=dstyles[3], figure=rcpmPlot.rcpm_plot(chosen_year['Alldata'], year, TITLES[0], [[0, 30], [-15, 15], [0, 1.2], [-25, 25], "TEC"])),
+                dcc.Graph(style=dstyles[7], figure=heatSssmPlot.heatmap_sssm_plot(chosen_year['allphase'], "TEC", year, TITLES[0])),
+                dcc.Graph(style=dstyles[3], figure=sssmPlot.skill_scores_sum_plot(chosen_year['All_nss'], year, TITLES[0], "TEC")),
+                dcc.Graph(style=dstyles[3], figure=tecRccPlot.tec_rcc_plot(chosen_year['CC'], chosen_year['RP_par'], chosen_year['MP_par'], year, TITLES[0], [[0, 200], [0, 200], ["Ratio(80th-20th)", "Ratio(80th)", "TC_80th", "TC(80th)-TC(20th)", "TEC"]])),
+                child_tec #Placeholder for model_comparison_plot
+            ]
 
             cm = list(map(int, cm))
             if len(cm) == 1 and cm[0] == 0: graphs[-1] = error 
@@ -395,84 +390,26 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
 # create a callback to handle updates for the thermosphere page
 @app.callback(
     Output("thermosphere-main-content", "children"),
-    Input("tabs", "value")
+    [Input("tabs", "value"),
+     Input("parameter_selection", "value")]
 )
-def update_thermosphere_content(tab):
-    if tab == "home":
-        return html.Div(
-            style={"padding-left": "10px"},
-            children=[
-                html.H1("Thermospheric Analysis Home Page"),
-            ]
-        )
-    elif tab == "dashboard":
-        return [
-            html.Div(
-                style={
-                    "padding-top": "10px", 
-                    "padding-left": "10px", 
-                    "width": "100%",
-                    "padding-left": "10%",
-                    "padding-right": "10%",
-                    "background-color": "#f4f6f7"
-                },
-                children=[
-                    html.P(["Select the ", html.B("peak Ap threshold"), ": greater or equal to"]),
-                    dcc.Slider(
-                        0, 4, 1, 
-                        marks={key: str(value) for key, value in enumerate(ap_thresholds)}, 
-                        id="ap_max_slider",
-                        value=0,
-                        persistence=True, 
-                        persistence_type="session",
-                        included=False
-                    ),
-                    html.P(["Select the ", html.B("peak F107 threshold"), ": greater or equal to"]),
-                    dcc.Slider(
-                        0, 4, 1,
-                        marks={key: str(value) for key, value in enumerate(f107_thresholds)},
-                        id="f107_max_slider",
-                        value=0,
-                        persistence=True,
-                        persistence_type="session",
-                        included=False
-                    )
-                ],
-            ),
-            html.Div(
-                style={
-                    "width": "70%",
-                    "margin-left": "auto",
-                    "margin-right": "auto"
-                },
-                children=dcc.Graph(
-                    id="example-graph"
-                )
-            )   
-        ]
-    elif tab == "benchmark":
-        pass
+def update_thermosphere_content(tab, parameter):
+    return tp.update_content(tab, parameter)
 
 @app.callback(
-    Output("example-graph", "figure"),
+    [Output("skills-by-event-plot", "figure"),
+     Output("skills-by-phase-table", "data"),
+     Output("skills-by-phase-plots", "children")],
     [Input("parameter_selection", "value"),
      Input("category_selections", "value"),
      Input("ap_max_slider", "value"),
      Input("f107_max_slider", "value"),
      Input("satellites", "value")]
 )
-def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites):
-    satellites = [satellite.strip() for satellite in satellites] 
-    filtered_df = thermosphere_df.copy()
-
-    if category != "all":
-        filtered_df = filtered_df[filtered_df["category"] == category]
-    filtered_df = filtered_df[filtered_df["satellite"].isin(satellites)]
-    filtered_df = filtered_df[filtered_df["ap_max"].ge(ap_thresholds[ap_max_threshold])]
-    filtered_df = filtered_df[filtered_df["f107_max"].ge(f107_thresholds[f107_max_threshold])]
-    
-    return px.box(filtered_df, x=parameter, y="model", color="category")
+def display_thermosphere_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites):
+    main_plot, table_data, skills_by_phase_plots = tp.display_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites)
+    return main_plot, table_data, skills_by_phase_plots
 
 
 if __name__ == '__main__':
-    app.run_server(debug=False, port=3000)
+    app.run(debug=True, port=3000)

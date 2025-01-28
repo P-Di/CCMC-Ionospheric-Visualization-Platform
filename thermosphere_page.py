@@ -1,6 +1,8 @@
 import json
 import pandas as pd
-from dash import html, dcc 
+from pandas.api.typing import DataFrameGroupBy
+import plotly.express as px
+from dash import html, dcc, dash_table 
 import dash_bootstrap_components as dbc
 
 ###########################
@@ -20,6 +22,7 @@ formatted_data = {
     "TP": [],
     "category": [],
     "satellite": [],
+    "phase": [],
     "ap_max": [],
     "f107_max": [],
     "mean_OC": [],
@@ -33,18 +36,24 @@ for file in files:
         model = file[23:file.find("_scores.json")]
         for key in data["events"]:
             for satellite in data["events"][key]["satellites"]:
-                formatted_data["model"].append(model)
-                formatted_data["TP"].append(data["events"][key]["TP"])
-                formatted_data["category"].append(data["events"][key]["category"])
-                formatted_data["satellite"].append(satellite)
-                formatted_data["ap_max"].append(data["events"][key]["ap_max"])
-                formatted_data["f107_max"].append(data["events"][key]["f107_max"])
-                formatted_data["mean_OC"].append(data["events"][key]["satellites"][satellite]["total"]["mean_OC"])
-                formatted_data["debias_mean_OC"].append(data["events"][key]["satellites"][satellite]["total"]["debias_mean_OC"])
-                formatted_data["stddev_OC"].append(data["events"][key]["satellites"][satellite]["total"]["stddev_OC"])
-                formatted_data["R"].append(data["events"][key]["satellites"][satellite]["total"]["R"])
+                for phase in data["events"][key]["satellites"][satellite]:
+                    formatted_data["model"].append(model)
+                    formatted_data["TP"].append(data["events"][key]["TP"])
+                    formatted_data["category"].append(data["events"][key]["category"])
+                    formatted_data["satellite"].append(satellite)
+                    formatted_data["phase"].append(phase)
+                    formatted_data["ap_max"].append(data["events"][key]["ap_max"])
+                    formatted_data["f107_max"].append(data["events"][key]["f107_max"])
+                    formatted_data["mean_OC"].append(data["events"][key]["satellites"][satellite][phase]["mean_OC"])
+                    formatted_data["debias_mean_OC"].append(data["events"][key]["satellites"][satellite][phase]["debias_mean_OC"])
+                    formatted_data["stddev_OC"].append(data["events"][key]["satellites"][satellite][phase]["stddev_OC"])
+                    formatted_data["R"].append(data["events"][key]["satellites"][satellite][phase]["R"])
 
 thermosphere_df = pd.DataFrame(formatted_data)
+
+# ensure proper ordering of the phases
+phase_order = ["total", "pre_storm", "onset", "main_recovery", "post_storm"]
+thermosphere_df["phase"] = pd.Categorical(thermosphere_df["phase"], categories=phase_order, ordered=True)
 
 ###########################
 # Declarations
@@ -54,6 +63,7 @@ ap_thresholds = [80, 132, 207, 236, 300]
 f107_thresholds = [70, 100, 150, 200, 250]
 image_paths = ['assets/CCMC.png', 'assets/airflow1.jpg']
 satellites = [" CHAMP", " GOCE", " GRACE-A", " SWARM-A", " GRACE-FO"]
+tpid_base_url = "https://kauai.ccmc.gsfc.nasa.gov/CMR/TimeInterval/viewTI?id="
 
 data_selection = html.Div(
     id="data-selection",
@@ -108,7 +118,7 @@ data_selection = html.Div(
 thermosphere_title = "DRAFT Thermosphere Neutral Density Assessment During Storm Times"
 thermosphere_layout = html.Div(
     style = {
-        'backgroundColor':'#f4f6f7  ', 
+        'backgroundColor':'#f4f6f7', 
         'margin': '0'
     }, 
     children=[  
@@ -132,7 +142,7 @@ thermosphere_layout = html.Div(
                 'height': '100px', 
                 'width': 'auto%', 
                 'position': 'fixed',
-                'background-color': '#f4f6f7  ',
+                'background-color': '#f4f6f7'
             }
         ),
         dbc.Tooltip( #Airflow Image Credits.
@@ -250,3 +260,167 @@ thermosphere_layout = html.Div(
         )
     ]
 )
+
+#################################
+# Callbacks for Thermosphere Page
+#################################
+def update_content(tab, parameter):
+    if tab == "home":
+        return html.Div(
+            style={"padding-left": "10px"},
+            children=[
+                html.H1("Thermospheric Analysis Home Page"),
+            ]
+        )
+    elif tab == "dashboard":
+        return [
+            html.Div(
+                style={
+                    "padding-top": "10px", 
+                    "padding-left": "10px", 
+                    "width": "100%",
+                    "padding-left": "10%",
+                    "padding-right": "10%",
+                    "background-color": "#f4f6f7"
+                },
+                children=[
+                    html.P(["Select the ", html.B("peak Ap threshold"), ": greater or equal to"]),
+                    dcc.Slider(
+                        0, 4, 1, 
+                        marks={key: str(value) for key, value in enumerate(ap_thresholds)}, 
+                        id="ap_max_slider",
+                        value=0,
+                        persistence=True, 
+                        persistence_type="session",
+                        included=False
+                    ),
+                    html.P(["Select the ", html.B("peak F107 threshold"), ": greater or equal to"]),
+                    dcc.Slider(
+                        0, 4, 1,
+                        marks={key: str(value) for key, value in enumerate(f107_thresholds)},
+                        id="f107_max_slider",
+                        value=0,
+                        persistence=True,
+                        persistence_type="session",
+                        included=False
+                    )
+                ],
+            ),
+            html.Div(
+                style={
+                    "width": "70%",
+                    "margin-left": "auto",
+                    "margin-right": "auto"
+                },
+                children=[
+                    html.Div([
+                        html.Span(
+                            html.B(f"Skills By Event: {parameter}"),
+                            style={
+                                "z-index": "3", 
+                                "position": "relative",
+                                "top": "50px",
+                                "left": "45%"
+                            } 
+                        ),
+                        dcc.Graph(
+                            id="skills-by-event-plot",
+                        )
+                    ]),
+                    html.Div([
+                        html.Span(html.B("Skills By Phase")),
+                        dash_table.DataTable(
+                            id="skills-by-phase-table",
+                            style_header={
+                                "background-color": "#e59b1c",
+                                "text-align": "center"
+                            },
+                            style_cell={
+                                "text-align": "center"
+                            } 
+                        )
+                    ]),
+                    html.Div(id="skills-by-phase-plots")
+                ]
+            ),
+            html.Div(
+                id="tpid-menu-button",
+                style={
+                    "width": "100px",
+                    "height": "50px",
+                    "position": "fixed",
+                    "bottom": "100px",
+                    "right": "20px",
+                    "display": "flex",
+                    "justify-content": "center",
+                    "align-items": "center",
+                    "box-shadow": "5px 5px 5px #e2e2e2",
+                    "border-radius": "20px"
+                },
+                children="Storm IDs"
+            ),
+            html.Div(html.B("TPID Menu"),
+                id="tpid-menu",
+                style={
+                    "background-color": "#f1f1f1",
+                    "width": "20%",
+                    "height": "100%",
+                    "position": "fixed",
+                    "top": "0px",
+                    "right": "0px",
+                    "z-index": "4",
+                    "box-shadow": "5px 5px 5px 10px #e2e2e2",
+                    "padding": "10px"
+                }
+            )   
+        ]
+    elif tab == "benchmark":
+        pass
+
+
+def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites):
+    satellites = [satellite.strip() for satellite in satellites] 
+    filtered_df = thermosphere_df.copy()
+
+    # data preparation for the one plot (more to come)
+    if category != "all":
+        filtered_df = filtered_df[filtered_df["category"] == category]
+    filtered_df = filtered_df[filtered_df["satellite"].isin(satellites)]
+    filtered_df = filtered_df[filtered_df["ap_max"].ge(ap_thresholds[ap_max_threshold])]
+    filtered_df = filtered_df[filtered_df["f107_max"].ge(f107_thresholds[f107_max_threshold])]
+    main_plot = px.box(filtered_df, x=parameter, y="model")
+    main_plot.update_traces(hoverinfo="none", hovertemplate=None)
+
+    skills_by_phase_plots = []
+    for file in files:
+        model = file[23:file.find("_scores.json")]
+
+        fig = px.box(filtered_df, x="phase", y=parameter)
+        fig.update_traces(hoverinfo="none", hovertemplate=None)
+
+        plot = html.Div([
+            html.Span(
+                html.B(f"Skills By Phase: {parameter} ({model})"),
+                style={
+                    "z-index": "3", 
+                    "position": "relative",
+                    "top": "50px",
+                    "left": "35%"
+                } 
+            ),
+            dcc.Graph(figure=fig)
+        ])
+        skills_by_phase_plots.append(plot)
+    
+    # data preparation for the pivot table
+    skills_by_phase: DataFrameGroupBy = filtered_df.groupby(["model", "phase"], observed=False)[parameter]
+    skills_by_phase: pd.DataFrame = (
+        skills_by_phase.mean()
+        .reset_index()
+        .pivot(index="model", columns="phase", values=parameter)
+        .round(2)
+    )
+    skills_by_phase.reset_index(inplace=True)
+    table_data = skills_by_phase.to_dict("records")
+
+    return main_plot, table_data, skills_by_phase_plots 
