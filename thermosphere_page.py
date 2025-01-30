@@ -5,6 +5,8 @@ import plotly.express as px
 from dash import html, dcc, dash_table 
 import dash_bootstrap_components as dbc
 
+from time import time
+
 ###########################
 # Data Loading
 ###########################
@@ -54,6 +56,7 @@ thermosphere_df = pd.DataFrame(formatted_data)
 # ensure proper ordering of the phases
 phase_order = ["total", "pre_storm", "onset", "main_recovery", "post_storm"]
 thermosphere_df["phase"] = pd.Categorical(thermosphere_df["phase"], categories=phase_order, ordered=True)
+filtered_df = pd.DataFrame()
 
 ###########################
 # Declarations
@@ -222,7 +225,6 @@ thermosphere_layout = html.Div(
             style={
                 "width": "80%",
                 "margin-left": "20%",
-                "margin-bottom": "100px",
                 "background": "white"
             },
             children=[
@@ -249,11 +251,10 @@ thermosphere_layout = html.Div(
             ],
             style={
                 'margin-left' : '20%',
-                "margin-top": "100px",
                 "textAlign": "center",
                 "padding": "10px",
                 "backgroundColor": "#f1f1f1",
-                "position": "fixed", 
+                "position": "relative", 
                 "bottom": 0,
                 "width": "80%"
             }
@@ -345,33 +346,34 @@ def update_content(tab, parameter):
             ),
             html.Div(
                 id="tpid-menu-button",
-                style={
-                    "width": "100px",
-                    "height": "50px",
-                    "position": "fixed",
-                    "bottom": "100px",
-                    "right": "20px",
-                    "display": "flex",
-                    "justify-content": "center",
-                    "align-items": "center",
-                    "box-shadow": "5px 5px 5px #e2e2e2",
-                    "border-radius": "20px"
-                },
                 children="Storm IDs"
             ),
-            html.Div(html.B("TPID Menu"),
+            html.Div(
                 id="tpid-menu",
-                style={
-                    "background-color": "#f1f1f1",
-                    "width": "20%",
-                    "height": "100%",
-                    "position": "fixed",
-                    "top": "0px",
-                    "right": "0px",
-                    "z-index": "4",
-                    "box-shadow": "5px 5px 5px 10px #e2e2e2",
-                    "padding": "10px"
-                }
+                children=[
+                    html.Div([
+                        html.B("TPID Menu"),
+                        html.Div(
+                            id="tpid-x-button",
+                            children=[
+                                html.Div(className="x-component", id="x-arm1"),
+                                html.Div(className="x-component", id="x-arm2")
+                            ]
+                        )],
+                        style={
+                            "padding": "10px",
+                            "position": "fixed", 
+                            "top": "0px",
+                            "right": "0px",
+                            "width": "20%",
+                            "background-color": "#f1f1f1"
+                        }
+                    ),
+                    html.Div(
+                        html.Ul(id="tpid-list"),
+                        style={"margin-top": "45px"}
+                    )
+                ]
             )   
         ]
     elif tab == "benchmark":
@@ -380,6 +382,8 @@ def update_content(tab, parameter):
 
 def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites):
     satellites = [satellite.strip() for satellite in satellites] 
+
+    global filtered_df
     filtered_df = thermosphere_df.copy()
 
     # data preparation for the one plot (more to come)
@@ -422,5 +426,19 @@ def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, sat
     )
     skills_by_phase.reset_index(inplace=True)
     table_data = skills_by_phase.to_dict("records")
-
+    
     return main_plot, table_data, skills_by_phase_plots 
+
+def open_tpid_menu():
+    # create the tpid list for the filtered_df
+    tpid_list = []
+    for tpid in filtered_df["TP"]:
+        item = html.Li(
+            html.A(
+                tpid,
+                href=tpid_base_url + tpid,
+                target="_blank"
+            )
+        )
+        tpid_list.append(item)
+    return tpid_list
