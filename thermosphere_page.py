@@ -5,8 +5,6 @@ import plotly.express as px
 from dash import html, dcc, dash_table 
 import dash_bootstrap_components as dbc
 
-from time import time
-
 ###########################
 # Data Loading
 ###########################
@@ -67,6 +65,12 @@ f107_thresholds = [70, 100, 150, 200, 250]
 image_paths = ['assets/CCMC.png', 'assets/airflow1.jpg']
 satellites = [" CHAMP", " GOCE", " GRACE-A", " SWARM-A", " GRACE-FO"]
 tpid_base_url = "https://kauai.ccmc.gsfc.nasa.gov/CMR/TimeInterval/viewTI?id="
+
+benchmark_tpids = ['2002-05-TP-02', '2002-09-TP-03', '2003-08-TP-02', '2003-11-TP-02', '2004-08-TP-01', '2005-01-TP-02',
+                   '2005-01-TP-04', '2005-04-TP-01', '2005-06-TP-01', '2005-06-TP-02', '2005-09-TP-03', '2006-04-TP-02',
+                   '2006-12-TP-01', '2010-04-TP-01', '2011-08-TP-01', '2011-10-TP-01', '2012-07-TP-01', '2013-05-TP-01', 
+                   '2013-09-TP-01', '2015-03-TP-01', '2015-06-TP-02', '2015-09-TP-02', '2017-05-TP-01', '2021-05-TP-01',
+                   '2021-11-TP-01', '2023-03-TP-01', '2023-04-TP-01', '2023-11-TP-01'] 
 
 data_selection = html.Div(
     id="data-selection",
@@ -236,7 +240,7 @@ thermosphere_layout = html.Div(
                             selected_style={"background-color": "#e59b1c", "color": "white", "border": "none"}),
                         dcc.Tab(label="Analysis Dashboard", value="dashboard", style={"background-color": "white", "color": "#e59b1c"}, 
                             selected_style={"background-color": "#e59b1c", "color": "white", "border": "none"}),
-                        dcc.Tab(label="Benchmark", value="benckmark", style={"background-color": "white", "color": "#e59b1c"}, 
+                        dcc.Tab(label="Benchmark", value="benchmark", style={"background-color": "white", "color": "#e59b1c"}, 
                             selected_style={"background-color": "#e59b1c", "color": "white", "border": "none"})
                     ]),
                 html.Div(id="thermosphere-main-content")
@@ -255,7 +259,7 @@ thermosphere_layout = html.Div(
                 "padding": "10px",
                 "backgroundColor": "#f1f1f1",
                 "position": "relative", 
-                "bottom": 0,
+                "bottom": "0px",
                 "width": "80%"
             }
         )
@@ -377,7 +381,81 @@ def update_content(tab, parameter):
             )   
         ]
     elif tab == "benchmark":
-        pass
+        benchmark_df = thermosphere_df[thermosphere_df["TP"].isin(benchmark_tpids)]
+        benchmark_df = benchmark_df[benchmark_df["ap_max"].ge(ap_thresholds[0])]
+        benchmark_df = benchmark_df[benchmark_df["f107_max"].ge(ap_thresholds[0])]
+        main_plot = px.box(benchmark_df, x="mean_OC", y="model")
+        main_plot.update_traces(hoverinfo="none", hovertemplate=None)
+
+        skills_by_phase_plots = []
+        for file in files:
+            model = file[23:file.find("_scores.json")]
+            fig = px.box(benchmark_df[benchmark_df["model"] == model], x="phase", y="mean_OC")
+            fig.update_traces(hoverinfo="none", hovertemplate=None)
+            plot = html.Div([
+                html.Span(
+                    html.B(f"Skills By Phase: mean_OC ({model})"),
+                    style={
+                        "z-index": "3", 
+                        "position": "relative",
+                        "top": "50px",
+                        "left": "35%"
+                    } 
+                ),
+                dcc.Graph(figure=fig)
+            ])
+            skills_by_phase_plots.append(plot)
+
+        # data  preparation for the pivot table
+        skills_by_phase: DataFrameGroupBy = benchmark_df.groupby(["model", "phase"], observed=False)["mean_OC"]
+        skills_by_phase: pd.DataFrame = (
+            skills_by_phase.mean()
+            .reset_index()
+            .pivot(index="model", columns="phase", values=parameter)
+            .round(2)
+        )
+        skills_by_phase.reset_index(inplace=True)
+        table_data = skills_by_phase.to_dict("records")
+
+        return html.Div(
+            style={
+                "width": "70%",
+                "margin-left": "auto",
+                "margin-right": "auto"
+            },
+            children=[
+                html.Div([
+                    html.Span(
+                        html.B(f"Skills By Event: {parameter}"),
+                        style={
+                            "z-index": "3", 
+                            "position": "relative",
+                            "top": "50px",
+                            "left": "45%"
+                        } 
+                    ),
+                    dcc.Graph(
+                        id="skills-by-event-plot",
+                        figure=main_plot
+                    )
+                ]),
+                html.Div([
+                    html.Span(html.B("Skills By Phase: mean_OC")),
+                    dash_table.DataTable(
+                        id="skills-by-phase-table",
+                        style_header={
+                            "background-color": "#e59b1c",
+                            "text-align": "center"
+                        },
+                        style_cell={
+                            "text-align": "center"
+                        },
+                        data=table_data 
+                    )
+                ]),
+                html.Div(id="skills-by-phase-plots", children=skills_by_phase_plots)
+            ]
+        )
 
 
 def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites):
@@ -399,7 +477,7 @@ def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, sat
     for file in files:
         model = file[23:file.find("_scores.json")]
 
-        fig = px.box(filtered_df, x="phase", y=parameter)
+        fig = px.box(filtered_df[filtered_df["model"] == model], x="phase", y=parameter)
         fig.update_traces(hoverinfo="none", hovertemplate=None)
 
         plot = html.Div([
