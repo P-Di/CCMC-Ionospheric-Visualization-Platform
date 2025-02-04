@@ -408,7 +408,7 @@ def update_thermosphere_content(tab, parameter):
 )
 def display_thermosphere_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites):
     main_plot, table_data, skills_by_phase_plots = tp.display_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites)
-    return main_plot, table_data, skills_by_phase_plots
+    return main_plot, table_data, skills_by_phase_plots 
 
 @app.callback(
     [Output("tpid-menu", "style"),
@@ -417,7 +417,7 @@ def display_thermosphere_plots(parameter, category, ap_max_threshold, f107_max_t
     prevent_initial_call=True
 )
 def open_thermosphere_tpid_menu(n_clicks):
-    return {"display": "block"}, tp.open_tpid_menu()
+    return {"display": "block"}, tp.open_tpid_menu() 
 
 @app.callback(
     Output("tpid-menu", "style", allow_duplicate=True),

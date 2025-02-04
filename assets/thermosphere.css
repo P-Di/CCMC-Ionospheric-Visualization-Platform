@@ -1,5 +1,9 @@
+th, td {
+    padding-right: 20px; 
+}
+
 #tpid-menu-button {
-    background-color: #f1f1f1;
+    background-color: #e59b1c;
     width: 100px;
     height: 50px;
     position: fixed;
@@ -8,12 +12,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 5px 5px 5px #e2e2e2;
+    box-shadow: 5px 5px 10px #e2e2e2;
     border-radius: 20px;
 }
 
 #tpid-menu-button:hover {
-    background-color: #ecececec;
+    background-color: #d18708;
     cursor: pointer;
 }
 

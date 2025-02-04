@@ -9,7 +9,42 @@ import dash_bootstrap_components as dbc
 # Data Loading
 ###########################
 
-files = [
+# helper function to with data loading
+def format_data(files):
+    formatted_data = {
+        "model": [],
+        "TP": [],
+        "category": [],
+        "satellite": [],
+        "phase": [],
+        "ap_max": [],
+        "f107_max": [],
+        "mean_OC": [],
+        "debias_mean_OC": [],
+        "stddev_OC": [],
+        "R": []
+    }
+    for file in files:
+        with open(file, 'r') as f:
+            data = json.load(f)
+            for key in data["events"]:
+                for satellite in data["events"][key]["satellites"]:
+                    for phase in data["events"][key]["satellites"][satellite]:
+                        formatted_data["model"].append(data["solution"])
+                        formatted_data["TP"].append(data["events"][key]["TP"])
+                        formatted_data["category"].append(data["events"][key]["category"])
+                        formatted_data["satellite"].append(satellite)
+                        formatted_data["phase"].append(phase)
+                        formatted_data["ap_max"].append(data["events"][key]["ap_max"])
+                        formatted_data["f107_max"].append(data["events"][key]["f107_max"])
+                        formatted_data["mean_OC"].append(data["events"][key]["satellites"][satellite][phase]["mean_OC"])
+                        formatted_data["debias_mean_OC"].append(data["events"][key]["satellites"][satellite][phase]["debias_mean_OC"])
+                        formatted_data["stddev_OC"].append(data["events"][key]["satellites"][satellite][phase]["stddev_OC"])
+                        formatted_data["R"].append(data["events"][key]["satellites"][satellite][phase]["R"])
+    return formatted_data
+
+# analysis dashboard data
+dashboard_files = [
     "data/thermosphere_data/DTM2013-01_scores.json", 
     "data/thermosphere_data/DTM2020-01_scores.json", 
     "data/thermosphere_data/JB2008-01_scores.json",
@@ -17,43 +52,27 @@ files = [
     "data/thermosphere_data/MSISE00-01_scores.json"
 ]
 
-formatted_data = {
-    "model": [],
-    "TP": [],
-    "category": [],
-    "satellite": [],
-    "phase": [],
-    "ap_max": [],
-    "f107_max": [],
-    "mean_OC": [],
-    "debias_mean_OC": [],
-    "stddev_OC": [],
-    "R": []
-}
-for file in files:
-    with open(file, 'r') as f:
-        data = json.load(f)
-        model = file[23:file.find("_scores.json")]
-        for key in data["events"]:
-            for satellite in data["events"][key]["satellites"]:
-                for phase in data["events"][key]["satellites"][satellite]:
-                    formatted_data["model"].append(model)
-                    formatted_data["TP"].append(data["events"][key]["TP"])
-                    formatted_data["category"].append(data["events"][key]["category"])
-                    formatted_data["satellite"].append(satellite)
-                    formatted_data["phase"].append(phase)
-                    formatted_data["ap_max"].append(data["events"][key]["ap_max"])
-                    formatted_data["f107_max"].append(data["events"][key]["f107_max"])
-                    formatted_data["mean_OC"].append(data["events"][key]["satellites"][satellite][phase]["mean_OC"])
-                    formatted_data["debias_mean_OC"].append(data["events"][key]["satellites"][satellite][phase]["debias_mean_OC"])
-                    formatted_data["stddev_OC"].append(data["events"][key]["satellites"][satellite][phase]["stddev_OC"])
-                    formatted_data["R"].append(data["events"][key]["satellites"][satellite][phase]["R"])
+thermosphere_df = pd.DataFrame(format_data(dashboard_files))
 
-thermosphere_df = pd.DataFrame(formatted_data)
+# benchmark data
+benchmark_files = [
+    "data/benchmark_scores/CTIPe-01_benchmark_scores.json",
+    "data/benchmark_scores/DTM2013-01_benchmark_scores.json",
+    "data/benchmark_scores/DTM2020-01_benchmark_scores.json",
+    "data/benchmark_scores/JB2008-01_benchmark_scores.json",
+    "data/benchmark_scores/MSIS20-01_benchmark_scores.json",
+    "data/benchmark_scores/MSISE00-01_benchmark_scores.json",
+    "data/benchmark_scores/TIEGCM-Heelis-01_benchmark_scores.json",
+    "data/benchmark_scores/TIEGCM-Weimer-01_benchmark_scores.json"
+]
+
+benchmark_df = pd.DataFrame(format_data(benchmark_files))
 
 # ensure proper ordering of the phases
 phase_order = ["total", "pre_storm", "onset", "main_recovery", "post_storm"]
 thermosphere_df["phase"] = pd.Categorical(thermosphere_df["phase"], categories=phase_order, ordered=True)
+benchmark_df["phase"] = pd.Categorical(benchmark_df["phase"], categories=phase_order, ordered=True)
+
 filtered_df = pd.DataFrame()
 
 ###########################
@@ -65,12 +84,6 @@ f107_thresholds = [70, 100, 150, 200, 250]
 image_paths = ['assets/CCMC.png', 'assets/airflow1.jpg']
 satellites = [" CHAMP", " GOCE", " GRACE-A", " SWARM-A", " GRACE-FO"]
 tpid_base_url = "https://kauai.ccmc.gsfc.nasa.gov/CMR/TimeInterval/viewTI?id="
-
-benchmark_tpids = ['2002-05-TP-02', '2002-09-TP-03', '2003-08-TP-02', '2003-11-TP-02', '2004-08-TP-01', '2005-01-TP-02',
-                   '2005-01-TP-04', '2005-04-TP-01', '2005-06-TP-01', '2005-06-TP-02', '2005-09-TP-03', '2006-04-TP-02',
-                   '2006-12-TP-01', '2010-04-TP-01', '2011-08-TP-01', '2011-10-TP-01', '2012-07-TP-01', '2013-05-TP-01', 
-                   '2013-09-TP-01', '2015-03-TP-01', '2015-06-TP-02', '2015-09-TP-02', '2017-05-TP-01', '2021-05-TP-01',
-                   '2021-11-TP-01', '2023-03-TP-01', '2023-04-TP-01', '2023-11-TP-01'] 
 
 data_selection = html.Div(
     id="data-selection",
@@ -234,9 +247,9 @@ thermosphere_layout = html.Div(
             children=[
                 dcc.Tabs(
                     id="tabs",
-                    value="home",
+                    value="description",
                     children=[
-                        dcc.Tab(label="Home", value="home", style={"background-color": "white", "color": "#e59b1c"}, 
+                        dcc.Tab(label="Description", value="description", style={"background-color": "white", "color": "#e59b1c"}, 
                             selected_style={"background-color": "#e59b1c", "color": "white", "border": "none"}),
                         dcc.Tab(label="Analysis Dashboard", value="dashboard", style={"background-color": "white", "color": "#e59b1c"}, 
                             selected_style={"background-color": "#e59b1c", "color": "white", "border": "none"}),
@@ -266,15 +279,232 @@ thermosphere_layout = html.Div(
     ]
 )
 
+# layout for the tpid menu popup
+tpid_menu = html.Div(
+    id="tpid-menu",
+    children=[
+        html.Div([
+            html.B("TPID Menu"),
+            html.Div(
+                id="tpid-x-button",
+                children=[
+                    html.Div(className="x-component", id="x-arm1"),
+                    html.Div(className="x-component", id="x-arm2")
+                ]
+            )],
+            style={
+                "padding": "10px",
+                "position": "fixed", 
+                "top": "0px",
+                "right": "0px",
+                "width": "20%",
+                "background-color": "#f1f1f1"
+            }
+        ),
+        html.Div(
+            html.Ul(id="tpid-list"),
+            style={"margin-top": "45px"}
+        )
+    ]
+)   
+
 #################################
 # Callbacks for Thermosphere Page
 #################################
 def update_content(tab, parameter):
-    if tab == "home":
+    '''
+    This is a callback function for the thermosphere page that displays the proper page depending on the tab that has been
+    selected (home, dashboard, or benchmark)
+    '''
+    if tab == "description":
         return html.Div(
-            style={"padding-left": "10px"},
+            style={"padding-left": "30px", "padding-right": "30px", "padding-bottom": "30px"},
             children=[
-                html.H1("Thermospheric Analysis Home Page"),
+                html.H1("Introduction"),
+                html.P(
+                    """
+                    Thermospheric density is the dominant source of uncertainty in the atmospheric drag. The diagram in Figure 1
+                    shows how the data and model are involved in drag calculation. Thermosphere models estimate neutral density, 
+                    composition, and temperature based on the solar and geomagnetic drivers. Physics-based models with the lower 
+                    boundary located around the mesopause also need to specify the lower boundary condition representing the variability 
+                    from the lower atmosphere. Biases from thermospheric models are amplified due to the satellite shape and aerodynamic 
+                    model when calculating the drag force. This, in turn, introduces several error sources originating from the modeled 
+                    thermospheric states in orbit computation. To make advances in orbit computation and determination, accurate 
+                    specification and forecasting of thermosphere are required. Modelled neutral density must be validated against 
+                    high-quality and high-spatial resolution neutral density datasets to identify strengths and weaknesses, establish 
+                    error budgets, and improve the models after ingestion.
+                    """
+                ),
+                html.Div(
+                    [html.Img(className="description-fig", src="assets/Thermosphere_fig_1.png", 
+                              alt="Figure 1: Diagram showing the data and models of a drag calculation."),
+                     html.P(html.I("Firgure 1. Diagram showing the data and models of a drag calculation."))],
+                    className="img-container"
+                ),
+                html.P("However, there are still several challenges remaining in the validation of neutral density."),
+                html.Ol([
+                    html.Li(
+                        """
+                        Validation studies often invloved only one or two events and a subset of models. this approach may not 
+                        be robust or comprehansive.
+                        """
+                    ),
+                    html.Li(
+                        """
+                        Staying updated with the growing number of models and their various versions remains chellenging, 
+                        especially with open source models.
+                        """
+                    ),
+                    html.Li(
+                        """
+                        Unified validation effort requires an online platform to keep track of the progress of model development.
+                        """
+                    )
+                ]),
+                html.P(
+                    """
+                    To addres these challenges, an assessment of thermosphere models under storm conditions was initiated within the COSPR 
+                    ISWAT framework, leveraging the international collborative network. This allows the ocmmunity to systematically track
+                    the progress of thermosphere models over time.
+                    """
+                ),
+                html.P(
+                    """
+                    This validation campaign focuses on validating 1-D neutral density output from various model runs/solutions with
+                    observation data from GOCE, CHAMP, GRACE, SWARM, and/or GRACE_FO for different time periods. The thermophsere models
+                    are executed in-house using CCMC Runs-on-Request system and accessed. The model performance during the selected 
+                    geomagnetically storm times from 2001 to 2023 are assessed for this study.
+                    """
+                ),
+                html.H1("Methodology"),
+                html.P(
+                    """
+                    An updated metric for thermospheric model assessment under geomagnetic storm conditions were proposed and implemented 
+                    in the validation project (Sutton, 2018; Bruinsma et al., 2021; Bruinsma & Laurens, 2024). The metrics for 
+                    comprehensive thermospheric model-data comparison are applied to establish the thermospheric model scorecard. 
+                    """
+                ),
+                html.P(
+                    """
+                    Figure 2 (top) illustrates the four phases of a single-peak (SP) storm. Phase 1, the pre-storm interval, is used to 
+                    de-bias the models relative to observations. A scaling factor is determined by computing the observed-to-computed (O/C) 
+                    density ratio in the pre-storm phase, then applied to the model densities in all four phases. This de-biasing procedure 
+                    is used to minimize the effect of non-storm related model errors on the assessment. 
+                    """
+                ),
+                html.P(
+                    """
+                    Density data for the SP storms are selected from 30 hours before to 48 hours after the time when ap reaches 80, which 
+                    defines t₀ and marks the end of Phase 2 (storm onset). Phase 3 encompasses the main and recovery phase, while Phase 4 
+                    represents the post-storm phase.
+                    """
+                ),
+                html.P(
+                    """
+                    Figure 2 (bottom) illustrates the phases for double- or multiple-peaked (MP) storms, exemplified by the 10–16 July 2004 
+                    event. For the MP storms, t₀ is defined as the time when ap reaches 80, similar to SP storms. In Figure 2 (bottom), 
+                    Phase 3 for MP storms is extended due to a second occurrence of ap = 80 at t = 1.4. The duration of Phase 3 varies, 
+                    ending when ap falls below 80 again (at t ≈ 3.0 in this example), plus an additional 36 hours. Phase 4 then extends 
+                    for 12 hours beyond the end of Phase 3. Table 1 summarizes the phases and their duration for SP and MP storms computed 
+                    as list below with respect to t0.
+                    """
+                ),
+                html.Div(
+                    [html.Img(className="description-fig", src="assets/Thermosphere_fig_2.png", alt="Figure 2"),
+                     html.P(html.I("""
+                        Figure 2. The four phases of the assessment interavl for single-peak (top) and multiple-peak (bottom) storms, with t0
+                        centered on the time of the first peak in ap with a minimum of 80. The X-axis represents the day relative to t0.
+                        Adapted from Bruinsma and Laurens (2024).
+                    """))], 
+                    className="img-container"),
+                html.Table([
+                    html.Tr([
+                        html.Th("Phase"),
+                        html.Th("Single-Peak (SP) Storm"),
+                        html.Th("Multiple-Peaked (MP) Storm")
+                    ]),
+                    html.Tr([
+                        html.Td("Phase 1"),
+                        html.Td("t0 - 30 h to t0 - 18 h"),
+                        html.Td("t0 - 30 h to t0 - 18 h"),
+                    ]),
+                    html.Tr([
+                        html.Td("Phase 2"),
+                        html.Td("t0 - 18 h to t0"),
+                        html.Td("t0 - 18 h to t0")
+                    ]),
+                    html.Tr([
+                        html.Td("Phase 3"),
+                        html.Td("t0  to t0 + 36 h"),
+                        html.Td("t0 to t0 + variable duration + 36 h")
+                    ]),
+                    html.Tr([
+                        html.Td("Phase 4"),
+                        html.Td("t0 + 36 h to t0 + 48 h"),
+                        html.Td("End of Phase 3 + 12 h")
+                    ])
+                ]), 
+                html.Br(),
+                html.P(html.I(
+                    """Table 1. The phases and their durations for single-peak (SP) and multiple-peaked (MP) storms, 
+                    computed relative to t0, as listed below. Adapted from Bruinsma and Laurens (2024)."""
+                )),
+                html.P(
+                    """
+                    After debiasing, the observed-to-computed (O/C) density ratio is re-computed for the main and recovery phases of each 
+                    storm to express model’s skill to reproduce observations during the geomagnetically storm times. Density ratios of one 
+                    indicate perfect duplication of the observations, i.e., an unbiased model that reproduces all features; deviation from 
+                    unity points to under (larger than one) or overestimation (smaller than one). A model bias, i.e., the mean of the 
+                    density ratios differs from unity, is most damaging to orbit extrapolation because it causes position errors that 
+                    increase with time.
+                    """
+                ),
+                html.P(
+                    """
+                    The standard deviation (Std. Dev.) of the density ratios, computed as percentage of the observation, represents a 
+                    combination of the ability of the model to reproduce observed density variations, and the geophysical noise 
+                    (e.g., waves, the short duration effect of large flares) and instrumental noise in the observations.
+                    """
+                ),
+                html.P(
+                    """
+                    The mean and Std. Dev. of the O/C density ratios, due to their distribution, are computed in log space (Sutton, 2018; 
+                    Bruinsma et al., 2021):
+                    """
+                ),
+                html.Ul([
+                    html.Li([
+                        "Average Observed-to-Compute Density (O/C) (= mean scaling factor of the model)",
+                        html.Ul(html.Li(html.Img(src="assets/Thermosphere_equation_1.png", alt="Mean_OC computation")))
+                    ]),
+                    html.Li([
+                        "Average standard deviation (Std. Dev.) of Observed-to-Compute Density (O/C)",
+                        html.Ul(html.Li(html.Img(src="assets/Thermosphere_equation_2.png", alt="StdDev_OC computation")))
+                    ])
+                ]),
+                html.P("where N is the total number of observations."),
+                html.H1("References:"),
+                html.P([
+                    """
+                    Sutton EK. 2018. A new method of physics-based data assimilation for the quiet and disturbed thermosphere. 
+                    Space Weather 16: 736–753.
+                    """,
+                    html.A("https://doi.org/10.1002/2017SW00178.", href="https://doi.org/10.1002/2017SW00178")
+                ]),
+                html.P([
+                    """
+                    Bruinsma S, Boniface C, Sutton EK & Fedrizzi M 2021. Thermosphere modeling capabilities assessment: geomagnetic storms. 
+                    J. Space Weather Space Clim. 11, 12.
+                    """,
+                    html.A("https://doi.org/10.1051/swsc/2021002.", href="https://doi.org/10.1051/swsc/2021002")
+                ]),
+                html.P([
+                    """
+                    Bruinsma S & Laurens S. 2024. Thermosphere model assessment for geomagnetic storms from 2001 to 2023. J. Space Weather 
+                    Space Clim. 14, 28. 
+                    """,
+                    html.A("https://doi.org/10.1051/swsc/2024027.", href="https://doi.org/10.1051/swsc/2024027")
+                ])
             ]
         )
     elif tab == "dashboard":
@@ -352,49 +582,29 @@ def update_content(tab, parameter):
                 id="tpid-menu-button",
                 children="Storm IDs"
             ),
-            html.Div(
-                id="tpid-menu",
-                children=[
-                    html.Div([
-                        html.B("TPID Menu"),
-                        html.Div(
-                            id="tpid-x-button",
-                            children=[
-                                html.Div(className="x-component", id="x-arm1"),
-                                html.Div(className="x-component", id="x-arm2")
-                            ]
-                        )],
-                        style={
-                            "padding": "10px",
-                            "position": "fixed", 
-                            "top": "0px",
-                            "right": "0px",
-                            "width": "20%",
-                            "background-color": "#f1f1f1"
-                        }
-                    ),
-                    html.Div(
-                        html.Ul(id="tpid-list"),
-                        style={"margin-top": "45px"}
-                    )
-                ]
-            )   
+            tpid_menu
         ]
     elif tab == "benchmark":
-        benchmark_df = thermosphere_df[thermosphere_df["TP"].isin(benchmark_tpids)]
-        benchmark_df = benchmark_df[benchmark_df["ap_max"].ge(ap_thresholds[0])]
-        benchmark_df = benchmark_df[benchmark_df["f107_max"].ge(ap_thresholds[0])]
-        main_plot = px.box(benchmark_df, x="mean_OC", y="model")
+        global filtered_df
+
+        filtered_df = benchmark_df.copy()
+        filtered_df = filtered_df[filtered_df["ap_max"].ge(ap_thresholds[0])]
+        filtered_df = filtered_df[filtered_df["f107_max"].ge(ap_thresholds[0])]
+        main_plot = px.box(filtered_df, x=parameter, y="model")
         main_plot.update_traces(hoverinfo="none", hovertemplate=None)
 
         skills_by_phase_plots = []
-        for file in files:
-            model = file[23:file.find("_scores.json")]
-            fig = px.box(benchmark_df[benchmark_df["model"] == model], x="phase", y="mean_OC")
+        for model in filtered_df["model"].unique():
+            if parameter == "debias_mean_OC":
+                debias_df = filtered_df[filtered_df["phase"] != "pre_storm"]
+                fig = px.box(debias_df[debias_df["model"] == model], x="phase", y=parameter)
+            else:
+                fig = px.box(filtered_df[filtered_df["model"] == model], x="phase", y=parameter)
+
             fig.update_traces(hoverinfo="none", hovertemplate=None)
             plot = html.Div([
                 html.Span(
-                    html.B(f"Skills By Phase: mean_OC ({model})"),
+                    html.B(f"Skills By Phase: {parameter} ({model})"),
                     style={
                         "z-index": "3", 
                         "position": "relative",
@@ -407,7 +617,7 @@ def update_content(tab, parameter):
             skills_by_phase_plots.append(plot)
 
         # data  preparation for the pivot table
-        skills_by_phase: DataFrameGroupBy = benchmark_df.groupby(["model", "phase"], observed=False)["mean_OC"]
+        skills_by_phase: DataFrameGroupBy = filtered_df.groupby(["model", "phase"], observed=False)[parameter]
         skills_by_phase: pd.DataFrame = (
             skills_by_phase.mean()
             .reset_index()
@@ -440,7 +650,7 @@ def update_content(tab, parameter):
                     )
                 ]),
                 html.Div([
-                    html.Span(html.B("Skills By Phase: mean_OC")),
+                    html.Span(html.B(f"Skills By Phase: {parameter}")),
                     dash_table.DataTable(
                         id="skills-by-phase-table",
                         style_header={
@@ -453,7 +663,12 @@ def update_content(tab, parameter):
                         data=table_data 
                     )
                 ]),
-                html.Div(id="skills-by-phase-plots", children=skills_by_phase_plots)
+                html.Div(id="skills-by-phase-plots", children=skills_by_phase_plots),
+                html.Div(
+                    id="tpid-menu-button",
+                    children="Storm IDs"
+                ),
+                tpid_menu
             ]
         )
 
@@ -462,6 +677,7 @@ def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, sat
     satellites = [satellite.strip() for satellite in satellites] 
 
     global filtered_df
+
     filtered_df = thermosphere_df.copy()
 
     # data preparation for the one plot (more to come)
@@ -474,9 +690,7 @@ def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, sat
     main_plot.update_traces(hoverinfo="none", hovertemplate=None)
 
     skills_by_phase_plots = []
-    for file in files:
-        model = file[23:file.find("_scores.json")]
-
+    for model in filtered_df["model"].unique():
         fig = px.box(filtered_df[filtered_df["model"] == model], x="phase", y=parameter)
         fig.update_traces(hoverinfo="none", hovertemplate=None)
 
@@ -504,13 +718,13 @@ def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, sat
     )
     skills_by_phase.reset_index(inplace=True)
     table_data = skills_by_phase.to_dict("records")
-    
+
     return main_plot, table_data, skills_by_phase_plots 
 
+
 def open_tpid_menu():
-    # create the tpid list for the filtered_df
     tpid_list = []
-    for tpid in filtered_df["TP"]:
+    for tpid in filtered_df["TP"].drop_duplicates():
         item = html.Li(
             html.A(
                 tpid,
