@@ -1,9 +1,9 @@
 """
 This module implements the Thermosphere Neutral Density Assessment dashboard. It is split into three main sections:
-    1. DECLARATIONS - Contains declarations for global variables that are used throughout the program
-    2. APP LAYOUT - Defines the base app layout that does not change
-    3. DATA LOADING - Loads the json data from data/thermosphere_data and data/benchmark_data into pandas dataframes
-    4. CALLBACK DEFINITIONS - defines how the page will update based on user input
+    SECTION 1: DECLARATIONS - Contains declarations for global variables that are used throughout the program
+    SECTION 2: APP LAYOUT - Defines the base app layout that does not change
+    SECTION 3: DATA LOADING - Loads the json data from data/thermosphere_data and data/benchmark_data into pandas dataframes
+    SECTION 4: CALLBACK DEFINITIONS - defines how the page will update based on user input
 To navigate to a given section search for the section name exactly as it is displayed above
 """
 
@@ -264,9 +264,19 @@ tpid_menu = html.Div(
 # SECTION 3: DATA LOADING
 
 # This section contains code that loads data from two sources, data/thermosphere_data and data/benchmark_data.
+# The data is stored as a pandas dataframe in two global variables, thermosphere_df and benchmark_df
 ###########################
 
-def format_data(files):
+def format_data(files: list[str]) -> dict:
+    """
+    Opens and reads each file in `files` and returns the data in the `formatted_data dictionary that can be easily converted 
+    into a dataframe.
+
+    :param `files`: A list of paths to json files
+
+    :return `formatted_data`: A dictionary containing the json data where each key will be a column in the dataframe and maps to
+        the values that it will take
+    """
     formatted_data = {
         "model": [],
         "TP": [],
@@ -299,7 +309,14 @@ def format_data(files):
                         formatted_data["R"].append(data["events"][key]["satellites"][satellite][phase]["R"])
     return formatted_data
 
-def load_data():
+def load_data() -> tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    Defines the lists (`dashboard_files` and `benchmark_files`) that contain the paths to the json sources, 
+    loads the data from the two sources into `thermosphere_df` and `benchmark_df` respectively, and ensures proper phase ordering
+    in the dataframes.
+
+    :return: A tuple containg the two dataframes with the storm data, `thermosphere_df` and `benchmark_df`
+    """
     # analysis dashboard data
     dashboard_files = [
         "data/thermosphere_data/DTM2013-01_scores.json", 
@@ -337,6 +354,14 @@ thermosphere_df, benchmark_df = load_data()
 
 ################################
 # SECTION 4: CALLBACK DEFINTIONS
+
+# This section contains callback implementations for the thermosphere callback page. These functions are called by the actual callbacks
+#   in app.py
+# There are three callback functions implemented in this section:
+#   "update_content" - switches between tabs
+#   "display_plots" - populated the plots on the analysis dashboard tab
+#   "open_tpid_menu" - opens the tpid popup
+# There is one more callback to close the tpid popup but it is a one-liner so it is implemented in app.py
 ################################
 
 def update_content(tab, parameter):

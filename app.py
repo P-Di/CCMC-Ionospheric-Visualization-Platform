@@ -389,7 +389,7 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
         
 # The following callbacks are all used to update elements of the thermosphere page
 # For the sake of keeping all the thermosphere code together, I implemented the callbacks in thermosphere_page.py and 
-# simply called those functions in their respective callbacks in this file
+#   simply called those functions in their respective callbacks in this file
 @app.callback(
     Output("thermosphere-main-content", "children"),
     [Input("tabs", "value"),
