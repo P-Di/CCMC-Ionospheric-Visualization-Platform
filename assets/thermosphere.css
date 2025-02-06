@@ -2,6 +2,13 @@ th, td {
     padding-right: 20px; 
 }
 
+.stats {
+    position: absolute;
+    top: 420px;
+    right: 175px;
+    font-size: small;
+}
+
 #tpid-menu-button {
     background-color: #e59b1c;
     width: 100px;

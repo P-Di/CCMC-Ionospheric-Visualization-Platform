@@ -387,7 +387,9 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
 
             return child1, child_multi, child3, child4, child5, child6, None, None, multi, options_list[2], options_list[1], obs_op, yearid, False, False, True
         
-# create a callback to handle updates for the thermosphere page
+# The following callbacks are all used to update elements of the thermosphere page
+# For the sake of keeping all the thermosphere code together, I implemented the callbacks in thermosphere_page.py and 
+# simply called those functions in their respective callbacks in this file
 @app.callback(
     Output("thermosphere-main-content", "children"),
     [Input("tabs", "value"),
@@ -399,7 +401,8 @@ def update_thermosphere_content(tab, parameter):
 @app.callback(
     [Output("skills-by-event-plot", "figure"),
      Output("skills-by-phase-table", "data"),
-     Output("skills-by-phase-plots", "children")],
+     Output("skills-by-phase-plots", "children"),
+     Output("main-plot-stats", "children")],
     [Input("parameter_selection", "value"),
      Input("category_selections", "value"),
      Input("ap_max_slider", "value"),
@@ -407,8 +410,7 @@ def update_thermosphere_content(tab, parameter):
      Input("satellites", "value")]
 )
 def display_thermosphere_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites):
-    main_plot, table_data, skills_by_phase_plots = tp.display_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites)
-    return main_plot, table_data, skills_by_phase_plots 
+    return tp.display_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites)
 
 @app.callback(
     [Output("tpid-menu", "style"),
@@ -428,4 +430,4 @@ def close_thermosphere_tpid_menu(n_clicks):
     return {"display": "none"} 
     
 if __name__ == '__main__':
-    app.run(debug=False, port=3000)
+    app.run(debug=True, port=3000)

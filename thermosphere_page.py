@@ -1,3 +1,12 @@
+"""
+This module implements the Thermosphere Neutral Density Assessment dashboard. It is split into three main sections:
+    1. DECLARATIONS - Contains declarations for global variables that are used throughout the program
+    2. APP LAYOUT - Defines the base app layout that does not change
+    3. DATA LOADING - Loads the json data from data/thermosphere_data and data/benchmark_data into pandas dataframes
+    4. CALLBACK DEFINITIONS - defines how the page will update based on user input
+To navigate to a given section search for the section name exactly as it is displayed above
+"""
+
 import json
 import pandas as pd
 from pandas.api.typing import DataFrameGroupBy
@@ -5,86 +14,32 @@ import plotly.express as px
 from dash import html, dcc, dash_table 
 import dash_bootstrap_components as dbc
 
-###########################
-# Data Loading
-###########################
-
-# helper function to with data loading
-def format_data(files):
-    formatted_data = {
-        "model": [],
-        "TP": [],
-        "category": [],
-        "satellite": [],
-        "phase": [],
-        "ap_max": [],
-        "f107_max": [],
-        "mean_OC": [],
-        "debias_mean_OC": [],
-        "stddev_OC": [],
-        "R": []
-    }
-    for file in files:
-        with open(file, 'r') as f:
-            data = json.load(f)
-            for key in data["events"]:
-                for satellite in data["events"][key]["satellites"]:
-                    for phase in data["events"][key]["satellites"][satellite]:
-                        formatted_data["model"].append(data["solution"])
-                        formatted_data["TP"].append(data["events"][key]["TP"])
-                        formatted_data["category"].append(data["events"][key]["category"])
-                        formatted_data["satellite"].append(satellite)
-                        formatted_data["phase"].append(phase)
-                        formatted_data["ap_max"].append(data["events"][key]["ap_max"])
-                        formatted_data["f107_max"].append(data["events"][key]["f107_max"])
-                        formatted_data["mean_OC"].append(data["events"][key]["satellites"][satellite][phase]["mean_OC"])
-                        formatted_data["debias_mean_OC"].append(data["events"][key]["satellites"][satellite][phase]["debias_mean_OC"])
-                        formatted_data["stddev_OC"].append(data["events"][key]["satellites"][satellite][phase]["stddev_OC"])
-                        formatted_data["R"].append(data["events"][key]["satellites"][satellite][phase]["R"])
-    return formatted_data
-
-# analysis dashboard data
-dashboard_files = [
-    "data/thermosphere_data/DTM2013-01_scores.json", 
-    "data/thermosphere_data/DTM2020-01_scores.json", 
-    "data/thermosphere_data/JB2008-01_scores.json",
-    "data/thermosphere_data/MSIS20-01_scores.json",
-    "data/thermosphere_data/MSISE00-01_scores.json"
-]
-
-thermosphere_df = pd.DataFrame(format_data(dashboard_files))
-
-# benchmark data
-benchmark_files = [
-    "data/benchmark_scores/CTIPe-01_benchmark_scores.json",
-    "data/benchmark_scores/DTM2013-01_benchmark_scores.json",
-    "data/benchmark_scores/DTM2020-01_benchmark_scores.json",
-    "data/benchmark_scores/JB2008-01_benchmark_scores.json",
-    "data/benchmark_scores/MSIS20-01_benchmark_scores.json",
-    "data/benchmark_scores/MSISE00-01_benchmark_scores.json",
-    "data/benchmark_scores/TIEGCM-Heelis-01_benchmark_scores.json",
-    "data/benchmark_scores/TIEGCM-Weimer-01_benchmark_scores.json"
-]
-
-benchmark_df = pd.DataFrame(format_data(benchmark_files))
-
-# ensure proper ordering of the phases
-phase_order = ["total", "pre_storm", "onset", "main_recovery", "post_storm"]
-thermosphere_df["phase"] = pd.Categorical(thermosphere_df["phase"], categories=phase_order, ordered=True)
-benchmark_df["phase"] = pd.Categorical(benchmark_df["phase"], categories=phase_order, ordered=True)
-
-filtered_df = pd.DataFrame()
 
 ###########################
-# Declarations
+# SECTION 1: DECLARATIONS
 ###########################
 
+# declare global variables that will be used throughout the program
+filtered_df = pd.DataFrame() # this variables is used to share data between callbacks
 ap_thresholds = [80, 132, 207, 236, 300]
 f107_thresholds = [70, 100, 150, 200, 250]
 image_paths = ['assets/CCMC.png', 'assets/airflow1.jpg']
 satellites = [" CHAMP", " GOCE", " GRACE-A", " SWARM-A", " GRACE-FO"]
 tpid_base_url = "https://kauai.ccmc.gsfc.nasa.gov/CMR/TimeInterval/viewTI?id="
 
+
+##########################
+# SECTION 2: APP LAYOUT
+
+# This section defines three dash app layouts.
+# The "data_selection" layout is the portion of the lefthand menu where the user can select different parameters to filter the data
+# The "thermosphere_layout" is the entire base layout that does not change. It includes the lefthand menu, the CCMC logo, the footer,
+#   the airflow image and page title, and the tabs to select the description, dashboard, and benchmark pages
+# The "tpid_menu" layout is the layout for the tpid popup that displays a list of links to the storm home page for each storm included
+#   in the current displayed plot
+##########################
+
+# This is the dash layout for the lefthand data selection menu
 data_selection = html.Div(
     id="data-selection",
     children=[
@@ -130,11 +85,7 @@ data_selection = html.Div(
     ]
 )
 
-
-##########################
-# App Layout Definition
-##########################
-
+# This is the basic layout for the thermosphere app
 thermosphere_title = "DRAFT Thermosphere Neutral Density Assessment During Storm Times"
 thermosphere_layout = html.Div(
     style = {
@@ -308,13 +259,90 @@ tpid_menu = html.Div(
     ]
 )   
 
-#################################
-# Callbacks for Thermosphere Page
-#################################
+
+###########################
+# SECTION 3: DATA LOADING
+
+# This section contains code that loads data from two sources, data/thermosphere_data and data/benchmark_data.
+###########################
+
+def format_data(files):
+    formatted_data = {
+        "model": [],
+        "TP": [],
+        "category": [],
+        "satellite": [],
+        "phase": [],
+        "ap_max": [],
+        "f107_max": [],
+        "mean_OC": [],
+        "debias_mean_OC": [],
+        "stddev_OC": [],
+        "R": []
+    }
+    for file in files:
+        with open(file, 'r') as f:
+            data = json.load(f)
+            for key in data["events"]:
+                for satellite in data["events"][key]["satellites"]:
+                    for phase in data["events"][key]["satellites"][satellite]:
+                        formatted_data["model"].append(data["solution"])
+                        formatted_data["TP"].append(data["events"][key]["TP"])
+                        formatted_data["category"].append(data["events"][key]["category"])
+                        formatted_data["satellite"].append(satellite)
+                        formatted_data["phase"].append(phase)
+                        formatted_data["ap_max"].append(data["events"][key]["ap_max"])
+                        formatted_data["f107_max"].append(data["events"][key]["f107_max"])
+                        formatted_data["mean_OC"].append(data["events"][key]["satellites"][satellite][phase]["mean_OC"])
+                        formatted_data["debias_mean_OC"].append(data["events"][key]["satellites"][satellite][phase]["debias_mean_OC"])
+                        formatted_data["stddev_OC"].append(data["events"][key]["satellites"][satellite][phase]["stddev_OC"])
+                        formatted_data["R"].append(data["events"][key]["satellites"][satellite][phase]["R"])
+    return formatted_data
+
+def load_data():
+    # analysis dashboard data
+    dashboard_files = [
+        "data/thermosphere_data/DTM2013-01_scores.json", 
+        "data/thermosphere_data/DTM2020-01_scores.json", 
+        "data/thermosphere_data/JB2008-01_scores.json",
+        "data/thermosphere_data/MSIS20-01_scores.json",
+        "data/thermosphere_data/MSISE00-01_scores.json"
+    ]
+
+    thermosphere_df = pd.DataFrame(format_data(dashboard_files))
+
+    # benchmark data
+    benchmark_files = [
+        "data/benchmark_scores/CTIPe-01_benchmark_scores.json",
+        "data/benchmark_scores/DTM2013-01_benchmark_scores.json",
+        "data/benchmark_scores/DTM2020-01_benchmark_scores.json",
+        "data/benchmark_scores/JB2008-01_benchmark_scores.json",
+        "data/benchmark_scores/MSIS20-01_benchmark_scores.json",
+        "data/benchmark_scores/MSISE00-01_benchmark_scores.json",
+        "data/benchmark_scores/TIEGCM-Heelis-01_benchmark_scores.json",
+        "data/benchmark_scores/TIEGCM-Weimer-01_benchmark_scores.json"
+    ]
+
+    benchmark_df = pd.DataFrame(format_data(benchmark_files))
+
+    # ensure proper ordering of the phases
+    phase_order = ["total", "pre_storm", "onset", "main_recovery", "post_storm"]
+    thermosphere_df["phase"] = pd.Categorical(thermosphere_df["phase"], categories=phase_order, ordered=True)
+    benchmark_df["phase"] = pd.Categorical(benchmark_df["phase"], categories=phase_order, ordered=True)
+
+    return thermosphere_df, benchmark_df
+
+# actually load the data into two global variables
+thermosphere_df, benchmark_df = load_data()
+
+################################
+# SECTION 4: CALLBACK DEFINTIONS
+################################
+
 def update_content(tab, parameter):
     '''
     This is a callback function for the thermosphere page that displays the proper page depending on the tab that has been
-    selected (home, dashboard, or benchmark)
+    selected (description, dashboard, or benchmark)
     '''
     if tab == "description":
         return html.Div(
@@ -489,21 +517,21 @@ def update_content(tab, parameter):
                     Sutton EK. 2018. A new method of physics-based data assimilation for the quiet and disturbed thermosphere. 
                     Space Weather 16: 736–753.
                     """,
-                    html.A("https://doi.org/10.1002/2017SW00178.", href="https://doi.org/10.1002/2017SW00178")
+                    html.A("https://doi.org/10.1002/2017SW00178.", href="https://doi.org/10.1002/2017SW00178", target="_blank")
                 ]),
                 html.P([
                     """
                     Bruinsma S, Boniface C, Sutton EK & Fedrizzi M 2021. Thermosphere modeling capabilities assessment: geomagnetic storms. 
                     J. Space Weather Space Clim. 11, 12.
                     """,
-                    html.A("https://doi.org/10.1051/swsc/2021002.", href="https://doi.org/10.1051/swsc/2021002")
+                    html.A("https://doi.org/10.1051/swsc/2021002.", href="https://doi.org/10.1051/swsc/2021002", target="_blank")
                 ]),
                 html.P([
                     """
                     Bruinsma S & Laurens S. 2024. Thermosphere model assessment for geomagnetic storms from 2001 to 2023. J. Space Weather 
                     Space Clim. 14, 28. 
                     """,
-                    html.A("https://doi.org/10.1051/swsc/2024027.", href="https://doi.org/10.1051/swsc/2024027")
+                    html.A("https://doi.org/10.1051/swsc/2024027.", href="https://doi.org/10.1051/swsc/2024027", target="_blank")
                 ])
             ]
         )
@@ -555,12 +583,13 @@ def update_content(tab, parameter):
                                 "z-index": "3", 
                                 "position": "relative",
                                 "top": "50px",
-                                "left": "45%"
+                                "left": "120px"
                             } 
                         ),
                         dcc.Graph(
                             id="skills-by-event-plot",
-                        )
+                        ),
+                        html.Div(id="main-plot-stats", className="stats")
                     ]),
                     html.Div([
                         html.Span(html.B("Skills By Phase")),
@@ -593,6 +622,24 @@ def update_content(tab, parameter):
         main_plot = px.box(filtered_df, x=parameter, y="model")
         main_plot.update_traces(hoverinfo="none", hovertemplate=None)
 
+        # make benchmark main plot stats
+        bench_main_stats: pd.DataFrame = filtered_df.groupby("model", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2)
+        bench_main_stats = bench_main_stats.iloc[::-1]
+        formatted_bench_main_stats = []
+        for _, row in bench_main_stats.iterrows():
+            if  row["model"] == "MSISE00-01":
+                stats_label = html.Div(
+                    children=["Mean: " + str(row["mean"]), html.Br(), "StD: " + str(row["std"])]
+                )
+                formatted_bench_main_stats.append(stats_label)
+                continue
+            stats_label = html.Div(
+                children=["Mean: " + str(row["mean"]), html.Br(), "StD: " + str(row["std"])],
+                style={"margin-top": "25px"}
+            )
+            formatted_bench_main_stats.append(stats_label)
+        # TODO: Need to find a way to return "formatted_bench_main_stats". I don't think I can do it from the "update_content" callback
+
         skills_by_phase_plots = []
         for model in filtered_df["model"].unique():
             if parameter == "debias_mean_OC":
@@ -609,7 +656,7 @@ def update_content(tab, parameter):
                         "z-index": "3", 
                         "position": "relative",
                         "top": "50px",
-                        "left": "35%"
+                        "left": "80px"
                     } 
                 ),
                 dcc.Graph(figure=fig)
@@ -641,13 +688,14 @@ def update_content(tab, parameter):
                             "z-index": "3", 
                             "position": "relative",
                             "top": "50px",
-                            "left": "45%"
+                            "left": "160px"
                         } 
                     ),
                     dcc.Graph(
                         id="skills-by-event-plot",
                         figure=main_plot
-                    )
+                    ),
+                    html.Div(id="bench-main-stats", className="stats")
                 ]),
                 html.Div([
                     html.Span(html.B(f"Skills By Phase: {parameter}")),
@@ -674,6 +722,10 @@ def update_content(tab, parameter):
 
 
 def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites):
+    """
+    This callback filters thermosphere_df using the input data and populates the plots and table with the filtered dataframe.
+    The filtered dataframe is stored in the global variable filtered_df so that the tpid callback can access that data
+    """
     satellites = [satellite.strip() for satellite in satellites] 
 
     global filtered_df
@@ -688,12 +740,36 @@ def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, sat
     filtered_df = filtered_df[filtered_df["f107_max"].ge(f107_thresholds[f107_max_threshold])]
     main_plot = px.box(filtered_df, x=parameter, y="model")
     main_plot.update_traces(hoverinfo="none", hovertemplate=None)
+    
+    # create the elements for the main plot mean and std display
+    main_plot_stats: pd.DataFrame = filtered_df.groupby("model", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2)
+    main_plot_stats = main_plot_stats.iloc[::-1]
+    formatted_main_plot_stats = []
+    for _, row in main_plot_stats.iterrows():
+        if  row["model"] == "MSISE00-01":
+            stats_label = html.Div(
+                children=["Mean: " + str(row["mean"]), html.Br(), "StD: " + str(row["std"])]
+            )
+            formatted_main_plot_stats.append(stats_label)
+            continue
+        stats_label = html.Div(
+            children=["Mean: " + str(row["mean"]), html.Br(), "StD: " + str(row["std"])],
+            style={"margin-top": "25px"}
+        )
+        formatted_main_plot_stats.append(stats_label)
 
+    # create the skills by phase plots for each model
     skills_by_phase_plots = []
     for model in filtered_df["model"].unique():
-        fig = px.box(filtered_df[filtered_df["model"] == model], x="phase", y=parameter)
-        fig.update_traces(hoverinfo="none", hovertemplate=None)
+        # since the debias_mean_OC pre_storm value is set to 1 throughout, don't display it on the plots (it adds no info)
+        if parameter == "debias_mean_OC":
+            debias_df = filtered_df[filtered_df["phase"] != "pre_storm"]
+            fig = px.box(debias_df[debias_df["model"] == model], x="phase", y=parameter)
+        else:
+            fig = px.box(filtered_df[filtered_df["model"] == model], x="phase", y=parameter)
+        fig.update_traces(hoverinfo="none", hovertemplate=None) # removes the hover function of the plots
 
+        # creates the actual webpage elements for the plots
         plot = html.Div([
             html.Span(
                 html.B(f"Skills By Phase: {parameter} ({model})"),
@@ -701,7 +777,7 @@ def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, sat
                     "z-index": "3", 
                     "position": "relative",
                     "top": "50px",
-                    "left": "35%"
+                    "left": "80px"
                 } 
             ),
             dcc.Graph(figure=fig)
@@ -719,10 +795,18 @@ def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, sat
     skills_by_phase.reset_index(inplace=True)
     table_data = skills_by_phase.to_dict("records")
 
-    return main_plot, table_data, skills_by_phase_plots 
+    return (
+        main_plot, 
+        table_data, 
+        skills_by_phase_plots,
+        formatted_main_plot_stats 
+    )
 
 
 def open_tpid_menu():
+    """
+    This callback creates the links that will be in the tpid popup. It accesses the correct data using the global variable filtered_df
+    """
     tpid_list = []
     for tpid in filtered_df["TP"].drop_duplicates():
         item = html.Li(
