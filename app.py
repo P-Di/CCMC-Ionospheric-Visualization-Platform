@@ -19,6 +19,8 @@ import multiFunc
 import plotSelection
 import plots.comparisonPlot as comparisonPlot
 
+import thermosphere_page as tp
+
 #Import data.
 csmc2_foF2 = np.load('data/foF2_202111_storm.npz')
 csmc2_hmF2 = np.load('data/hmF2_202111_storm.npz')
@@ -86,7 +88,7 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.config.suppress_callback_exceptions = True
 
 #Define the layout: Set the background to a light gray, delete all margines.
-app.layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, children=[  
+ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, children=[  
     html.Div( #Create a background for the CCMC logo image.
         style={'width': '20%', 'background-color': '#f4f6f7', 
                       'height': '200px', 'position': 'fixed',
@@ -103,24 +105,59 @@ app.layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, ch
         target="picture_bg", 
         placement="bottom"
     ),
-    html.Div(id='img_container', children=[ #Airflow Image and text.
-                                        html.Img(id = 'picture_bg', src=image_paths[1],
-                                                 style={"zIndex": "3", 'top': '0', 'width': '100%', 'height': '100px', 'object-fit': 'cover'}),
-                                        html.Div(id='text_overlay',
-                                                children=[
-                                                    html.P("CCMC Ionospheric Validation Campaign",id='text_box', 
-                                                           style={"zIndex": "4",'position': 'absolute', 'top': '10px', 'left': '10px', 
-                                                                  'color': 'white', 'font-size': '54px', 'overflowX': 'hidden', 'white-space': 'nowrap'})])
-                                            ],style={"zIndex": "3", 'padding': '0', 'margin': '0', 'width': '100%', 'height': '100%', 
-                                                  'position': 'relative', 'margin-left': '20%','overflowX': 'hidden', 'width':'80%'}),
-
+    html.Div(
+        id='img_container', 
+        children=[ #Airflow Image and text.
+            html.Img(
+                id = 'picture_bg', 
+                src=image_paths[1],
+                style={"zIndex": "3", 'top': '0', 'width': '100%', 'height': '100px', 'object-fit': 'cover'}
+            ),
+            html.Div(
+                id='text_overlay',
+                children=[
+                    html.P(
+                        "CCMC Ionospheric Validation Campaign", 
+                        id='text_box', 
+                        style={
+                            "zIndex": "4",
+                            'position': 'absolute', 
+                            'top': '10px', 
+                            'left': '10px', 
+                            'color': 'white', 
+                            'font-size': '54px', 
+                            'overflowX': 'hidden', 
+                            'white-space': 'nowrap'
+                        }
+                    )
+                ]
+            )
+        ],
+        style={
+            "zIndex": "3", 
+            'padding': '0', 
+            'margin': '0', 
+            'width': '100%', 
+            'height': '100%', 
+            'position': 'relative', 
+            'margin-left': '20%',
+            'overflowX': 'hidden', 
+            'width':'80%'
+        }
+    ),
     # Format the window on the left of the webpage to include all the dropdown menus.
     html.Div([
                 html.Div(children=[html.B(children='Project')], style=dstyles[2]),
-                dcc.Dropdown(id='project', options=[
-                    {'label': 'Ionosphere Model Validation', 'value': 'IMV'},
-                    {'label': 'Ray Tracing', 'value': 'RT', 'disabled': True},
-                    {'label': 'GPS Positioning', 'value': 'GPS', 'disabled': True},], value = 'IMV'),
+                dcc.Dropdown(
+                    id='project',
+                    options=[
+                        {'label': 'Ionosphere Model Validation', 'value': 'IMV'},
+                        {'label': 'Thermosphere Neutral Density Assessment', 'value': "TNDA"},
+                        {'label': 'Ray Tracing', 'value': 'RT', 'disabled': True},
+                        {'label': 'GPS Positioning', 'value': 'GPS', 'disabled': True}
+                    ], 
+                    value = 'IMV'
+                ),
                 html.Div(children=[html.B(children='Storm ID')], style=dstyles[2]),
                 dcc.Dropdown(id='year', options=[
                     {'label': '2013-03-TP-01', 'value': '201303'},
@@ -200,6 +237,22 @@ app.layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, ch
                 "width": "80%",})
 ])
 
+app.layout = html.Div(
+    id="main-content",
+    children=ionosphere_layout
+)
+
+# create a callback to select which project to display
+@app.callback(
+        Output("main-content", "children"),
+        Input("project", "value")
+)
+def select_project(project):
+    if (project == "TNDA"):
+        return tp.thermosphere_layout
+    elif (project == "IMV"):
+        return ionosphere_layout
+
 
 # Create one callback to handle all graphs, with the input from all the sidebar buttons.
 @app.callback(
@@ -218,8 +271,7 @@ app.layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, ch
          Output('year', 'value'),
          Output('year', 'disabled'),
          Output('task', 'disabled'),
-         Output('plot', 'disabled')
-         ],
+         Output('plot', 'disabled')],
         [Input('multi', 'value'),
          Input('year', 'value'),
          Input('task', 'value'),
@@ -232,8 +284,7 @@ app.layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, ch
          State('child5', 'children'),
          State('child6', 'children'),
          State('child7', 'children'),
-         State('child8', 'children')
-         ]
+         State('child8', 'children')]
 )
 def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4, child5, child6, child7, child8):
 
@@ -259,15 +310,15 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
     if obs == 'FC2':
         # A list of all possible selected graphs.
         graphs = [ 
-                    child1,
-                    child_multi,
-                    dcc.Graph(style=dstyles[3], figure=fig1),
-                    dcc.Graph(style=dstyles[3], figure=rcpmPlot.rcpm_plot(csmc2_foF2['Alldata'], '2021', TITLES[1], [[0,10],[-5,5],[0,1.2],[-5,5], "foF2"])),
-                    dcc.Graph(style=dstyles[7], figure=heatSssmPlot.heatmap_sssm_plot(csmc2_foF2['allphase'], "foF2", '2021', TITLES[1])),
-                    dcc.Graph(style=dstyles[3], figure=sssmPlot.skill_scores_sum_plot(csmc2_foF2['All_nss'], '2021', TITLES[1], "foF2")),
-                    dcc.Graph(style=dstyles[3], figure=tecRccPlot.tec_rcc_plot(csmc2_foF2['CC'], csmc2_foF2['RP_par'], csmc2_foF2['MP_par'], '2021', TITLES[1], [[0, 200], [0, 100], ["Ratio(95th-5th)", "Ratio_95th",  "RD_95th", "RD(95th)-RD(5th)", "foF2"]])),
-                    child_multi #Placeholder for model_comparison_plot
-                ]
+            child1,
+            child_multi,
+            dcc.Graph(style=dstyles[3], figure=fig1),
+            dcc.Graph(style=dstyles[3], figure=rcpmPlot.rcpm_plot(csmc2_foF2['Alldata'], '2021', TITLES[1], [[0,10],[-5,5],[0,1.2],[-5,5], "foF2"])),
+            dcc.Graph(style=dstyles[7], figure=heatSssmPlot.heatmap_sssm_plot(csmc2_foF2['allphase'], "foF2", '2021', TITLES[1])),
+            dcc.Graph(style=dstyles[3], figure=sssmPlot.skill_scores_sum_plot(csmc2_foF2['All_nss'], '2021', TITLES[1], "foF2")),
+            dcc.Graph(style=dstyles[3], figure=tecRccPlot.tec_rcc_plot(csmc2_foF2['CC'], csmc2_foF2['RP_par'], csmc2_foF2['MP_par'], '2021', TITLES[1], [[0, 200], [0, 100], ["Ratio(95th-5th)", "Ratio_95th",  "RD_95th", "RD(95th)-RD(5th)", "foF2"]])),
+            child_multi #Placeholder for model_comparison_plot
+        ]
         # Generate the comparison graph based off all selected model excluding comparison model.
         cm = list(map(int, cm))
         if len(cm) == 1 and cm[0] == 0: graphs[-1] = error 
@@ -280,15 +331,15 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
     elif obs == 'HC2':
 
         graphs = [
-                    child1,
-                    child_multi,
-                    dcc.Graph(style=dstyles[3], figure=fig1),
-                    dcc.Graph(style=dstyles[3], figure=rcpmPlot.rcpm_plot(csmc2_hmF2['Alldata'], '2021', TITLES[1], [[0,200],[-50,100],[0,1],[-100,100], "hmF2"])),
-                    dcc.Graph(style=dstyles[7], figure=heatSssmPlot.heatmap_sssm_plot(csmc2_hmF2['allphase'], "hmF2", '2021', TITLES[1])),
-                    dcc.Graph(style=dstyles[3], figure=sssmPlot.skill_scores_sum_plot(csmc2_hmF2['All_nss'], '2021', TITLES[1], "hmF2")),
-                    dcc.Graph(style=dstyles[3], figure=tecRccPlot.tec_rcc_plot(csmc2_hmF2['CC'], csmc2_hmF2['RP_par'], csmc2_hmF2['MP_par'], '2021', TITLES[1], [[0, 150], [0, 100], ["Ratio(90th-10th)", "Ratio_90th", "TC_90th", "TC(90th)-TC(10th)", "hmF2"]])),
-                    child_multi #Placeholder for model_comparison_plot
-                ]
+            child1,
+            child_multi,
+            dcc.Graph(style=dstyles[3], figure=fig1),
+            dcc.Graph(style=dstyles[3], figure=rcpmPlot.rcpm_plot(csmc2_hmF2['Alldata'], '2021', TITLES[1], [[0,200],[-50,100],[0,1],[-100,100], "hmF2"])),
+            dcc.Graph(style=dstyles[7], figure=heatSssmPlot.heatmap_sssm_plot(csmc2_hmF2['allphase'], "hmF2", '2021', TITLES[1])),
+            dcc.Graph(style=dstyles[3], figure=sssmPlot.skill_scores_sum_plot(csmc2_hmF2['All_nss'], '2021', TITLES[1], "hmF2")),
+            dcc.Graph(style=dstyles[3], figure=tecRccPlot.tec_rcc_plot(csmc2_hmF2['CC'], csmc2_hmF2['RP_par'], csmc2_hmF2['MP_par'], '2021', TITLES[1], [[0, 150], [0, 100], ["Ratio(90th-10th)", "Ratio_90th", "TC_90th", "TC(90th)-TC(10th)", "hmF2"]])),
+            child_multi #Placeholder for model_comparison_plot
+        ]
         # Generate the comparison graph based off all selected model excluding comparison model.
         cm = list(map(int, cm))
         if len(cm) == 1 and cm[0] == 0: graphs[-1] = error 
@@ -302,15 +353,15 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
     else:
         if task == 'SCE':
             graphs = [
-                        child_multi,
-                        dcc.Graph(style=dstyles[3], figure=fig1),
-                        child_tec, 
-                        dcc.Graph(style=dstyles[3], figure=rcpmPlot.rcpm_plot(chosen_year['Alldata'], year, TITLES[0], [[0, 30], [-15, 15], [0, 1.2], [-25, 25], "TEC"])),
-                        dcc.Graph(style=dstyles[7], figure=heatSssmPlot.heatmap_sssm_plot(chosen_year['allphase'], "TEC", year, TITLES[0])),
-                        dcc.Graph(style=dstyles[3], figure=sssmPlot.skill_scores_sum_plot(chosen_year['All_nss'], year, TITLES[0], "TEC")),
-                        dcc.Graph(style=dstyles[3], figure=tecRccPlot.tec_rcc_plot(chosen_year['CC'], chosen_year['RP_par'], chosen_year['MP_par'], year, TITLES[0], [[0, 200], [0, 200], ["Ratio(80th-20th)", "Ratio(80th)", "TC_80th", "TC(80th)-TC(20th)", "TEC"]])),
-                        child_tec #Placeholder for model_comparison_plot
-                    ]
+                child_multi,
+                dcc.Graph(style=dstyles[3], figure=fig1),
+                child_tec, 
+                dcc.Graph(style=dstyles[3], figure=rcpmPlot.rcpm_plot(chosen_year['Alldata'], year, TITLES[0], [[0, 30], [-15, 15], [0, 1.2], [-25, 25], "TEC"])),
+                dcc.Graph(style=dstyles[7], figure=heatSssmPlot.heatmap_sssm_plot(chosen_year['allphase'], "TEC", year, TITLES[0])),
+                dcc.Graph(style=dstyles[3], figure=sssmPlot.skill_scores_sum_plot(chosen_year['All_nss'], year, TITLES[0], "TEC")),
+                dcc.Graph(style=dstyles[3], figure=tecRccPlot.tec_rcc_plot(chosen_year['CC'], chosen_year['RP_par'], chosen_year['MP_par'], year, TITLES[0], [[0, 200], [0, 200], ["Ratio(80th-20th)", "Ratio(80th)", "TC_80th", "TC(80th)-TC(20th)", "TEC"]])),
+                child_tec #Placeholder for model_comparison_plot
+            ]
 
             cm = list(map(int, cm))
             if len(cm) == 1 and cm[0] == 0: graphs[-1] = error 
@@ -336,5 +387,47 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
 
             return child1, child_multi, child3, child4, child5, child6, None, None, multi, options_list[2], options_list[1], obs_op, yearid, False, False, True
         
+# The following callbacks are all used to update elements of the thermosphere page
+# For the sake of keeping all the thermosphere code together, I implemented the callbacks in thermosphere_page.py and 
+#   simply called those functions in their respective callbacks in this file
+@app.callback(
+    Output("thermosphere-main-content", "children"),
+    [Input("tabs", "value"),
+     Input("parameter_selection", "value")]
+)
+def update_thermosphere_content(tab, parameter):
+    return tp.update_content(tab, parameter)
+
+@app.callback(
+    [Output("skills-by-event-plot", "figure"),
+     Output("skills-by-phase-table", "data"),
+     Output("skills-by-phase-plots", "children"),
+     Output("main-plot-stats", "children")],
+    [Input("parameter_selection", "value"),
+     Input("category_selections", "value"),
+     Input("ap_max_slider", "value"),
+     Input("f107_max_slider", "value"),
+     Input("satellites", "value")]
+)
+def display_thermosphere_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites):
+    return tp.display_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites)
+
+@app.callback(
+    [Output("tpid-menu", "style"),
+     Output("tpid-list", "children")],
+    Input("tpid-menu-button", "n_clicks"),
+    prevent_initial_call=True
+)
+def open_thermosphere_tpid_menu(n_clicks):
+    return {"display": "block"}, tp.open_tpid_menu() 
+
+@app.callback(
+    Output("tpid-menu", "style", allow_duplicate=True),
+    Input("tpid-x-button", "n_clicks"),
+    prevent_initial_call=True
+)
+def close_thermosphere_tpid_menu(n_clicks):
+    return {"display": "none"} 
+    
 if __name__ == '__main__':
-    app.run_server(debug=False)
+    app.run(debug=False, port=3000)
