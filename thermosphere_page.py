@@ -189,6 +189,7 @@ thermosphere_layout = html.Div(
                 data_selection
             ]
         ),
+        # This div contains the dcc Tab components that allow the user to switch between tabs
         html.Div(
             style={
                 "width": "80%",
@@ -236,7 +237,7 @@ tpid_menu = html.Div(
     children=[
         html.Div([
             html.B("TPID Menu"),
-            html.Div(
+            html.Div( # made an x button for the tpid menu using three divs and css :)
                 id="tpid-x-button",
                 children=[
                     html.Div(className="x-component", id="x-arm1"),
@@ -252,7 +253,7 @@ tpid_menu = html.Div(
                 "background-color": "#f1f1f1"
             }
         ),
-        html.Div(
+        html.Div( # This is the target for the "open_tpid_menu" callback 
             html.Ul(id="tpid-list"),
             style={"margin-top": "45px"}
         )
@@ -277,6 +278,7 @@ def format_data(files: list[str]) -> dict:
     :return `formatted_data`: A dictionary containing the json data where each key will be a column in the dataframe and maps to
         the values that it will take
     """
+    # create the empty dictionary that the data will be returned in
     formatted_data = {
         "model": [],
         "TP": [],
@@ -290,12 +292,14 @@ def format_data(files: list[str]) -> dict:
         "stddev_OC": [],
         "R": []
     }
+    # loop through each file
     for file in files:
         with open(file, 'r') as f:
             data = json.load(f)
             for key in data["events"]:
                 for satellite in data["events"][key]["satellites"]:
                     for phase in data["events"][key]["satellites"][satellite]:
+                        # select the keys we want and append the data to the coorisponding list in the dictionary 
                         formatted_data["model"].append(data["solution"])
                         formatted_data["TP"].append(data["events"][key]["TP"])
                         formatted_data["category"].append(data["events"][key]["category"])
@@ -326,6 +330,7 @@ def load_data() -> tuple[pd.DataFrame, pd.DataFrame]:
         "data/thermosphere_data/MSISE00-01_scores.json"
     ]
 
+    # convert the json data into a dataframe using the "format_data" function
     thermosphere_df = pd.DataFrame(format_data(dashboard_files))
 
     # benchmark data
@@ -340,9 +345,10 @@ def load_data() -> tuple[pd.DataFrame, pd.DataFrame]:
         "data/benchmark_scores/TIEGCM-Weimer-01_benchmark_scores.json"
     ]
 
+    # convert the json data into a dataframe using the "format_data" function
     benchmark_df = pd.DataFrame(format_data(benchmark_files))
 
-    # ensure proper ordering of the phases
+    # ensure proper ordering of phases column
     phase_order = ["total", "pre_storm", "onset", "main_recovery", "post_storm"]
     thermosphere_df["phase"] = pd.Categorical(thermosphere_df["phase"], categories=phase_order, ordered=True)
     benchmark_df["phase"] = pd.Categorical(benchmark_df["phase"], categories=phase_order, ordered=True)
@@ -369,7 +375,12 @@ def update_content(tab, parameter):
     This is a callback function for the thermosphere page that displays the proper page depending on the tab that has been
     selected (description, dashboard, or benchmark)
     '''
+    # There are three basic conditions in this function:
+    #   if the tab value (passed in by the callback decorator) is description, render the description tab
+    #   if the tab value is dashboard, render the analysis dashboard tab
+    #   if the tab value is benchmark, render the benchamrk tab
     if tab == "description":
+        # The description tab basically contains a bunch of static html
         return html.Div(
             style={"padding-left": "30px", "padding-right": "30px", "padding-bottom": "30px"},
             children=[
@@ -561,6 +572,8 @@ def update_content(tab, parameter):
             ]
         )
     elif tab == "dashboard":
+        # The dashboard block renders the base template for the analysis dashboard page which is populated by the "display_plots" callback
+        # on page load/user input
         return [
             html.Div(
                 style={
@@ -571,7 +584,7 @@ def update_content(tab, parameter):
                     "padding-right": "10%",
                     "background-color": "#f4f6f7"
                 },
-                children=[
+                children=[ # Sliders to select peak Ap and F107 thresholds, storms displayed have peak ap/f107 values >= the selected value
                     html.P(["Select the ", html.B("peak Ap threshold"), ": greater or equal to"]),
                     dcc.Slider(
                         0, 4, 1, 
@@ -601,7 +614,7 @@ def update_content(tab, parameter):
                     "margin-right": "auto"
                 },
                 children=[
-                    html.Div([
+                    html.Div([ # The main plot on the page, compares thermosphere models
                         html.Span(
                             html.B(f"Skills By Event: {parameter}"),
                             style={
@@ -616,7 +629,7 @@ def update_content(tab, parameter):
                         ),
                         html.Div(id="main-plot-stats", className="stats")
                     ]),
-                    html.Div([
+                    html.Div([ # Data table showing average parameter value for each phase for each model
                         html.Span(html.B("Skills By Phase")),
                         dash_table.DataTable(
                             id="skills-by-phase-table",
@@ -629,30 +642,39 @@ def update_content(tab, parameter):
                             } 
                         )
                     ]),
+                    # This div is a target for the "update_plots" callback and will be populated with plotly graphs for each model plotted against phase
                     html.Div(id="skills-by-phase-plots")
                 ]
             ),
-            html.Div(
+            html.Div( # Target for the "open_tpid_menu" callback 
                 id="tpid-menu-button",
                 children="Storm IDs"
             ),
             tpid_menu
         ]
     elif tab == "benchmark":
+        # declare the variable filtered_df global
         global filtered_df
 
+        # filter benchmark_df for peek ap/f107 values that are >= selected slider values
         filtered_df = benchmark_df.copy()
         filtered_df = filtered_df[filtered_df["ap_max"].ge(ap_thresholds[0])]
         filtered_df = filtered_df[filtered_df["f107_max"].ge(ap_thresholds[0])]
+        # Create the plotly figure using the selected parameter for x values and model for y values
         main_plot = px.box(filtered_df, x=parameter, y="model")
-        main_plot.update_traces(hoverinfo="none", hovertemplate=None)
+        main_plot.update_traces(hoverinfo="none", hovertemplate=None) # remove the hover functionality from the plots
 
-        # make benchmark main plot stats
+        # make benchmark main plot stats (rendered to the right of the plot)
+        # This line does some pandas magic (i.e., I have no idea what it does it just gives me the mean and std)
         bench_main_stats: pd.DataFrame = filtered_df.groupby("model", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2)
+        # reverse the stats df because for some reason this gives it to me in the opposite order that it is rendered in
         bench_main_stats = bench_main_stats.iloc[::-1]
         formatted_bench_main_stats = []
+        # iterate through the rows of the stats df
         for _, row in bench_main_stats.iterrows():
-            if  row["model"] == "MSISE00-01":
+            # create a div that will have the mean and std data in it
+            # seperate code for the first block because it should have no margin-top styling
+            if  row["model"] == "TIEGCM-Weimer-01":
                 stats_label = html.Div(
                     children=["Mean: " + str(row["mean"]), html.Br(), "StD: " + str(row["std"])]
                 )
@@ -662,18 +684,21 @@ def update_content(tab, parameter):
                 children=["Mean: " + str(row["mean"]), html.Br(), "StD: " + str(row["std"])],
                 style={"margin-top": "25px"}
             )
+            # add the div to the "formatted_bench_main_stats" variable
             formatted_bench_main_stats.append(stats_label)
-        # TODO: Need to find a way to return "formatted_bench_main_stats". I don't think I can do it from the "update_content" callback
 
+        # create a plotly plot for each model and add it to "skill_by_phase_plots"
         skills_by_phase_plots = []
         for model in filtered_df["model"].unique():
+            # if the parameter is debias_mean_OC remove the pre-storm phase because it is set to 1 for all storms in the debiasing
             if parameter == "debias_mean_OC":
                 debias_df = filtered_df[filtered_df["phase"] != "pre_storm"]
                 fig = px.box(debias_df[debias_df["model"] == model], x="phase", y=parameter)
             else:
                 fig = px.box(filtered_df[filtered_df["model"] == model], x="phase", y=parameter)
 
-            fig.update_traces(hoverinfo="none", hovertemplate=None)
+            fig.update_traces(hoverinfo="none", hovertemplate=None) # remove hover info
+            # create the plot elements in dash
             plot = html.Div([
                 html.Span(
                     html.B(f"Skills By Phase: {parameter} ({model})"),
@@ -686,9 +711,10 @@ def update_content(tab, parameter):
                 ),
                 dcc.Graph(figure=fig)
             ])
+            # add to the list
             skills_by_phase_plots.append(plot)
 
-        # data  preparation for the pivot table
+        # data  preparation for the pivot table (some more pandas magic)
         skills_by_phase: DataFrameGroupBy = filtered_df.groupby(["model", "phase"], observed=False)[parameter]
         skills_by_phase: pd.DataFrame = (
             skills_by_phase.mean()
@@ -699,6 +725,7 @@ def update_content(tab, parameter):
         skills_by_phase.reset_index(inplace=True)
         table_data = skills_by_phase.to_dict("records")
 
+        # The actual dash layout for the benchmark page
         return html.Div(
             style={
                 "width": "70%",
@@ -718,9 +745,10 @@ def update_content(tab, parameter):
                     ),
                     dcc.Graph(
                         id="skills-by-event-plot",
-                        figure=main_plot
+                        figure=main_plot,
+                        style={"height": "650px"}
                     ),
-                    html.Div(id="bench-main-stats", className="stats")
+                    html.Div(id="bench-main-stats", className="stats", children=formatted_bench_main_stats, style={"top": "265px"})
                 ]),
                 html.Div([
                     html.Span(html.B(f"Skills By Phase: {parameter}")),
@@ -737,7 +765,7 @@ def update_content(tab, parameter):
                     )
                 ]),
                 html.Div(id="skills-by-phase-plots", children=skills_by_phase_plots),
-                html.Div(
+                html.Div( # target for "open_tpid_menu" callback
                     id="tpid-menu-button",
                     children="Storm IDs"
                 ),
@@ -749,7 +777,7 @@ def update_content(tab, parameter):
 def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites):
     """
     This callback filters thermosphere_df using the input data and populates the plots and table with the filtered dataframe.
-    The filtered dataframe is stored in the global variable filtered_df so that the tpid callback can access that data
+    The filtered dataframe is stored in the global variable `filtered_df` so that the tpid callback can access that data
     """
     satellites = [satellite.strip() for satellite in satellites] 
 
