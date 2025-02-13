@@ -11,8 +11,11 @@ import json
 import pandas as pd
 from pandas.api.typing import DataFrameGroupBy
 import plotly.express as px
+import plotly.graph_objects as go
 from dash import html, dcc, dash_table 
 import dash_bootstrap_components as dbc
+
+import thermosphere_plots.stripplot as sp
 
 
 ###########################
@@ -216,7 +219,7 @@ thermosphere_layout = html.Div(
                 html.A("Accessibility", href='https://www.nasa.gov/accessibility', target="_blank"), 
                 html.Span(children=" | "),
                 html.A("Privacy Policy", href='https://www.nasa.gov/privacy/', target="_blank"),
-                html.Span(children=" | Curators: Paul DiMarzio and Dr. Min-Yang Chou | NASA Official: Maria Kuznetsova")
+                html.Span(children=" | Curators: Paul DiMarzio, Joseph Sypal, and Dr. Min-Yang Chou | NASA Official: Maria Kuznetsova")
             ],
             style={
                 'margin-left' : '20%',
@@ -359,7 +362,7 @@ def load_data() -> tuple[pd.DataFrame, pd.DataFrame]:
 thermosphere_df, benchmark_df = load_data()
 
 ################################
-# SECTION 4: CALLBACK DEFINTIONS
+# SECTION 4: CALLBACK DEFINITIONS
 
 # This section contains callback implementations for the thermosphere callback page. These functions are called by the actual callbacks
 #   in app.py
@@ -660,15 +663,16 @@ def update_content(tab, parameter):
         filtered_df = benchmark_df.copy()
         filtered_df = filtered_df[filtered_df["ap_max"].ge(ap_thresholds[0])]
         filtered_df = filtered_df[filtered_df["f107_max"].ge(ap_thresholds[0])]
-        # Create the plotly figure using the selected parameter for x values and model for y values
-        main_plot = px.box(filtered_df, x=parameter, y="model")
-        main_plot.update_traces(hoverinfo="none", hovertemplate=None) # remove the hover functionality from the plots
 
         # make benchmark main plot stats (rendered to the right of the plot)
         # This line does some pandas magic (i.e., I have no idea what it does it just gives me the mean and std)
         bench_main_stats: pd.DataFrame = filtered_df.groupby("model", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2)
         # reverse the stats df because for some reason this gives it to me in the opposite order that it is rendered in
         bench_main_stats = bench_main_stats.iloc[::-1]
+
+        # main plot only uses total phase data
+        main_plot = sp.create_main_stripplot(filtered_df[filtered_df["phase"] == "total"], bench_main_stats, parameter)
+
         formatted_bench_main_stats = []
         # iterate through the rows of the stats df
         for _, row in bench_main_stats.iterrows():
@@ -688,31 +692,8 @@ def update_content(tab, parameter):
             formatted_bench_main_stats.append(stats_label)
 
         # create a plotly plot for each model and add it to "skill_by_phase_plots"
-        skills_by_phase_plots = []
-        for model in filtered_df["model"].unique():
-            # if the parameter is debias_mean_OC remove the pre-storm phase because it is set to 1 for all storms in the debiasing
-            if parameter == "debias_mean_OC":
-                debias_df = filtered_df[filtered_df["phase"] != "pre_storm"]
-                fig = px.box(debias_df[debias_df["model"] == model], x="phase", y=parameter)
-            else:
-                fig = px.box(filtered_df[filtered_df["model"] == model], x="phase", y=parameter)
-
-            fig.update_traces(hoverinfo="none", hovertemplate=None) # remove hover info
-            # create the plot elements in dash
-            plot = html.Div([
-                html.Span(
-                    html.B(f"Skills By Phase: {parameter} ({model})"),
-                    style={
-                        "z-index": "3", 
-                        "position": "relative",
-                        "top": "50px",
-                        "left": "80px"
-                    } 
-                ),
-                dcc.Graph(figure=fig)
-            ])
-            # add to the list
-            skills_by_phase_plots.append(plot)
+        skills_plots_stats: pd.DataFrame = filtered_df.groupby("phase", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2)
+        skills_by_phase_plots = sp.create_phase_stripplots(filtered_df, skills_plots_stats, parameter)
 
         # data  preparation for the pivot table (some more pandas magic)
         skills_by_phase: DataFrameGroupBy = filtered_df.groupby(["model", "phase"], observed=False)[parameter]
@@ -791,12 +772,15 @@ def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, sat
     filtered_df = filtered_df[filtered_df["satellite"].isin(satellites)]
     filtered_df = filtered_df[filtered_df["ap_max"].ge(ap_thresholds[ap_max_threshold])]
     filtered_df = filtered_df[filtered_df["f107_max"].ge(f107_thresholds[f107_max_threshold])]
-    main_plot = px.box(filtered_df, x=parameter, y="model")
-    main_plot.update_traces(hoverinfo="none", hovertemplate=None)
     
     # create the elements for the main plot mean and std display
     main_plot_stats: pd.DataFrame = filtered_df.groupby("model", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2)
     main_plot_stats = main_plot_stats.iloc[::-1]
+
+    # main plot only uses total phase data
+    main_plot = sp.create_main_stripplot(filtered_df[filtered_df["phase"] == "total"], main_plot_stats, parameter)
+
+    # make stats labels dash components
     formatted_main_plot_stats = []
     for _, row in main_plot_stats.iterrows():
         if  row["model"] == "MSISE00-01":
@@ -811,31 +795,9 @@ def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, sat
         )
         formatted_main_plot_stats.append(stats_label)
 
-    # create the skills by phase plots for each model
-    skills_by_phase_plots = []
-    for model in filtered_df["model"].unique():
-        # since the debias_mean_OC pre_storm value is set to 1 throughout, don't display it on the plots (it adds no info)
-        if parameter == "debias_mean_OC":
-            debias_df = filtered_df[filtered_df["phase"] != "pre_storm"]
-            fig = px.box(debias_df[debias_df["model"] == model], x="phase", y=parameter)
-        else:
-            fig = px.box(filtered_df[filtered_df["model"] == model], x="phase", y=parameter)
-        fig.update_traces(hoverinfo="none", hovertemplate=None) # removes the hover function of the plots
-
-        # creates the actual webpage elements for the plots
-        plot = html.Div([
-            html.Span(
-                html.B(f"Skills By Phase: {parameter} ({model})"),
-                style={
-                    "z-index": "3", 
-                    "position": "relative",
-                    "top": "50px",
-                    "left": "80px"
-                } 
-            ),
-            dcc.Graph(figure=fig)
-        ])
-        skills_by_phase_plots.append(plot)
+    # create skills plots stats
+    skills_plots_stats: pd.DataFrame = filtered_df.groupby("phase", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2) 
+    skills_by_phase_plots = sp.create_phase_stripplots(filtered_df, skills_plots_stats, parameter)
     
     # data preparation for the pivot table
     skills_by_phase: DataFrameGroupBy = filtered_df.groupby(["model", "phase"], observed=False)[parameter]

@@ -226,7 +226,7 @@ ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '
     ]),
             html.Footer(
             children=[html.A("Accessibility", href='https://www.nasa.gov/accessibility', target="_blank"), html.Span(children =" | ")          
-,html.A("Privacy Policy", href='https://www.nasa.gov/privacy/', target="_blank"), html.Span(children =" | Curators: Paul DiMarzio and Dr. Min-Yang Chou | NASA Official: Maria Kuznetsova")],
+,html.A("Privacy Policy", href='https://www.nasa.gov/privacy/', target="_blank"), html.Span(children =" | Curators: Paul DiMarzio, Joseph Sypal, and Dr. Min-Yang Chou | NASA Official: Maria Kuznetsova")],
             style={
                 'margin-left' : '20%',
                 "textAlign": "center",
@@ -430,4 +430,4 @@ def close_thermosphere_tpid_menu(n_clicks):
     return {"display": "none"} 
     
 if __name__ == '__main__':
-    app.run(debug=False, port=3000)
+    app.run(debug=True, port=3000)
