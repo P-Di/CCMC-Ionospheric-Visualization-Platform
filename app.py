@@ -414,12 +414,15 @@ def display_thermosphere_plots(parameter, category, ap_max_threshold, f107_max_t
 
 @app.callback(
     [Output("tpid-menu", "style"),
-     Output("tpid-list", "children")],
-    Input("tpid-menu-button", "n_clicks"),
+     Output("tpid-list", "children"),
+     Output("basic-storm-data", "children")],
+    [Input("tpid-menu-button-1", "n_clicks"),
+     Input("tpid-menu-button-2", "n_clicks")],
     prevent_initial_call=True
 )
-def open_thermosphere_tpid_menu(n_clicks):
-    return {"display": "block"}, tp.open_tpid_menu() 
+def open_thermosphere_tpid_menu(n_clicks_1, n_clicks_2):
+    tpid_list, basic_storm_data = tp.open_tpid_menu()
+    return {"display": "block"}, tpid_list, basic_storm_data
 
 @app.callback(
     Output("tpid-menu", "style", allow_duplicate=True),

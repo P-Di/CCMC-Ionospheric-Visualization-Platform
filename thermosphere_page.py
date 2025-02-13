@@ -10,8 +10,6 @@ To navigate to a given section search for the section name exactly as it is disp
 import json
 import pandas as pd
 from pandas.api.typing import DataFrameGroupBy
-import plotly.express as px
-import plotly.graph_objects as go
 from dash import html, dcc, dash_table 
 import dash_bootstrap_components as dbc
 
@@ -89,7 +87,6 @@ data_selection = html.Div(
 )
 
 # This is the basic layout for the thermosphere app
-thermosphere_title = "DRAFT Thermosphere Neutral Density Assessment During Storm Times"
 thermosphere_layout = html.Div(
     style = {
         'backgroundColor':'#f4f6f7', 
@@ -246,6 +243,9 @@ tpid_menu = html.Div(
                     html.Div(className="x-component", id="x-arm1"),
                     html.Div(className="x-component", id="x-arm2")
                 ]
+            ),
+            html.Div(
+                id="basic-storm-data"
             )],
             style={
                 "padding": "10px",
@@ -258,7 +258,7 @@ tpid_menu = html.Div(
         ),
         html.Div( # This is the target for the "open_tpid_menu" callback 
             html.Ul(id="tpid-list"),
-            style={"margin-top": "45px"}
+            style={"margin-top": "100px"}
         )
     ]
 )   
@@ -610,6 +610,11 @@ def update_content(tab, parameter):
                     )
                 ],
             ),
+            html.Div( # Target for the "open_tpid_menu" callback 
+                id="tpid-menu-button-2",
+                className="tpid-menu-button",
+                children="Storm IDs"
+            ),
             html.Div(
                 style={
                     "width": "70%",
@@ -650,7 +655,8 @@ def update_content(tab, parameter):
                 ]
             ),
             html.Div( # Target for the "open_tpid_menu" callback 
-                id="tpid-menu-button",
+                id="tpid-menu-button-1",
+                className="tpid-menu-button",
                 children="Storm IDs"
             ),
             tpid_menu
@@ -823,6 +829,7 @@ def open_tpid_menu():
     This callback creates the links that will be in the tpid popup. It accesses the correct data using the global variable filtered_df
     """
     tpid_list = []
+    basic_storm_data = dict(multiple_peak=0, single_peak=0)
     for tpid in filtered_df["TP"].drop_duplicates():
         item = html.Li(
             html.A(
@@ -832,4 +839,14 @@ def open_tpid_menu():
             )
         )
         tpid_list.append(item)
-    return tpid_list
+
+        if filtered_df[filtered_df["TP"] == tpid]["category"].iloc[0] == "multiple_peak":
+            basic_storm_data["multiple_peak"] += 1
+        else:
+            basic_storm_data["single_peak"] += 1
+
+    return tpid_list, [
+        html.Div(f"Total Storm Count: {len(tpid_list)}"),
+        html.Div(f"Multiple Peak Count: {basic_storm_data['multiple_peak']}"),
+        html.Div(f"Single Peak Count: {basic_storm_data['single_peak']}")
+    ]
