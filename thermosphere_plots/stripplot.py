@@ -63,3 +63,36 @@ def create_phase_stripplots(dataframe: DataFrame, dataframe_stats: DataFrame, pa
         skills_by_phase_plots.append(plot)
 
     return skills_by_phase_plots
+
+
+def fetch_tpid_data(dataframe: DataFrame, tpid_base_url: str) -> tuple[list, list]:
+    '''
+    Returns dash components for the tpid links and the basic storm data for the tpid menu
+
+    :param dataframe: A dataframe containing all storms and storm data currently displayed on the page
+    :param tpid_base_url: The basic url that will be used to construct the specific url for each storm
+
+    :return components: Returns both the Ul of links and a list of three divs containing the basic storm data
+    '''
+    tpid_list = []
+    basic_storm_data = dict(multiple_peak=0, single_peak=0)
+    for tpid in dataframe["TP"].drop_duplicates():
+        item = html.Li(
+            html.A(
+                tpid,
+                href=tpid_base_url + tpid,
+                target="_blank"
+            )
+        )
+        tpid_list.append(item)
+
+        if dataframe[dataframe["TP"] == tpid]["category"].iloc[0] == "multiple_peak":
+            basic_storm_data["multiple_peak"] += 1
+        else:
+            basic_storm_data["single_peak"] += 1
+
+    return tpid_list, [
+        html.Div(f"Total Storm Count: {len(tpid_list)}"),
+        html.Div(f"Multiple Peak Count: {basic_storm_data['multiple_peak']}"),
+        html.Div(f"Single Peak Count: {basic_storm_data['single_peak']}")
+    ]

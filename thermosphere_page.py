@@ -183,7 +183,7 @@ thermosphere_layout = html.Div(
                             {'label': 'Ray Tracing', 'value': 'RT', 'disabled': True},
                             {'label': 'GPS Positioning', 'value': 'GPS', 'disabled': True}
                         ],
-                        value="TNDA"
+                        value="TNDA",
                     )
                 ]),
                 data_selection
@@ -253,12 +253,13 @@ tpid_menu = html.Div(
                 "top": "0px",
                 "right": "0px",
                 "width": "20%",
-                "background-color": "#f1f1f1"
+                "background-color": "#f1f1f1",
+                "border-bottom": "1px solid black",
             }
         ),
         html.Div( # This is the target for the "open_tpid_menu" callback 
             html.Ul(id="tpid-list"),
-            style={"margin-top": "100px"}
+            style={"margin-top": "110px"}
         )
     ]
 )   
@@ -712,53 +713,65 @@ def update_content(tab, parameter):
         skills_by_phase.reset_index(inplace=True)
         table_data = skills_by_phase.to_dict("records")
 
+        tpid_list, basic_storm_data = sp.fetch_tpid_data(filtered_df, tpid_base_url)
+        tpid_menu.children[1].children.children = tpid_list
+        tpid_menu.children[0].children[2].children = basic_storm_data
+
         # The actual dash layout for the benchmark page
-        return html.Div(
-            style={
-                "width": "70%",
-                "margin-left": "auto",
-                "margin-right": "auto"
-            },
-            children=[
-                html.Div([
-                    html.Span(
-                        html.B(f"Skills By Event: {parameter}"),
-                        style={
-                            "z-index": "3", 
-                            "position": "relative",
-                            "top": "50px",
-                            "left": "160px"
-                        } 
-                    ),
-                    dcc.Graph(
-                        id="skills-by-event-plot",
-                        figure=main_plot,
-                        style={"height": "650px"}
-                    ),
-                    html.Div(id="bench-main-stats", className="stats", children=formatted_bench_main_stats, style={"top": "265px"})
-                ]),
-                html.Div([
-                    html.Span(html.B(f"Skills By Phase: {parameter}")),
-                    dash_table.DataTable(
-                        id="skills-by-phase-table",
-                        style_header={
-                            "background-color": "#e59b1c",
-                            "text-align": "center"
-                        },
-                        style_cell={
-                            "text-align": "center"
-                        },
-                        data=table_data 
-                    )
-                ]),
-                html.Div(id="skills-by-phase-plots", children=skills_by_phase_plots),
-                html.Div( # target for "open_tpid_menu" callback
-                    id="tpid-menu-button",
-                    children="Storm IDs"
-                ),
-                tpid_menu
-            ]
-        )
+        return [
+            html.Div( # Target for the "open_tpid_menu" callback 
+                id="tpid-menu-button-2",
+                className="tpid-menu-button",
+                children="Storm IDs"
+            ),
+            html.Div(
+                style={
+                    "width": "70%",
+                    "margin-left": "auto",
+                    "margin-right": "auto"
+                },
+                children=[
+                    html.Div([
+                        html.Span(
+                            html.B(f"Skills By Event: {parameter}"),
+                            style={
+                                "z-index": "3", 
+                                "position": "relative",
+                                "top": "50px",
+                                "left": "160px"
+                            } 
+                        ),
+                        dcc.Graph(
+                            id="skills-by-event-plot",
+                            figure=main_plot,
+                            style={"height": "650px"}
+                        ),
+                        html.Div(id="bench-main-stats", className="stats", children=formatted_bench_main_stats, style={"top": "320px"})
+                    ]),
+                    html.Div([
+                        html.Span(html.B(f"Skills By Phase: {parameter}")),
+                        dash_table.DataTable(
+                            id="skills-by-phase-table",
+                            style_header={
+                                "background-color": "#e59b1c",
+                                "text-align": "center"
+                            },
+                            style_cell={
+                                "text-align": "center"
+                            },
+                            data=table_data 
+                        )
+                    ]),
+                    html.Div(id="skills-by-phase-plots", children=skills_by_phase_plots)
+                ]
+            ),
+            html.Div( # target for "open_tpid_menu" callback
+                id="tpid-menu-button-1",
+                className="tpid-menu-button",
+                children="Storm IDs"
+            ),
+            tpid_menu
+        ]
 
 
 def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites):
@@ -816,11 +829,16 @@ def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, sat
     skills_by_phase.reset_index(inplace=True)
     table_data = skills_by_phase.to_dict("records")
 
+    # get tpid data
+    tpid_list, basic_storm_data = sp.fetch_tpid_data(filtered_df, tpid_base_url)
+
     return (
         main_plot, 
         table_data, 
         skills_by_phase_plots,
-        formatted_main_plot_stats 
+        formatted_main_plot_stats,
+        tpid_list,
+        basic_storm_data
     )
 
 
@@ -828,25 +846,4 @@ def open_tpid_menu():
     """
     This callback creates the links that will be in the tpid popup. It accesses the correct data using the global variable filtered_df
     """
-    tpid_list = []
-    basic_storm_data = dict(multiple_peak=0, single_peak=0)
-    for tpid in filtered_df["TP"].drop_duplicates():
-        item = html.Li(
-            html.A(
-                tpid,
-                href=tpid_base_url + tpid,
-                target="_blank"
-            )
-        )
-        tpid_list.append(item)
-
-        if filtered_df[filtered_df["TP"] == tpid]["category"].iloc[0] == "multiple_peak":
-            basic_storm_data["multiple_peak"] += 1
-        else:
-            basic_storm_data["single_peak"] += 1
-
-    return tpid_list, [
-        html.Div(f"Total Storm Count: {len(tpid_list)}"),
-        html.Div(f"Multiple Peak Count: {basic_storm_data['multiple_peak']}"),
-        html.Div(f"Single Peak Count: {basic_storm_data['single_peak']}")
-    ]
+    pass

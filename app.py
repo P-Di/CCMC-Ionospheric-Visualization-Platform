@@ -402,7 +402,9 @@ def update_thermosphere_content(tab, parameter):
     [Output("skills-by-event-plot", "figure"),
      Output("skills-by-phase-table", "data"),
      Output("skills-by-phase-plots", "children"),
-     Output("main-plot-stats", "children")],
+     Output("main-plot-stats", "children"),
+     Output("tpid-list", "children"),
+     Output("basic-storm-data", "children")],
     [Input("parameter_selection", "value"),
      Input("category_selections", "value"),
      Input("ap_max_slider", "value"),
@@ -413,16 +415,16 @@ def display_thermosphere_plots(parameter, category, ap_max_threshold, f107_max_t
     return tp.display_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites)
 
 @app.callback(
-    [Output("tpid-menu", "style"),
-     Output("tpid-list", "children"),
-     Output("basic-storm-data", "children")],
+    [Output("tpid-menu", "style")],
+    #  Output("tpid-list", "children"),
+    #  Output("basic-storm-data", "children")],
     [Input("tpid-menu-button-1", "n_clicks"),
      Input("tpid-menu-button-2", "n_clicks")],
     prevent_initial_call=True
 )
 def open_thermosphere_tpid_menu(n_clicks_1, n_clicks_2):
-    tpid_list, basic_storm_data = tp.open_tpid_menu()
-    return {"display": "block"}, tpid_list, basic_storm_data
+    # tpid_list, basic_storm_data = tp.open_tpid_menu()
+    return {"display": "block"}, # tpid_list, basic_storm_data
 
 @app.callback(
     Output("tpid-menu", "style", allow_duplicate=True),
