@@ -5,6 +5,7 @@ THERMOSPHERE DESCRIPTION PAGE
 #description-page {
     background-color: #f4f6f7;
     padding-top: 20px;
+    line-height: 1.6;
 }
 
 .TOC {
@@ -13,11 +14,17 @@ THERMOSPHERE DESCRIPTION PAGE
     margin: 20px;
     margin-top: 0px;
     padding-left: 10px;
+    padding-top: 10px;
+    padding-bottom: 1px;
     border-radius: 10px;
     position: sticky;
     top: 10px;
 
     /* border: 2px solid black; */
+}
+
+.TOC-link {
+    text-decoration: none;
 }
 
 #content {
@@ -32,9 +39,16 @@ THERMOSPHERE DESCRIPTION PAGE
     border-radius: 10px;
 
     position: relative;
-    bottom: 164px;
+    bottom: 206px;
 
     /* border: 2px solid black; */
+}
+
+#challenges-list {
+    background: #fff9e6;
+    padding: 20px;
+    border-left: 4px solid #ffeb3b;
+    border-radius: 5px;
 }
 
 th, td {

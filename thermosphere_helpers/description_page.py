@@ -5,14 +5,14 @@ description_page = html.Div(
     [
         html.Div(
             [
-                html.Div("Table of Contents"),
+                html.Div(html.H5("Table of Contents")),
                 html.Ul(
                     [
-                        html.Li(html.A("Introduction", href="#introduction")),
-                        html.Li(html.A("Challenges", href="#challenges")),
-                        html.Li(html.A("Campaign Objective", href="#objectives")),
-                        html.Li(html.A("Methodology", href="#methodology")),
-                        html.Li(html.A("References", href="#references"))
+                        html.Li(html.A("Introduction", href="#introduction", className="TOC-link")),
+                        html.Li(html.A("Challenges", href="#challenges", className="TOC-link")),
+                        html.Li(html.A("Campaign Objective", href="#objectives", className="TOC-link")),
+                        html.Li(html.A("Methodology", href="#methodology", className="TOC-link")),
+                        html.Li(html.A("References", href="#references", className="TOC-link"))
                     ],
                     style={"list-style-type": "none"}
                 )
@@ -64,25 +64,33 @@ description_page = html.Div(
                     [
                         html.H1("Challenges"),
                         html.P("However, there are still several challenges remaining in the validation of neutral density."),
-                        html.Ol([
-                            html.Li(
-                                """
-                                Validation studies often invloved only one or two events and a subset of models. this approach may not 
-                                be robust or comprehansive.
-                                """
-                            ),
-                            html.Li(
-                                """
-                                Staying updated with the growing number of models and their various versions remains chellenging, 
-                                especially with open source models.
-                                """
-                            ),
-                            html.Li(
-                                """
-                                Unified validation effort requires an online platform to keep track of the progress of model development.
-                                """
-                            )
-                        ]),
+                        html.Div(
+                            [
+                                html.Ol([
+                                    html.Li([
+                                        html.B("Limited Scope: "),
+                                        """
+                                        Validation studies often invloved only one or two events and a subset of models. this approach may not 
+                                        be robust or comprehansive.
+                                        """
+                                    ], style={"margin-bottom": "10px"}),
+                                    html.Li([
+                                        html.B("Version Management: "),
+                                        """
+                                        Staying updated with the growing number of models and their various versions remains chellenging, 
+                                        especially with open source models.
+                                        """
+                                    ], style={"margin-bottom": "10px"}),
+                                    html.Li([
+                                        html.B("Lack of an Online Platform: "),
+                                        """
+                                        Unified validation effort requires an online platform to keep track of the progress of model development.
+                                        """
+                                    ])
+                                ]),
+                            ],
+                            id="challenges-list"
+                        ),
                         html.P(
                             """
                             To addres these challenges, an assessment of thermosphere models under storm conditions was initiated within the COSPR 
