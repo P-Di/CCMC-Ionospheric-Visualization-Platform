@@ -432,7 +432,48 @@ def open_thermosphere_tpid_menu(n_clicks_1, n_clicks_2):
     prevent_initial_call=True
 )
 def close_thermosphere_tpid_menu(n_clicks):
-    return {"display": "none"} 
+    return {"display": "none"}
+
+@app.callback(
+    Output("fig-1-collapse", "is_open"),
+    Input("fig-1-btn", "n_clicks"),
+    State("fig-1-collapse", "is_open"),
+)
+def toggle_fig1_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
+
+@app.callback(
+    Output("fig-2-collapse", "is_open"),
+    Input("fig-2-btn", "n_clicks"),
+    State("fig-2-collapse", "is_open")
+)
+def toggle_fig2_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
+
+@app.callback(
+    Output("phase-table-collapse", "is_open"),
+    Input("phase-table-btn", "n_clicks"),
+    State("phase-table-collapse", "is_open")
+)
+def toggle_phase_table_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
+
+
+@app.callback(
+    Output("comp-collapse", "is_open"),
+    Input("comp-btn", "n_clicks"),
+    State("comp-collapse", "is_open")
+)
+def toggle_comp_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
     
 if __name__ == '__main__':
     app.run(debug=True, port=3000)
