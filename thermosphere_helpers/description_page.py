@@ -148,30 +148,58 @@ description_page = html.Div(
                             comprehensive thermospheric model-data comparison are applied to establish the thermospheric model scorecard. 
                             """
                         ),
-                        html.P(
-                            """
-                            Figure 2 (top) illustrates the four phases of a single-peak (SP) storm. Phase 1, the pre-storm interval, is used to 
-                            de-bias the models relative to observations. A scaling factor is determined by computing the observed-to-computed (O/C) 
-                            density ratio in the pre-storm phase, then applied to the model densities in all four phases. This de-biasing procedure 
-                            is used to minimize the effect of non-storm related model errors on the assessment. 
-                            """
-                        ),
-                        html.P(
-                            """
-                            Density data for the SP storms are selected from 30 hours before to 48 hours after the time when ap reaches 80, which 
-                            defines t₀ and marks the end of Phase 2 (storm onset). Phase 3 encompasses the main and recovery phase, while Phase 4 
-                            represents the post-storm phase.
-                            """
-                        ),
-                        html.P(
-                            """
-                            Figure 2 (bottom) illustrates the phases for double or multiple-peaked (MP) storms, exemplified by the 10–16 July 2004 
-                            event. For the MP storms, t₀ is defined as the time when ap reaches 80, similar to SP storms. In Figure 2 (bottom), 
-                            Phase 3 for MP storms is extended due to a second occurrence of ap = 80 at t = 1.4. The duration of Phase 3 varies, 
-                            ending when ap falls below 80 again (at t ≈ 3.0 in this example), plus an additional 36 hours. Phase 4 then extends 
-                            for 12 hours beyond the end of Phase 3. Table 1 summarizes the phases and their duration for SP and MP storms computed 
-                            as list below with respect to t0.
-                            """
+                        html.Div(
+                            [
+                                html.H4("Single-Peak (SP) Storms"),
+                                html.P("Figure 2 (top) illustrates the four phases of a single-peak (SP) storm."),
+                                html.H6(html.Strong("Phases:")),
+                                html.Ol([
+                                    html.Li(
+                                        html.P([
+                                            html.Strong("Phase 1 (Pre-storm): "),
+                                            """
+                                            Serves to de-bias the models relative to observations. A scaling factor is determined by 
+                                            computing the observed-to-computed (O/C) density ratio in the pre-storm phase, then applied 
+                                            to the model densities in all four phases. This de-biasing procedure is used to minimize the 
+                                            effect of non-storm related model errors on the assessment.
+                                            """
+                                        ]),
+                                    ),
+                                    html.Li(
+                                        html.P([
+                                            html.Strong("Phase 2 (Onset): "),
+                                            """
+                                            Includes density data for the SP storm selected from 30 hours before to 48 hours after the time
+                                            then ap reaches 80, which defines t₀.
+                                            """
+                                        ])
+                                    ),
+                                    html.Li(
+                                        html.P([
+                                            html.Strong("Phase 3 (Main and Recovery): "),
+                                            "Encompasses the main and recovery phase."
+                                        ])
+                                    ),
+                                    html.Li(
+                                        html.P([
+                                            html.Strong("Phase 4 (Post Storm): "),
+                                            "Represents the post-storm phase."
+                                        ])
+                                    )
+                                ]),
+                                html.H4("Multiple-Peaked (MP) Storms"),
+                                html.P(
+                                    """
+                                    Figure 2 (bottom) illustrates the phases for double or multiple-peaked (MP) storms, exemplified by the 10–16 July 2004 
+                                    event. For the MP storms, t₀ is defined as the time when ap reaches 80, similar to SP storms. In Figure 2 (bottom), 
+                                    Phase 3 for MP storms is extended due to a second occurrence of ap = 80 at t = 1.4. The duration of Phase 3 varies, 
+                                    ending when ap falls below 80 again (at t ≈ 3.0 in this example), plus an additional 36 hours. Phase 4 then extends 
+                                    for 12 hours beyond the end of Phase 3. Table 1 summarizes the phases and their duration for SP and MP storms computed 
+                                    as list below with respect to t0.
+                                    """
+                                ),
+                            ],
+                            className="accent-gray"
                         ),
                         html.Div([
                             dbc.Button(
