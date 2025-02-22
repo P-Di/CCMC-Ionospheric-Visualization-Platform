@@ -2,6 +2,13 @@
 THERMOSPHERE DESCRIPTION PAGE
 */
 
+.accent-gray {
+    background-color: #f8f8f8;
+    border-left: 3px solid #3498db;
+    border-radius: 5px;
+    padding: 10px;
+}
+
 #description-page {
     background-color: #f4f6f7;
     padding-top: 20px;

@@ -27,12 +27,35 @@ description_page = html.Div(
                         html.P(
                             """
                             Thermospheric density is the dominant source of uncertainty in the atmospheric drag. The diagram in Figure 1
-                            shows how the data and model are involved in drag calculation. Thermosphere models estimate neutral density, 
-                            composition, and temperature based on the solar and geomagnetic drivers. Physics-based models with the lower 
-                            boundary located around the mesopause also need to specify the lower boundary condition representing the variability 
-                            from the lower atmosphere. Biases from thermospheric models are amplified due to the satellite shape and aerodynamic 
-                            model when calculating the drag force. This, in turn, introduces several error sources originating from the modeled 
-                            thermospheric states in orbit computation. To make advances in orbit computation and determination, accurate 
+                            shows how the data and model are involved in drag calculation. 
+                            """
+                        ),
+                        html.Div(
+                            [
+                                html.H4("Key Considerations"),
+                                html.Ul([
+                                    html.Li("Thermosphere models estimate neutral density, composition, and temperature based on the solar and geomagnetic drivers."),
+                                    html.Li(
+                                        """
+                                        Physics-based models with the lower boundary located around the mesopause also need to specify the lower 
+                                        boundary condition representing the variability 
+                                        from the lower atmosphere.
+                                        """
+                                    ),
+                                    html.Li("Biases from thermospheric models are amplified due to the satellite shape and aerodynamic  model when calculating the drag force."),
+                                    html.Li(
+                                        """ 
+                                        This, in turn, introduces several error sources originating from the modeled thermospheric states in 
+                                        orbit computation.
+                                        """
+                                    )
+                                ]),
+                            ],
+                            className="accent-gray"
+                        ),
+                        html.P(
+                            """
+                            To make advances in orbit computation and determination, accurate 
                             specification and forecasting of thermosphere are required. Modelled neutral density must be validated against 
                             high-quality and high-spatial resolution neutral density datasets to identify strengths and weaknesses, establish 
                             error budgets, and improve the models after ingestion.
@@ -94,7 +117,7 @@ description_page = html.Div(
                         html.P(
                             """
                             To addres these challenges, an assessment of thermosphere models under storm conditions was initiated within the COSPR 
-                            ISWAT framework, leveraging the international collborative network. This allows the ocmmunity to systematically track
+                            ISWAT framework, leveraging the international collborative network. This allows the community to systematically track
                             the progress of thermosphere models over time.
                             """
                         )
@@ -142,7 +165,7 @@ description_page = html.Div(
                         ),
                         html.P(
                             """
-                            Figure 2 (bottom) illustrates the phases for double- or multiple-peaked (MP) storms, exemplified by the 10–16 July 2004 
+                            Figure 2 (bottom) illustrates the phases for double or multiple-peaked (MP) storms, exemplified by the 10–16 July 2004 
                             event. For the MP storms, t₀ is defined as the time when ap reaches 80, similar to SP storms. In Figure 2 (bottom), 
                             Phase 3 for MP storms is extended due to a second occurrence of ap = 80 at t = 1.4. The duration of Phase 3 varies, 
                             ending when ap falls below 80 again (at t ≈ 3.0 in this example), plus an additional 36 hours. Phase 4 then extends 
