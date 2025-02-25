@@ -10,22 +10,48 @@ To navigate to a given section search for the section name exactly as it is disp
 import json
 import pandas as pd
 from pandas.api.typing import DataFrameGroupBy
-import plotly.express as px
 from dash import html, dcc, dash_table 
 import dash_bootstrap_components as dbc
+
+import thermosphere_helpers.stripplot as sp
+import thermosphere_helpers.description_page as dp
 
 
 ###########################
 # SECTION 1: DECLARATIONS
 ###########################
 
+def dict_from_sat(satellite):
+    return {
+        "label": html.P(satellite, style={"display": "none"}),
+        "value": satellite
+    }
+
+def generate_satellite_labels(satellite):
+    return html.Span(
+        [
+            satellite,
+            html.Img(src="assets/options-icon.svg", id= f"{satellite}-opts", className="options-icon"),
+            # dbc.Tooltip(
+            #     f"{satellite} description",
+            #     target=f"{satellite}-opts",
+            #     placement="right"
+            # )
+        ],
+        id=f"{satellite}-label", className="satellite-label"   
+    )
+
 # declare global variables that will be used throughout the program
 filtered_df = pd.DataFrame() # this variables is used to share data between callbacks
 ap_thresholds = [80, 132, 207, 236, 300]
 f107_thresholds = [70, 100, 150, 200, 250]
-image_paths = ['assets/CCMC.png', 'assets/airflow1.jpg']
-satellites = [" CHAMP", " GOCE", " GRACE-A", " SWARM-A", " GRACE-FO"]
 tpid_base_url = "https://kauai.ccmc.gsfc.nasa.gov/CMR/TimeInterval/viewTI?id="
+image_paths = ['assets/CCMC.png', 'assets/airflow1.jpg', "assets/options-icon.svg"]
+
+satellites = ["CHAMP", "GOCE", "GRACE-A", "SWARM-A", "GRACE-FO"]
+satellite_opts = list(map(dict_from_sat, satellites))
+satellite_labels = list(map(generate_satellite_labels, satellites))
+
 
 
 ##########################
@@ -38,6 +64,7 @@ tpid_base_url = "https://kauai.ccmc.gsfc.nasa.gov/CMR/TimeInterval/viewTI?id="
 # The "tpid_menu" layout is the layout for the tpid popup that displays a list of links to the storm home page for each storm included
 #   in the current displayed plot
 ##########################
+
 
 # This is the dash layout for the lefthand data selection menu
 data_selection = html.Div(
@@ -78,15 +105,29 @@ data_selection = html.Div(
             html.Div(html.B("Satellites")),
             dcc.Checklist(
                 id="satellites",
-                options=satellites,
+                options=satellite_opts,
                 value=satellites
-            )
-        ])
+            ),
+            html.Div(satellite_labels, id="satellite-labels"),
+        ]),
+        html.Div(
+            [
+                html.Div( # made an x button for the tpid menu using three divs and css :)
+                    id="satellite-desc-x-button",
+                    className="x-button",
+                    children=[
+                        html.Div(className="x-component", id="x-arm1"),
+                        html.Div(className="x-component", id="x-arm2")
+                    ]
+                ),
+                html.Div(id="satellite-description-data")
+            ],
+            id="satellite-description-popup"
+        )
     ]
 )
 
 # This is the basic layout for the thermosphere app
-thermosphere_title = "DRAFT Thermosphere Neutral Density Assessment During Storm Times"
 thermosphere_layout = html.Div(
     style = {
         'backgroundColor':'#f4f6f7', 
@@ -183,10 +224,10 @@ thermosphere_layout = html.Div(
                             {'label': 'Ray Tracing', 'value': 'RT', 'disabled': True},
                             {'label': 'GPS Positioning', 'value': 'GPS', 'disabled': True}
                         ],
-                        value="TNDA"
+                        value="TNDA",
                     )
                 ]),
-                data_selection
+                data_selection,
             ]
         ),
         # This div contains the dcc Tab components that allow the user to switch between tabs
@@ -216,7 +257,7 @@ thermosphere_layout = html.Div(
                 html.A("Accessibility", href='https://www.nasa.gov/accessibility', target="_blank"), 
                 html.Span(children=" | "),
                 html.A("Privacy Policy", href='https://www.nasa.gov/privacy/', target="_blank"),
-                html.Span(children=" | Curators: Paul DiMarzio and Dr. Min-Yang Chou | NASA Official: Maria Kuznetsova")
+                html.Span(children=" | Curators: Paul DiMarzio, Joseph Sypal, and Dr. Min-Yang Chou | NASA Official: Maria Kuznetsova")
             ],
             style={
                 'margin-left' : '20%',
@@ -239,10 +280,14 @@ tpid_menu = html.Div(
             html.B("TPID Menu"),
             html.Div( # made an x button for the tpid menu using three divs and css :)
                 id="tpid-x-button",
+                className="x-button",
                 children=[
                     html.Div(className="x-component", id="x-arm1"),
                     html.Div(className="x-component", id="x-arm2")
                 ]
+            ),
+            html.Div(
+                id="basic-storm-data"
             )],
             style={
                 "padding": "10px",
@@ -250,12 +295,13 @@ tpid_menu = html.Div(
                 "top": "0px",
                 "right": "0px",
                 "width": "20%",
-                "background-color": "#f1f1f1"
+                "background-color": "#f1f1f1",
+                "border-bottom": "1px solid black",
             }
         ),
         html.Div( # This is the target for the "open_tpid_menu" callback 
             html.Ul(id="tpid-list"),
-            style={"margin-top": "45px"}
+            style={"margin-top": "110px"}
         )
     ]
 )   
@@ -359,7 +405,7 @@ def load_data() -> tuple[pd.DataFrame, pd.DataFrame]:
 thermosphere_df, benchmark_df = load_data()
 
 ################################
-# SECTION 4: CALLBACK DEFINTIONS
+# SECTION 4: CALLBACK DEFINITIONS
 
 # This section contains callback implementations for the thermosphere callback page. These functions are called by the actual callbacks
 #   in app.py
@@ -381,196 +427,7 @@ def update_content(tab, parameter):
     #   if the tab value is benchmark, render the benchamrk tab
     if tab == "description":
         # The description tab basically contains a bunch of static html
-        return html.Div(
-            style={"padding-left": "30px", "padding-right": "30px", "padding-bottom": "30px"},
-            children=[
-                html.H1("Introduction"),
-                html.P(
-                    """
-                    Thermospheric density is the dominant source of uncertainty in the atmospheric drag. The diagram in Figure 1
-                    shows how the data and model are involved in drag calculation. Thermosphere models estimate neutral density, 
-                    composition, and temperature based on the solar and geomagnetic drivers. Physics-based models with the lower 
-                    boundary located around the mesopause also need to specify the lower boundary condition representing the variability 
-                    from the lower atmosphere. Biases from thermospheric models are amplified due to the satellite shape and aerodynamic 
-                    model when calculating the drag force. This, in turn, introduces several error sources originating from the modeled 
-                    thermospheric states in orbit computation. To make advances in orbit computation and determination, accurate 
-                    specification and forecasting of thermosphere are required. Modelled neutral density must be validated against 
-                    high-quality and high-spatial resolution neutral density datasets to identify strengths and weaknesses, establish 
-                    error budgets, and improve the models after ingestion.
-                    """
-                ),
-                html.Div(
-                    [html.Img(className="description-fig", src="assets/Thermosphere_fig_1.png", 
-                              alt="Figure 1: Diagram showing the data and models of a drag calculation."),
-                     html.P(html.I("Firgure 1. Diagram showing the data and models of a drag calculation."))],
-                    className="img-container"
-                ),
-                html.P("However, there are still several challenges remaining in the validation of neutral density."),
-                html.Ol([
-                    html.Li(
-                        """
-                        Validation studies often invloved only one or two events and a subset of models. this approach may not 
-                        be robust or comprehansive.
-                        """
-                    ),
-                    html.Li(
-                        """
-                        Staying updated with the growing number of models and their various versions remains chellenging, 
-                        especially with open source models.
-                        """
-                    ),
-                    html.Li(
-                        """
-                        Unified validation effort requires an online platform to keep track of the progress of model development.
-                        """
-                    )
-                ]),
-                html.P(
-                    """
-                    To addres these challenges, an assessment of thermosphere models under storm conditions was initiated within the COSPR 
-                    ISWAT framework, leveraging the international collborative network. This allows the ocmmunity to systematically track
-                    the progress of thermosphere models over time.
-                    """
-                ),
-                html.P(
-                    """
-                    This validation campaign focuses on validating 1-D neutral density output from various model runs/solutions with
-                    observation data from GOCE, CHAMP, GRACE, SWARM, and/or GRACE_FO for different time periods. The thermophsere models
-                    are executed in-house using CCMC Runs-on-Request system and accessed. The model performance during the selected 
-                    geomagnetically storm times from 2001 to 2023 are assessed for this study.
-                    """
-                ),
-                html.H1("Methodology"),
-                html.P(
-                    """
-                    An updated metric for thermospheric model assessment under geomagnetic storm conditions were proposed and implemented 
-                    in the validation project (Sutton, 2018; Bruinsma et al., 2021; Bruinsma & Laurens, 2024). The metrics for 
-                    comprehensive thermospheric model-data comparison are applied to establish the thermospheric model scorecard. 
-                    """
-                ),
-                html.P(
-                    """
-                    Figure 2 (top) illustrates the four phases of a single-peak (SP) storm. Phase 1, the pre-storm interval, is used to 
-                    de-bias the models relative to observations. A scaling factor is determined by computing the observed-to-computed (O/C) 
-                    density ratio in the pre-storm phase, then applied to the model densities in all four phases. This de-biasing procedure 
-                    is used to minimize the effect of non-storm related model errors on the assessment. 
-                    """
-                ),
-                html.P(
-                    """
-                    Density data for the SP storms are selected from 30 hours before to 48 hours after the time when ap reaches 80, which 
-                    defines t₀ and marks the end of Phase 2 (storm onset). Phase 3 encompasses the main and recovery phase, while Phase 4 
-                    represents the post-storm phase.
-                    """
-                ),
-                html.P(
-                    """
-                    Figure 2 (bottom) illustrates the phases for double- or multiple-peaked (MP) storms, exemplified by the 10–16 July 2004 
-                    event. For the MP storms, t₀ is defined as the time when ap reaches 80, similar to SP storms. In Figure 2 (bottom), 
-                    Phase 3 for MP storms is extended due to a second occurrence of ap = 80 at t = 1.4. The duration of Phase 3 varies, 
-                    ending when ap falls below 80 again (at t ≈ 3.0 in this example), plus an additional 36 hours. Phase 4 then extends 
-                    for 12 hours beyond the end of Phase 3. Table 1 summarizes the phases and their duration for SP and MP storms computed 
-                    as list below with respect to t0.
-                    """
-                ),
-                html.Div(
-                    [html.Img(className="description-fig", src="assets/Thermosphere_fig_2.png", alt="Figure 2"),
-                     html.P(html.I("""
-                        Figure 2. The four phases of the assessment interavl for single-peak (top) and multiple-peak (bottom) storms, with t0
-                        centered on the time of the first peak in ap with a minimum of 80. The X-axis represents the day relative to t0.
-                        Adapted from Bruinsma and Laurens (2024).
-                    """))], 
-                    className="img-container"),
-                html.Table([
-                    html.Tr([
-                        html.Th("Phase"),
-                        html.Th("Single-Peak (SP) Storm"),
-                        html.Th("Multiple-Peaked (MP) Storm")
-                    ]),
-                    html.Tr([
-                        html.Td("Phase 1"),
-                        html.Td("t0 - 30 h to t0 - 18 h"),
-                        html.Td("t0 - 30 h to t0 - 18 h"),
-                    ]),
-                    html.Tr([
-                        html.Td("Phase 2"),
-                        html.Td("t0 - 18 h to t0"),
-                        html.Td("t0 - 18 h to t0")
-                    ]),
-                    html.Tr([
-                        html.Td("Phase 3"),
-                        html.Td("t0  to t0 + 36 h"),
-                        html.Td("t0 to t0 + variable duration + 36 h")
-                    ]),
-                    html.Tr([
-                        html.Td("Phase 4"),
-                        html.Td("t0 + 36 h to t0 + 48 h"),
-                        html.Td("End of Phase 3 + 12 h")
-                    ])
-                ]), 
-                html.Br(),
-                html.P(html.I(
-                    """Table 1. The phases and their durations for single-peak (SP) and multiple-peaked (MP) storms, 
-                    computed relative to t0, as listed below. Adapted from Bruinsma and Laurens (2024)."""
-                )),
-                html.P(
-                    """
-                    After debiasing, the observed-to-computed (O/C) density ratio is re-computed for the main and recovery phases of each 
-                    storm to express model’s skill to reproduce observations during the geomagnetically storm times. Density ratios of one 
-                    indicate perfect duplication of the observations, i.e., an unbiased model that reproduces all features; deviation from 
-                    unity points to under (larger than one) or overestimation (smaller than one). A model bias, i.e., the mean of the 
-                    density ratios differs from unity, is most damaging to orbit extrapolation because it causes position errors that 
-                    increase with time.
-                    """
-                ),
-                html.P(
-                    """
-                    The standard deviation (Std. Dev.) of the density ratios, computed as percentage of the observation, represents a 
-                    combination of the ability of the model to reproduce observed density variations, and the geophysical noise 
-                    (e.g., waves, the short duration effect of large flares) and instrumental noise in the observations.
-                    """
-                ),
-                html.P(
-                    """
-                    The mean and Std. Dev. of the O/C density ratios, due to their distribution, are computed in log space (Sutton, 2018; 
-                    Bruinsma et al., 2021):
-                    """
-                ),
-                html.Ul([
-                    html.Li([
-                        "Average Observed-to-Compute Density (O/C) (= mean scaling factor of the model)",
-                        html.Ul(html.Li(html.Img(src="assets/Thermosphere_equation_1.png", alt="Mean_OC computation")))
-                    ]),
-                    html.Li([
-                        "Average standard deviation (Std. Dev.) of Observed-to-Compute Density (O/C)",
-                        html.Ul(html.Li(html.Img(src="assets/Thermosphere_equation_2.png", alt="StdDev_OC computation")))
-                    ])
-                ]),
-                html.P("where N is the total number of observations."),
-                html.H1("References:"),
-                html.P([
-                    """
-                    Sutton EK. 2018. A new method of physics-based data assimilation for the quiet and disturbed thermosphere. 
-                    Space Weather 16: 736–753.
-                    """,
-                    html.A("https://doi.org/10.1002/2017SW00178.", href="https://doi.org/10.1002/2017SW00178", target="_blank")
-                ]),
-                html.P([
-                    """
-                    Bruinsma S, Boniface C, Sutton EK & Fedrizzi M 2021. Thermosphere modeling capabilities assessment: geomagnetic storms. 
-                    J. Space Weather Space Clim. 11, 12.
-                    """,
-                    html.A("https://doi.org/10.1051/swsc/2021002.", href="https://doi.org/10.1051/swsc/2021002", target="_blank")
-                ]),
-                html.P([
-                    """
-                    Bruinsma S & Laurens S. 2024. Thermosphere model assessment for geomagnetic storms from 2001 to 2023. J. Space Weather 
-                    Space Clim. 14, 28. 
-                    """,
-                    html.A("https://doi.org/10.1051/swsc/2024027.", href="https://doi.org/10.1051/swsc/2024027", target="_blank")
-                ])
-            ]
-        )
+        return dp.description_page
     elif tab == "dashboard":
         # The dashboard block renders the base template for the analysis dashboard page which is populated by the "display_plots" callback
         # on page load/user input
@@ -606,6 +463,11 @@ def update_content(tab, parameter):
                         included=False
                     )
                 ],
+            ),
+            html.Div( # Target for the "open_tpid_menu" callback 
+                id="tpid-menu-button-2",
+                className="tpid-menu-button",
+                children="Storm IDs"
             ),
             html.Div(
                 style={
@@ -647,7 +509,8 @@ def update_content(tab, parameter):
                 ]
             ),
             html.Div( # Target for the "open_tpid_menu" callback 
-                id="tpid-menu-button",
+                id="tpid-menu-button-1",
+                className="tpid-menu-button",
                 children="Storm IDs"
             ),
             tpid_menu
@@ -660,15 +523,16 @@ def update_content(tab, parameter):
         filtered_df = benchmark_df.copy()
         filtered_df = filtered_df[filtered_df["ap_max"].ge(ap_thresholds[0])]
         filtered_df = filtered_df[filtered_df["f107_max"].ge(ap_thresholds[0])]
-        # Create the plotly figure using the selected parameter for x values and model for y values
-        main_plot = px.box(filtered_df, x=parameter, y="model")
-        main_plot.update_traces(hoverinfo="none", hovertemplate=None) # remove the hover functionality from the plots
 
         # make benchmark main plot stats (rendered to the right of the plot)
         # This line does some pandas magic (i.e., I have no idea what it does it just gives me the mean and std)
         bench_main_stats: pd.DataFrame = filtered_df.groupby("model", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2)
         # reverse the stats df because for some reason this gives it to me in the opposite order that it is rendered in
         bench_main_stats = bench_main_stats.iloc[::-1]
+
+        # main plot only uses total phase data
+        main_plot = sp.create_main_stripplot(filtered_df[filtered_df["phase"] == "total"], bench_main_stats, parameter)
+
         formatted_bench_main_stats = []
         # iterate through the rows of the stats df
         for _, row in bench_main_stats.iterrows():
@@ -688,31 +552,8 @@ def update_content(tab, parameter):
             formatted_bench_main_stats.append(stats_label)
 
         # create a plotly plot for each model and add it to "skill_by_phase_plots"
-        skills_by_phase_plots = []
-        for model in filtered_df["model"].unique():
-            # if the parameter is debias_mean_OC remove the pre-storm phase because it is set to 1 for all storms in the debiasing
-            if parameter == "debias_mean_OC":
-                debias_df = filtered_df[filtered_df["phase"] != "pre_storm"]
-                fig = px.box(debias_df[debias_df["model"] == model], x="phase", y=parameter)
-            else:
-                fig = px.box(filtered_df[filtered_df["model"] == model], x="phase", y=parameter)
-
-            fig.update_traces(hoverinfo="none", hovertemplate=None) # remove hover info
-            # create the plot elements in dash
-            plot = html.Div([
-                html.Span(
-                    html.B(f"Skills By Phase: {parameter} ({model})"),
-                    style={
-                        "z-index": "3", 
-                        "position": "relative",
-                        "top": "50px",
-                        "left": "80px"
-                    } 
-                ),
-                dcc.Graph(figure=fig)
-            ])
-            # add to the list
-            skills_by_phase_plots.append(plot)
+        skills_plots_stats: pd.DataFrame = filtered_df.groupby("phase", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2)
+        skills_by_phase_plots = sp.create_phase_stripplots(filtered_df, skills_plots_stats, parameter)
 
         # data  preparation for the pivot table (some more pandas magic)
         skills_by_phase: DataFrameGroupBy = filtered_df.groupby(["model", "phase"], observed=False)[parameter]
@@ -725,53 +566,65 @@ def update_content(tab, parameter):
         skills_by_phase.reset_index(inplace=True)
         table_data = skills_by_phase.to_dict("records")
 
+        tpid_list, basic_storm_data = sp.fetch_tpid_data(filtered_df, tpid_base_url)
+        tpid_menu.children[1].children.children = tpid_list
+        tpid_menu.children[0].children[2].children = basic_storm_data
+
         # The actual dash layout for the benchmark page
-        return html.Div(
-            style={
-                "width": "70%",
-                "margin-left": "auto",
-                "margin-right": "auto"
-            },
-            children=[
-                html.Div([
-                    html.Span(
-                        html.B(f"Skills By Event: {parameter}"),
-                        style={
-                            "z-index": "3", 
-                            "position": "relative",
-                            "top": "50px",
-                            "left": "160px"
-                        } 
-                    ),
-                    dcc.Graph(
-                        id="skills-by-event-plot",
-                        figure=main_plot,
-                        style={"height": "650px"}
-                    ),
-                    html.Div(id="bench-main-stats", className="stats", children=formatted_bench_main_stats, style={"top": "265px"})
-                ]),
-                html.Div([
-                    html.Span(html.B(f"Skills By Phase: {parameter}")),
-                    dash_table.DataTable(
-                        id="skills-by-phase-table",
-                        style_header={
-                            "background-color": "#e59b1c",
-                            "text-align": "center"
-                        },
-                        style_cell={
-                            "text-align": "center"
-                        },
-                        data=table_data 
-                    )
-                ]),
-                html.Div(id="skills-by-phase-plots", children=skills_by_phase_plots),
-                html.Div( # target for "open_tpid_menu" callback
-                    id="tpid-menu-button",
-                    children="Storm IDs"
-                ),
-                tpid_menu
-            ]
-        )
+        return [
+            html.Div( # Target for the "open_tpid_menu" callback 
+                id="tpid-menu-button-2",
+                className="tpid-menu-button",
+                children="Storm IDs"
+            ),
+            html.Div(
+                style={
+                    "width": "70%",
+                    "margin-left": "auto",
+                    "margin-right": "auto"
+                },
+                children=[
+                    html.Div([
+                        html.Span(
+                            html.B(f"Skills By Event: {parameter}"),
+                            style={
+                                "z-index": "3", 
+                                "position": "relative",
+                                "top": "50px",
+                                "left": "160px"
+                            } 
+                        ),
+                        dcc.Graph(
+                            id="skills-by-event-plot",
+                            figure=main_plot,
+                            style={"height": "650px"}
+                        ),
+                        html.Div(id="bench-main-stats", className="stats", children=formatted_bench_main_stats, style={"top": "320px"})
+                    ]),
+                    html.Div([
+                        html.Span(html.B(f"Skills By Phase: {parameter}")),
+                        dash_table.DataTable(
+                            id="skills-by-phase-table",
+                            style_header={
+                                "background-color": "#e59b1c",
+                                "text-align": "center"
+                            },
+                            style_cell={
+                                "text-align": "center"
+                            },
+                            data=table_data 
+                        )
+                    ]),
+                    html.Div(id="skills-by-phase-plots", children=skills_by_phase_plots)
+                ]
+            ),
+            html.Div( # target for "open_tpid_menu" callback
+                id="tpid-menu-button-1",
+                className="tpid-menu-button",
+                children="Storm IDs"
+            ),
+            tpid_menu
+        ]
 
 
 def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites):
@@ -791,12 +644,15 @@ def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, sat
     filtered_df = filtered_df[filtered_df["satellite"].isin(satellites)]
     filtered_df = filtered_df[filtered_df["ap_max"].ge(ap_thresholds[ap_max_threshold])]
     filtered_df = filtered_df[filtered_df["f107_max"].ge(f107_thresholds[f107_max_threshold])]
-    main_plot = px.box(filtered_df, x=parameter, y="model")
-    main_plot.update_traces(hoverinfo="none", hovertemplate=None)
     
     # create the elements for the main plot mean and std display
     main_plot_stats: pd.DataFrame = filtered_df.groupby("model", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2)
     main_plot_stats = main_plot_stats.iloc[::-1]
+
+    # main plot only uses total phase data
+    main_plot = sp.create_main_stripplot(filtered_df[filtered_df["phase"] == "total"], main_plot_stats, parameter)
+
+    # make stats labels dash components
     formatted_main_plot_stats = []
     for _, row in main_plot_stats.iterrows():
         if  row["model"] == "MSISE00-01":
@@ -811,31 +667,9 @@ def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, sat
         )
         formatted_main_plot_stats.append(stats_label)
 
-    # create the skills by phase plots for each model
-    skills_by_phase_plots = []
-    for model in filtered_df["model"].unique():
-        # since the debias_mean_OC pre_storm value is set to 1 throughout, don't display it on the plots (it adds no info)
-        if parameter == "debias_mean_OC":
-            debias_df = filtered_df[filtered_df["phase"] != "pre_storm"]
-            fig = px.box(debias_df[debias_df["model"] == model], x="phase", y=parameter)
-        else:
-            fig = px.box(filtered_df[filtered_df["model"] == model], x="phase", y=parameter)
-        fig.update_traces(hoverinfo="none", hovertemplate=None) # removes the hover function of the plots
-
-        # creates the actual webpage elements for the plots
-        plot = html.Div([
-            html.Span(
-                html.B(f"Skills By Phase: {parameter} ({model})"),
-                style={
-                    "z-index": "3", 
-                    "position": "relative",
-                    "top": "50px",
-                    "left": "80px"
-                } 
-            ),
-            dcc.Graph(figure=fig)
-        ])
-        skills_by_phase_plots.append(plot)
+    # create skills plots stats
+    skills_plots_stats: pd.DataFrame = filtered_df.groupby("phase", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2) 
+    skills_by_phase_plots = sp.create_phase_stripplots(filtered_df, skills_plots_stats, parameter)
     
     # data preparation for the pivot table
     skills_by_phase: DataFrameGroupBy = filtered_df.groupby(["model", "phase"], observed=False)[parameter]
@@ -848,11 +682,16 @@ def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, sat
     skills_by_phase.reset_index(inplace=True)
     table_data = skills_by_phase.to_dict("records")
 
+    # get tpid data
+    tpid_list, basic_storm_data = sp.fetch_tpid_data(filtered_df, tpid_base_url)
+
     return (
         main_plot, 
         table_data, 
         skills_by_phase_plots,
-        formatted_main_plot_stats 
+        formatted_main_plot_stats,
+        tpid_list,
+        basic_storm_data
     )
 
 
@@ -860,14 +699,4 @@ def open_tpid_menu():
     """
     This callback creates the links that will be in the tpid popup. It accesses the correct data using the global variable filtered_df
     """
-    tpid_list = []
-    for tpid in filtered_df["TP"].drop_duplicates():
-        item = html.Li(
-            html.A(
-                tpid,
-                href=tpid_base_url + tpid,
-                target="_blank"
-            )
-        )
-        tpid_list.append(item)
-    return tpid_list
+    pass

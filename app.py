@@ -226,7 +226,7 @@ ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '
     ]),
             html.Footer(
             children=[html.A("Accessibility", href='https://www.nasa.gov/accessibility', target="_blank"), html.Span(children =" | ")          
-,html.A("Privacy Policy", href='https://www.nasa.gov/privacy/', target="_blank"), html.Span(children =" | Curators: Paul DiMarzio and Dr. Min-Yang Chou | NASA Official: Maria Kuznetsova")],
+,html.A("Privacy Policy", href='https://www.nasa.gov/privacy/', target="_blank"), html.Span(children =" | Curators: Paul DiMarzio, Joseph Sypal, and Dr. Min-Yang Chou | NASA Official: Maria Kuznetsova")],
             style={
                 'margin-left' : '20%',
                 "textAlign": "center",
@@ -402,7 +402,9 @@ def update_thermosphere_content(tab, parameter):
     [Output("skills-by-event-plot", "figure"),
      Output("skills-by-phase-table", "data"),
      Output("skills-by-phase-plots", "children"),
-     Output("main-plot-stats", "children")],
+     Output("main-plot-stats", "children"),
+     Output("tpid-list", "children"),
+     Output("basic-storm-data", "children")],
     [Input("parameter_selection", "value"),
      Input("category_selections", "value"),
      Input("ap_max_slider", "value"),
@@ -413,13 +415,16 @@ def display_thermosphere_plots(parameter, category, ap_max_threshold, f107_max_t
     return tp.display_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites)
 
 @app.callback(
-    [Output("tpid-menu", "style"),
-     Output("tpid-list", "children")],
-    Input("tpid-menu-button", "n_clicks"),
+    [Output("tpid-menu", "style")],
+    #  Output("tpid-list", "children"),
+    #  Output("basic-storm-data", "children")],
+    [Input("tpid-menu-button-1", "n_clicks"),
+     Input("tpid-menu-button-2", "n_clicks")],
     prevent_initial_call=True
 )
-def open_thermosphere_tpid_menu(n_clicks):
-    return {"display": "block"}, tp.open_tpid_menu() 
+def open_thermosphere_tpid_menu(n_clicks_1, n_clicks_2):
+    # tpid_list, basic_storm_data = tp.open_tpid_menu()
+    return {"display": "block"}, # tpid_list, basic_storm_data
 
 @app.callback(
     Output("tpid-menu", "style", allow_duplicate=True),
@@ -427,7 +432,65 @@ def open_thermosphere_tpid_menu(n_clicks):
     prevent_initial_call=True
 )
 def close_thermosphere_tpid_menu(n_clicks):
-    return {"display": "none"} 
+    return {"display": "none"}
+
+@app.callback(
+    Output("fig-1-collapse", "is_open"),
+    Input("fig-1-btn", "n_clicks"),
+    State("fig-1-collapse", "is_open"),
+)
+def toggle_fig1_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
+
+@app.callback(
+    Output("fig-2-collapse", "is_open"),
+    Input("fig-2-btn", "n_clicks"),
+    State("fig-2-collapse", "is_open")
+)
+def toggle_fig2_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
+
+@app.callback(
+    Output("phase-table-collapse", "is_open"),
+    Input("phase-table-btn", "n_clicks"),
+    State("phase-table-collapse", "is_open")
+)
+def toggle_phase_table_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
+
+
+@app.callback(
+    Output("comp-collapse", "is_open"),
+    Input("comp-btn", "n_clicks"),
+    State("comp-collapse", "is_open")
+)
+def toggle_comp_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
+
+@app.callback(
+    [Output("satellite-description-popup", "style"),
+     Output("satellite-description-data", "children")],
+    [Input("CHAMP-opts", "n_clicks")],
+    prevent_initial_call=True
+)
+def open_satellite_description_popup(CHAMP_clicks):
+    return {"display": "block"}, "I'm a message!!!!!! YAAAAAAAY!!!!!"
+    
+@app.callback(
+    Output("satellite-description-popup", "style", allow_duplicate=True),
+    Input("satellite-desc-x-button", "n_clicks"),
+    prevent_initial_call=True
+)
+def close_satellite_description_popup(n_clicks):
+    return {"display": "none"}
     
 if __name__ == '__main__':
-    app.run(debug=False, port=3000)
+    app.run(debug=True, port=3000)
