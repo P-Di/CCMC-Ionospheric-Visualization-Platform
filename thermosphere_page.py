@@ -21,13 +21,37 @@ import thermosphere_helpers.description_page as dp
 # SECTION 1: DECLARATIONS
 ###########################
 
+def dict_from_sat(satellite):
+    return {
+        "label": html.P(satellite, style={"display": "none"}),
+        "value": satellite
+    }
+
+def generate_satellite_labels(satellite):
+    return html.Span(
+        [
+            satellite,
+            html.Img(src="assets/options-icon.svg", id= f"{satellite}-opts", className="options-icon"),
+            # dbc.Tooltip(
+            #     f"{satellite} description",
+            #     target=f"{satellite}-opts",
+            #     placement="right"
+            # )
+        ],
+        id=f"{satellite}-label", className="satellite-label"   
+    )
+
 # declare global variables that will be used throughout the program
 filtered_df = pd.DataFrame() # this variables is used to share data between callbacks
 ap_thresholds = [80, 132, 207, 236, 300]
 f107_thresholds = [70, 100, 150, 200, 250]
-image_paths = ['assets/CCMC.png', 'assets/airflow1.jpg']
-satellites = [" CHAMP", " GOCE", " GRACE-A", " SWARM-A", " GRACE-FO"]
 tpid_base_url = "https://kauai.ccmc.gsfc.nasa.gov/CMR/TimeInterval/viewTI?id="
+image_paths = ['assets/CCMC.png', 'assets/airflow1.jpg', "assets/options-icon.svg"]
+
+satellites = ["CHAMP", "GOCE", "GRACE-A", "SWARM-A", "GRACE-FO"]
+satellite_opts = list(map(dict_from_sat, satellites))
+satellite_labels = list(map(generate_satellite_labels, satellites))
+
 
 
 ##########################
@@ -40,6 +64,7 @@ tpid_base_url = "https://kauai.ccmc.gsfc.nasa.gov/CMR/TimeInterval/viewTI?id="
 # The "tpid_menu" layout is the layout for the tpid popup that displays a list of links to the storm home page for each storm included
 #   in the current displayed plot
 ##########################
+
 
 # This is the dash layout for the lefthand data selection menu
 data_selection = html.Div(
@@ -80,10 +105,25 @@ data_selection = html.Div(
             html.Div(html.B("Satellites")),
             dcc.Checklist(
                 id="satellites",
-                options=satellites,
+                options=satellite_opts,
                 value=satellites
-            )
-        ])
+            ),
+            html.Div(satellite_labels, id="satellite-labels"),
+        ]),
+        html.Div(
+            [
+                html.Div( # made an x button for the tpid menu using three divs and css :)
+                    id="satellite-desc-x-button",
+                    className="x-button",
+                    children=[
+                        html.Div(className="x-component", id="x-arm1"),
+                        html.Div(className="x-component", id="x-arm2")
+                    ]
+                ),
+                html.Div(id="satellite-description-data")
+            ],
+            id="satellite-description-popup"
+        )
     ]
 )
 
@@ -187,7 +227,7 @@ thermosphere_layout = html.Div(
                         value="TNDA",
                     )
                 ]),
-                data_selection
+                data_selection,
             ]
         ),
         # This div contains the dcc Tab components that allow the user to switch between tabs
@@ -240,6 +280,7 @@ tpid_menu = html.Div(
             html.B("TPID Menu"),
             html.Div( # made an x button for the tpid menu using three divs and css :)
                 id="tpid-x-button",
+                className="x-button",
                 children=[
                     html.Div(className="x-component", id="x-arm1"),
                     html.Div(className="x-component", id="x-arm2")

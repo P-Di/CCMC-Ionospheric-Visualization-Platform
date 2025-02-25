@@ -1,4 +1,56 @@
 /*
+DATA SELECTION MENU
+*/
+
+#satellite-description-popup {
+    background-color: #f4f6f7;
+    display: none;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 307px;
+    height: 100%;
+    z-index: 5;
+}
+
+#satellite-desc-x-button {
+    position: absolute;
+    top: 10px;
+    left: 270px;
+}
+
+#satellite-desc-x-button:hover {
+    background-color: lightgray;
+    cursor: pointer;
+}
+
+#satellite-labels {
+    position: relative;
+    bottom: 119px;
+    left: 15px;
+}
+
+.satellite-label {
+    margin-left: 5px;
+    display: inline-flex;
+    width: 248px;
+    justify-content: space-between;
+}
+
+.satellite-label:hover {
+    cursor: pointer;
+}
+
+.options-icon {
+    width: 40px;
+    display: none;
+}
+
+.satellite-label:hover .options-icon {
+    display: inline-block;
+}
+
+/*
 THERMOSPHERE DESCRIPTION PAGE
 */
 
@@ -123,13 +175,15 @@ THERMOSPHERE ANALYSIS DASHBOARD AND BENCHMARK PAGES
     position: absolute;
     top: 10px;
     right: 10px;
+}
 
+.x-button {
     width: 25px;
     height: 25px;
     border-radius: 7px;
 }
 
-#tpid-x-button:hover {
+.x-button:hover {
     background-color: lightgray;
     cursor: pointer;
 }

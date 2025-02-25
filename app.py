@@ -474,6 +474,23 @@ def toggle_comp_collapse(n, is_open):
     if n:
         return not is_open
     return is_open
+
+@app.callback(
+    [Output("satellite-description-popup", "style"),
+     Output("satellite-description-data", "children")],
+    [Input("CHAMP-opts", "n_clicks")],
+    prevent_initial_call=True
+)
+def open_satellite_description_popup(CHAMP_clicks):
+    return {"display": "block"}, "I'm a message!!!!!! YAAAAAAAY!!!!!"
+    
+@app.callback(
+    Output("satellite-description-popup", "style", allow_duplicate=True),
+    Input("satellite-desc-x-button", "n_clicks"),
+    prevent_initial_call=True
+)
+def close_satellite_description_popup(n_clicks):
+    return {"display": "none"}
     
 if __name__ == '__main__':
-    app.run(debug=False, port=3000)
+    app.run(debug=True, port=3000)
