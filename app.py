@@ -476,4 +476,4 @@ def toggle_comp_collapse(n, is_open):
     return is_open
     
 if __name__ == '__main__':
-    app.run(debug=True, port=3000)
+    app.run(debug=False, port=3000)
