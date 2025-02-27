@@ -409,10 +409,11 @@ def update_thermosphere_content(tab, parameter):
      Input("category_selections", "value"),
      Input("ap_max_slider", "value"),
      Input("f107_max_slider", "value"),
-     Input("satellites", "value")]
+     Input("satellites", "value"),
+     Input("models", "value")]
 )
-def display_thermosphere_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites):
-    return tp.display_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites)
+def display_thermosphere_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites, models):
+    return tp.display_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites, models)
 
 @app.callback(
     [Output("tpid-menu", "style")],
@@ -478,19 +479,127 @@ def toggle_comp_collapse(n, is_open):
 @app.callback(
     [Output("satellite-description-popup", "style"),
      Output("satellite-description-data", "children")],
-    [Input("CHAMP-opts", "n_clicks")],
+    [Input("CHAMP-opts", "n_clicks"),
+     Input("GOCE-opts", "n_clicks"),
+     Input("GRACE-A-opts", "n_clicks"),
+     Input("SWARM-A-opts", "n_clicks"),
+     Input("GRACE-FO-opts", "n_clicks"),
+     Input("MSISE00-01-opts", "n_clicks"),
+     Input("MSIS20-01-opts", "n_clicks"),
+     Input("JB2008-01-opts", "n_clicks"),
+     Input("DTM2020-01-opts", "n_clicks"),
+     Input("DTM2013-01-opts", "n_clicks")],
     prevent_initial_call=True
 )
-def open_satellite_description_popup(CHAMP_clicks):
-    return {"display": "block"}, "I'm a message!!!!!! YAAAAAAAY!!!!!"
+def open_satellite_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_clicks, GRACE_FO_clicks,
+                                     MSISE00_01_clicks, MSIS20_01_clicks, JB2008_01_clicks, DTM2020_01_clicks, DTM2013_01_clicks):
+    """
+    :Description:
+
+    This callback handles opening and populating the popup for the satellite and model info. It is triggered by 
+    a change to the n_clicks property for any of the checklist labels (n_clicks is initially set to 0). When the 
+    popup is closed, all label's n_clicks property are set to 0. This ensures that whenever a label is clicked,
+    that label's n_clicks property will be 1 and all other n_clicks properties will be 0.
+    """
+    
+    # CHAMP click
+    if (CHAMP_clicks == 1 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
+        and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
+        and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0):
+
+        return {"display": "block"}, "CHAMP data placeholder"
+    
+    # GOCE click
+    elif (CHAMP_clicks == 0 and GOCE_clicks == 1 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
+          and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
+          and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0):
+        
+        return {"display": "block"}, "GOCE data placeholder"
+    
+    # GRACE-A click
+    elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 1 and SWARM_A_clicks == 0 
+          and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
+          and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0):
+        
+        return {"display": "block"}, "GRACE-A data placeholder"
+    
+    # SWARM-A click
+    elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 1 
+          and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
+          and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0):
+        
+        return {"display": "block"}, "SWARM-A data placeholder"
+    
+    # GRACE-FO click
+    elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
+          and GRACE_FO_clicks == 1 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
+          and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0):
+        
+        return {"display": "block"}, "GRACE-FO data placeholder"
+    
+    # MSISE00_01 click
+    elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
+          and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 1 and MSIS20_01_clicks == 0 
+          and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0):
+
+        return {"display": "block"}, "I'm a message from MSISE00-01!!!!!!! YAAAAAAAY!!!!!"
+
+    # MSIS20_01 click
+    elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
+          and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 1
+          and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0):
+        
+        return {"display": "block"}, "I'm a message from MSIS20-01!!!!!!! YAAAAAAAY!!!!!"
+    
+    # JB2008-01 click
+    elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
+          and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
+          and JB2008_01_clicks == 1 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0):
+
+        return {"display": "block"}, "I'm a message from JB2008-01!!!!!!! YAAAAAAAY!!!!!"
+    
+    # DTM2020-01 click
+    elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
+          and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0 
+          and JB2008_01_clicks == 0 and DTM2020_01_clicks == 1 and DTM2013_01_clicks == 0):
+        
+        return {"display": "block"}, "I'm a message from DTM2020-01!!!!!!! YAAAAAAAY!!!!!"
+    
+    # DTM2013-01 click
+    elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
+          and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0 
+          and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 1):
+        
+        return {"display": "block"}, "I'm a message from DTM2013-01!!!!!!! YAAAAAAAY!!!!!"
+
+    # No click
+    elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
+          and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
+          and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0):
+        
+        return {"display": "none"}, ""
+    
+    # Error
+    else:
+        return {"display": "block"}, "ERROR: satellite click state unrecognized."
     
 @app.callback(
-    Output("satellite-description-popup", "style", allow_duplicate=True),
+    [Output("satellite-description-popup", "style", allow_duplicate=True),
+     Output("CHAMP-opts", "n_clicks"),
+     Output("GOCE-opts", "n_clicks"),
+     Output("GRACE-A-opts", "n_clicks"),
+     Output("SWARM-A-opts", "n_clicks"),
+     Output("GRACE-FO-opts", "n_clicks"),
+     Output("MSISE00-01-opts", "n_clicks"),
+     Output("MSIS20-01-opts", "n_clicks"),
+     Output("JB2008-01-opts", "n_clicks"),
+     Output("DTM2020-01-opts", "n_clicks"),
+     Output("DTM2013-01-opts", "n_clicks")],
     Input("satellite-desc-x-button", "n_clicks"),
     prevent_initial_call=True
 )
 def close_satellite_description_popup(n_clicks):
-    return {"display": "none"}
+    return {"display": "none"}, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     
 if __name__ == '__main__':
     app.run(debug=True, port=3000)

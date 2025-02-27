@@ -21,24 +21,24 @@ import thermosphere_helpers.description_page as dp
 # SECTION 1: DECLARATIONS
 ###########################
 
-def dict_from_sat(satellite):
+def options_from_list(label):
     return {
-        "label": html.P(satellite, style={"display": "none"}),
-        "value": satellite
+        "label": html.P(label, style={"display": "none"}),
+        "value": label
     }
 
-def generate_satellite_labels(satellite):
+def generate_labels(label):
     return html.Span(
         [
-            satellite,
-            html.Img(src="assets/options-icon.svg", id= f"{satellite}-opts", className="options-icon"),
+            label,
+            html.Img(src="assets/options-icon.svg", id= f"{label}-opts", className="options-icon", n_clicks=0),
             # dbc.Tooltip(
             #     f"{satellite} description",
             #     target=f"{satellite}-opts",
             #     placement="right"
             # )
         ],
-        id=f"{satellite}-label", className="satellite-label"   
+        id=f"{label}-label", className="checklist-label" 
     )
 
 # declare global variables that will be used throughout the program
@@ -49,9 +49,12 @@ tpid_base_url = "https://kauai.ccmc.gsfc.nasa.gov/CMR/TimeInterval/viewTI?id="
 image_paths = ['assets/CCMC.png', 'assets/airflow1.jpg', "assets/options-icon.svg"]
 
 satellites = ["CHAMP", "GOCE", "GRACE-A", "SWARM-A", "GRACE-FO"]
-satellite_opts = list(map(dict_from_sat, satellites))
-satellite_labels = list(map(generate_satellite_labels, satellites))
+satellite_opts = list(map(options_from_list, satellites))
+satellite_labels = list(map(generate_labels, satellites))
 
+models = ["MSISE00-01", "MSIS20-01", "JB2008-01", "DTM2020-01", "DTM2013-01"]
+model_opts = list(map(options_from_list, models))
+model_labels = list(map(generate_labels, models))
 
 
 ##########################
@@ -71,7 +74,7 @@ data_selection = html.Div(
     id="data-selection",
     children=[
         html.Div([
-            html.Div(html.B("Select a Parameter to Analyze")),
+            html.Div(html.Strong("Select a Parameter to Analyze")),
             dcc.Dropdown(
                 options=[
                     "mean_OC", 
@@ -87,7 +90,7 @@ data_selection = html.Div(
             )
         ]),
         html.Div([
-            html.Div(html.B("Select Event Category")),
+            html.Div(html.Strong("Select Event Category")),
             dcc.Dropdown(
                 options=[
                     {"label": "All", "value": "all"},
@@ -102,13 +105,23 @@ data_selection = html.Div(
             )
         ]),
         html.Div([
-            html.Div(html.B("Satellites")),
+            html.Div(html.Strong("Satellites")),
             dcc.Checklist(
                 id="satellites",
                 options=satellite_opts,
                 value=satellites
             ),
             html.Div(satellite_labels, id="satellite-labels"),
+        ]),
+        html.Br(),
+        html.Div([
+            html.Div(html.Strong("Models")),
+            dcc.Checklist(
+                id="models",
+                options=model_opts,
+                value=models
+            ),
+            html.Div(model_labels, id="model-labels")
         ]),
         html.Div(
             [
@@ -215,7 +228,7 @@ thermosphere_layout = html.Div(
             },
             children=[
                 html.Div([
-                    html.Div(html.B("Project")),
+                    html.Div(html.Strong("Project")),
                     dcc.Dropdown(
                         id="project",
                         options=[
@@ -277,7 +290,7 @@ tpid_menu = html.Div(
     id="tpid-menu",
     children=[
         html.Div([
-            html.B("TPID Menu"),
+            html.Strong("TPID Menu"),
             html.Div( # made an x button for the tpid menu using three divs and css :)
                 id="tpid-x-button",
                 className="x-button",
@@ -442,7 +455,7 @@ def update_content(tab, parameter):
                     "background-color": "#f4f6f7"
                 },
                 children=[ # Sliders to select peak Ap and F107 thresholds, storms displayed have peak ap/f107 values >= the selected value
-                    html.P(["Select the ", html.B("peak Ap threshold"), ": greater or equal to"]),
+                    html.P(["Select the ", html.Strong("peak Ap threshold"), ": greater or equal to"]),
                     dcc.Slider(
                         0, 4, 1, 
                         marks={key: str(value) for key, value in enumerate(ap_thresholds)}, 
@@ -452,7 +465,7 @@ def update_content(tab, parameter):
                         persistence_type="session",
                         included=False
                     ),
-                    html.P(["Select the ", html.B("peak F107 threshold"), ": greater or equal to"]),
+                    html.P(["Select the ", html.Strong("peak F107 threshold"), ": greater or equal to"]),
                     dcc.Slider(
                         0, 4, 1,
                         marks={key: str(value) for key, value in enumerate(f107_thresholds)},
@@ -478,7 +491,7 @@ def update_content(tab, parameter):
                 children=[
                     html.Div([ # The main plot on the page, compares thermosphere models
                         html.Span(
-                            html.B(f"Skills By Event: {parameter}"),
+                            html.Strong(f"Skills By Event: {parameter}"),
                             style={
                                 "z-index": "3", 
                                 "position": "relative",
@@ -492,7 +505,7 @@ def update_content(tab, parameter):
                         html.Div(id="main-plot-stats", className="stats")
                     ]),
                     html.Div([ # Data table showing average parameter value for each phase for each model
-                        html.Span(html.B("Skills By Phase")),
+                        html.Span(html.Strong("Skills By Phase")),
                         dash_table.DataTable(
                             id="skills-by-phase-table",
                             style_header={
@@ -586,7 +599,7 @@ def update_content(tab, parameter):
                 children=[
                     html.Div([
                         html.Span(
-                            html.B(f"Skills By Event: {parameter}"),
+                            html.Strong(f"Skills By Event: {parameter}"),
                             style={
                                 "z-index": "3", 
                                 "position": "relative",
@@ -602,7 +615,7 @@ def update_content(tab, parameter):
                         html.Div(id="bench-main-stats", className="stats", children=formatted_bench_main_stats, style={"top": "320px"})
                     ]),
                     html.Div([
-                        html.Span(html.B(f"Skills By Phase: {parameter}")),
+                        html.Span(html.Strong(f"Skills By Phase: {parameter}")),
                         dash_table.DataTable(
                             id="skills-by-phase-table",
                             style_header={
@@ -627,13 +640,11 @@ def update_content(tab, parameter):
         ]
 
 
-def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites):
+def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites, models):
     """
     This callback filters thermosphere_df using the input data and populates the plots and table with the filtered dataframe.
     The filtered dataframe is stored in the global variable `filtered_df` so that the tpid callback can access that data
     """
-    satellites = [satellite.strip() for satellite in satellites] 
-
     global filtered_df
 
     filtered_df = thermosphere_df.copy()
@@ -642,6 +653,7 @@ def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, sat
     if category != "all":
         filtered_df = filtered_df[filtered_df["category"] == category]
     filtered_df = filtered_df[filtered_df["satellite"].isin(satellites)]
+    filtered_df = filtered_df[filtered_df["model"].isin(models)]
     filtered_df = filtered_df[filtered_df["ap_max"].ge(ap_thresholds[ap_max_threshold])]
     filtered_df = filtered_df[filtered_df["f107_max"].ge(f107_thresholds[f107_max_threshold])]
     
@@ -693,10 +705,3 @@ def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, sat
         tpid_list,
         basic_storm_data
     )
-
-
-def open_tpid_menu():
-    """
-    This callback creates the links that will be in the tpid popup. It accesses the correct data using the global variable filtered_df
-    """
-    pass

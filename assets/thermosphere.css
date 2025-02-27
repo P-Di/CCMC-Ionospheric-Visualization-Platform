@@ -25,19 +25,25 @@ DATA SELECTION MENU
 }
 
 #satellite-labels {
-    position: relative;
-    bottom: 119px;
-    left: 15px;
+    position: absolute;
+    top: 250px;
+    left: 35px;
 }
 
-.satellite-label {
+#model-labels {
+    position: absolute;
+    top: 418px;
+    left: 35px;
+}
+
+.checklist-label {
     margin-left: 5px;
     display: inline-flex;
     width: 248px;
     justify-content: space-between;
 }
 
-.satellite-label:hover {
+.checklist-label:hover {
     cursor: pointer;
 }
 
@@ -46,7 +52,7 @@ DATA SELECTION MENU
     display: none;
 }
 
-.satellite-label:hover .options-icon {
+.checklist-label:hover .options-icon {
     display: inline-block;
 }
 
@@ -99,7 +105,7 @@ THERMOSPHERE DESCRIPTION PAGE
     border-radius: 10px;
 
     position: relative;
-    bottom: 206px;
+    bottom: 232px;
 
     /* border: 2px solid black; */
 }
