@@ -550,30 +550,31 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 1
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0):
         
-        return {"display": "block"}, "I'm a message from MSIS20-01!!!!!!! YAAAAAAAY!!!!!"
+        return {"display": "block"}, popups.gen_MSIS20_01_data()
     
     # JB2008-01 click
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 1 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0):
 
-        return {"display": "block"}, "I'm a message from JB2008-01!!!!!!! YAAAAAAAY!!!!!"
+        return {"display": "block"}, popups.gen_JB2008_01_data()
     
     # DTM2020-01 click
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0 
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 1 and DTM2013_01_clicks == 0):
         
-        return {"display": "block"}, "I'm a message from DTM2020-01!!!!!!! YAAAAAAAY!!!!!"
+        return {"display": "block"}, popups.gen_DTM2020_01_data()
     
     # DTM2013-01 click
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0 
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 1):
         
-        return {"display": "block"}, "I'm a message from DTM2013-01!!!!!!! YAAAAAAAY!!!!!"
+        return {"display": "block"}, popups.gen_DTM2013_01_data()
 
-    # No click
+    # No click. This state is necessary because setting all n_clicks values to 0 when the x button is clicked 
+    # triggers this callback.
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0):
