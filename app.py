@@ -20,6 +20,7 @@ import plotSelection
 import plots.comparisonPlot as comparisonPlot
 
 import thermosphere_page as tp
+from thermosphere_helpers import popups
 
 #Import data.
 csmc2_foF2 = np.load('data/foF2_202111_storm.npz')
@@ -479,19 +480,19 @@ def toggle_comp_collapse(n, is_open):
 @app.callback(
     [Output("satellite-description-popup", "style"),
      Output("satellite-description-data", "children")],
-    [Input("CHAMP-opts", "n_clicks"),
-     Input("GOCE-opts", "n_clicks"),
-     Input("GRACE-A-opts", "n_clicks"),
-     Input("SWARM-A-opts", "n_clicks"),
-     Input("GRACE-FO-opts", "n_clicks"),
-     Input("MSISE00-01-opts", "n_clicks"),
-     Input("MSIS20-01-opts", "n_clicks"),
-     Input("JB2008-01-opts", "n_clicks"),
-     Input("DTM2020-01-opts", "n_clicks"),
-     Input("DTM2013-01-opts", "n_clicks")],
+    [Input("CHAMP-label", "n_clicks"),
+     Input("GOCE-label", "n_clicks"),
+     Input("GRACE-A-label", "n_clicks"),
+     Input("SWARM-A-label", "n_clicks"),
+     Input("GRACE-FO-label", "n_clicks"),
+     Input("MSISE00-01-label", "n_clicks"),
+     Input("MSIS20-01-label", "n_clicks"),
+     Input("JB2008-01-label", "n_clicks"),
+     Input("DTM2020-01-label", "n_clicks"),
+     Input("DTM2013-01-label", "n_clicks")],
     prevent_initial_call=True
 )
-def open_satellite_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_clicks, GRACE_FO_clicks,
+def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_clicks, GRACE_FO_clicks,
                                      MSISE00_01_clicks, MSIS20_01_clicks, JB2008_01_clicks, DTM2020_01_clicks, DTM2013_01_clicks):
     """
     :Description:
@@ -542,7 +543,7 @@ def open_satellite_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 1 and MSIS20_01_clicks == 0 
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0):
 
-        return {"display": "block"}, "I'm a message from MSISE00-01!!!!!!! YAAAAAAAY!!!!!"
+        return {"display": "block"}, popups.gen_MSISE00_01_data()
 
     # MSIS20_01 click
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
@@ -585,20 +586,20 @@ def open_satellite_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, 
     
 @app.callback(
     [Output("satellite-description-popup", "style", allow_duplicate=True),
-     Output("CHAMP-opts", "n_clicks"),
-     Output("GOCE-opts", "n_clicks"),
-     Output("GRACE-A-opts", "n_clicks"),
-     Output("SWARM-A-opts", "n_clicks"),
-     Output("GRACE-FO-opts", "n_clicks"),
-     Output("MSISE00-01-opts", "n_clicks"),
-     Output("MSIS20-01-opts", "n_clicks"),
-     Output("JB2008-01-opts", "n_clicks"),
-     Output("DTM2020-01-opts", "n_clicks"),
-     Output("DTM2013-01-opts", "n_clicks")],
+     Output("CHAMP-label", "n_clicks"),
+     Output("GOCE-label", "n_clicks"),
+     Output("GRACE-A-label", "n_clicks"),
+     Output("SWARM-A-label", "n_clicks"),
+     Output("GRACE-FO-label", "n_clicks"),
+     Output("MSISE00-01-label", "n_clicks"),
+     Output("MSIS20-01-label", "n_clicks"),
+     Output("JB2008-01-label", "n_clicks"),
+     Output("DTM2020-01-label", "n_clicks"),
+     Output("DTM2013-01-label", "n_clicks")],
     Input("satellite-desc-x-button", "n_clicks"),
     prevent_initial_call=True
 )
-def close_satellite_description_popup(n_clicks):
+def close_description_popup(n_clicks):
     return {"display": "none"}, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     
 if __name__ == '__main__':

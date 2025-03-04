@@ -33,12 +33,12 @@ def generate_labels(label):
             label,
             html.Img(src="assets/options-icon.svg", id= f"{label}-opts", className="options-icon", n_clicks=0),
             # dbc.Tooltip(
-            #     f"{satellite} description",
-            #     target=f"{satellite}-opts",
+            #     f"{label} description",
+            #     target=f"{label}-label",
             #     placement="right"
             # )
         ],
-        id=f"{label}-label", className="checklist-label" 
+        id=f"{label}-label", className="checklist-label", n_clicks=0 
     )
 
 # declare global variables that will be used throughout the program
@@ -125,7 +125,7 @@ data_selection = html.Div(
         ]),
         html.Div(
             [
-                html.Div( # made an x button for the tpid menu using three divs and css :)
+                html.Div(
                     id="satellite-desc-x-button",
                     className="x-button",
                     children=[
