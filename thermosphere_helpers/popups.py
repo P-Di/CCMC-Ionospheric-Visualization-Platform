@@ -13,10 +13,140 @@ def gen_CHAMP_data():
         ),
         html.H2("Data Source", style={"font-size": "20px", "font-weight": "bold"}),
         html.P([
-            "TU Delft (", 
-            html.A("ftp://thermosphere.tudelft.nl"), 
-            ")"
-        ])
+            "TU Delft (",
+            html.A("ftp://thermosphere.tudelft.nl", href="ftp://thermosphere.tudelft.nl", target="_blank"), 
+            "); PI: Christian Siemes, ",
+            html.A("c.siemes@tudelft.nl", href="mailto:c.siemes@tudelft.nl", target="_blank")
+        ]),
+        html.H2("Density Retrieval Method", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("Accelerometer-inferred"),
+        html.H2("Data Version", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("Version_02"),
+        html.H2("More Information", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P(html.A("https://earth.esa.int/eogateway", href="https://earth.esa.int/eogateway", target="_blank")),
+        html.P(html.A("http://thermosphere.tudelft.nl/", href="http://thermosphere.tudelft.nl/", target="_blank"))
+    ], className="data-source-metadata")
+
+
+def gen_GOCE_data():
+    return html.Div([
+        html.H1("GOCE Description", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P([
+            "GOCE (Gravity field and steady-state Ocean Circulation Explorer; ", 
+            html.A("Drinkwater et al., 2003", href="https://doi.org/10.1023/A:1026104216284", target="_blank"),
+            """
+            ) was launched on 17 March 2009 in a 96.5° inclination, dawn-dusk orbit, and re-
+            entered the atmosphere on 11 November 2013. The orbit was maintained at 255 km
+            mean altitude for the largest part of the mission, and then it was lowered in four stages
+            ultimately to 224 km in May 2013.
+            """
+        ]),
+        html.H2("Data Source", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P([
+            "TU Delft (",
+            html.A("ftp://thermosphere.tudelft.nl", href="ftp://thermosphere.tudelft.nl", target="_blank"), 
+            "); PI: Christian Siemes, ",
+            html.A("c.siemes@tudelft.nl", href="mailto:c.siemes@tudelft.nl", target="_blank")
+        ]),
+        html.H2("Density Retrieval Method", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("Accelerometer-inferred"),
+        html.H2("Data Version", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("Version_01"),
+        html.H2("More Information", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P(html.A("http://thermosphere.tudelft.nl/", href="http://thermosphere.tudelft.nl/", target="_blank")),
+        html.P(html.A("https://earth.esa.int/eogateway", href="https://earth.esa.int/eogateway", target="_blank"))
+    ], className="data-source-metadata")
+
+
+def gen_GRACE_A_data():
+    return html.Div([
+        html.H1("GRACE-A Description", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P(
+            """
+            The Gravity Recovery and Climate Experiment (GRACE) mission was a joint project
+            between NASA and DLR. The primary science objective of GRACE was to measure the
+            Earth’s gravity field and time variability with unprecedented accuracy. GRACE consisted
+            of two identical spacecraft that flew approximately 220 kilometers apart in a polar orbit
+            500 kilometers above Earth.
+            """
+        ),
+        html.H2("Data Source", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P([
+            "TU Delft (",
+            html.A("ftp://thermosphere.tudelft.nl", href="ftp://thermosphere.tudelft.nl", target="_blank"), 
+            "); PI: Christian Siemes, ",
+            html.A("c.siemes@tudelft.nl", href="mailto:c.siemes@tudelft.nl", target="_blank")
+        ]),
+        html.H2("Density Retrieval Method", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("Accelerometer-inferred"),
+        html.H2("Data Version", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("Version_02"),
+        html.P(html.A("https://earth.esa.int/eogateway/missions/grace/description", 
+                      href="https://earth.esa.int/eogateway/missions/grace/description", target="_blank")),
+        html.P(html.A("http://thermosphere.tudelft.nl/", href="http://thermosphere.tudelft.nl/", target="_blank"))
+    ], className="data-source-metadata")
+
+
+def gen_SWARM_A_data():
+    return html.Div([
+        html.H1("SWARM-A Description", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P(
+            """
+            Swarm comprises a constellation of three satellites in near-polar low orbits to obtain
+            better and more varied measurements. The Swarm mission was launched from
+            Plesetsk Cosmodrome on 22 November 2013. Swarm A and C form the lower pair of
+
+            satellites flying side-by-side (1.4° separation in longitude at the equator) at an altitude of
+            462 km (initial altitude) and at 87.35° inclination angle.
+            """
+        ),
+        html.H2("Data Source", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P([
+            "TU Delft (",
+            html.A("ftp://thermosphere.tudelft.nl", href="ftp://thermosphere.tudelft.nl", target="_blank"), 
+            "); PI: Christian Siemes, ",
+            html.A("c.siemes@tudelft.nl", href="mailto:c.siemes@tudelft.nl", target="_blank")
+        ]),
+        html.H2("Density Retrieval Method", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("Derived using precision orbit determination"),
+        html.H2("Data Version", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("Version_01"),
+        html.H2("More Information", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P(html.A("https://earth.esa.int/eogateway/missions/swarm", 
+                      href="https://earth.esa.int/eogateway/missions/swarm", target="_blank")),
+        html.P(html.A("http://thermosphere.tudelft.nl/", href="http://thermosphere.tudelft.nl/", target="_blank"))
+    ], className="data-source-metadata")
+
+
+def gen_GRACE_FO_data():
+    return html.Div([
+        html.H1("GRACE-FO Description", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P(
+            """
+            The Gravity Recovery and Climate Experiment Follow-on (GRACE-FO) mission is a
+            partnership between NASA and the German Research Centre for Geosciences (GFZ).
+
+            GRACE-FO is a successor to the original GRACE mission. The twin GRACE-Follow-On
+            (GRACE-FO) satellites were launched in 2018 and provide measurements until today.
+            The data covers the altitude range around 500 km.
+            """
+        ),
+        html.H2("Data Source", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P([
+            "TU Delft (",
+            html.A("ftp://thermosphere.tudelft.nl", href="ftp://thermosphere.tudelft.nl", target="_blank"), 
+            "); PI: Christian Siemes, ",
+            html.A("c.siemes@tudelft.nl", href="mailto:c.siemes@tudelft.nl", target="_blank")
+        ]),
+        html.H2("Density Retrieval Method", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("Accelerometer-inferred"),
+        html.H2("Data Version", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("Version_02"),
+        html.H2("More Information", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P(html.A("https://www.jpl.nasa.gov/missions/gravity-recovery-and-climate-experiment-follow-on-grace-fo",
+                      href="https://www.jpl.nasa.gov/missions/gravity-recovery-and-climate-experiment-follow-on-grace-fo",
+                      target="_blank")),
+        html.P(html.A("http://thermosphere.tudelft.nl/", href="http://thermosphere.tudelft.nl/", target="_blank"))
     ], className="data-source-metadata")
 
 

@@ -508,35 +508,35 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
         and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
         and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0):
 
-        return {"display": "block"}, "CHAMP data placeholder"
+        return {"display": "block"}, popups.gen_CHAMP_data()
     
     # GOCE click
     elif (CHAMP_clicks == 0 and GOCE_clicks == 1 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0):
         
-        return {"display": "block"}, "GOCE data placeholder"
+        return {"display": "block"}, popups.gen_GOCE_data()
     
     # GRACE-A click
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 1 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0):
         
-        return {"display": "block"}, "GRACE-A data placeholder"
+        return {"display": "block"}, popups.gen_GRACE_A_data()
     
     # SWARM-A click
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 1 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0):
         
-        return {"display": "block"}, "SWARM-A data placeholder"
+        return {"display": "block"}, popups.gen_SWARM_A_data()
     
     # GRACE-FO click
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 1 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0):
         
-        return {"display": "block"}, "GRACE-FO data placeholder"
+        return {"display": "block"}, popups.gen_GRACE_FO_data()
     
     # MSISE00_01 click
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
