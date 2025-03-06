@@ -31,7 +31,7 @@ def generate_labels(label):
     return html.Span(
         [
             label,
-            html.Img(src="assets/options-icon.svg", id= f"{label}-opts", className="options-icon", n_clicks=0),
+            # html.Img(src="assets/options-icon.svg", id= f"{label}-opts", className="options-icon", n_clicks=0),
             # dbc.Tooltip(
             #     f"{label} description",
             #     target=f"{label}-label",

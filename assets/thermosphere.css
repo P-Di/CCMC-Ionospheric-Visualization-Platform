@@ -41,7 +41,7 @@ DATA SELECTION MENU
     margin-left: 5px;
     border-radius: 5px;
     padding-left: 5px;
-    display: inline-flex;
+    display: flex;
     width: 248px;
     justify-content: space-between;
 }
