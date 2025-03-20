@@ -16,7 +16,7 @@ def skill_scores_sum_plot(All_nss1, year, TITLES, tt):
     fig.add_trace(go.Bar(x=x, y=All_nss1[4][:,1],name="Main phase", marker_color='orange'))
     fig.add_trace(go.Bar(x=x, y=All_nss1[4][:,2],name="Recovery phase", marker_color='green'))
 
-    fig.update_xaxes(tickmode = 'array', showticklabels=True, ticktext = TITLES, ticks="outside", tickvals= x)
+    fig.update_xaxes(tickmode = 'array', showticklabels=True, ticktext = TITLES[1:], ticks="outside", tickvals= x)
 
     fig.update_yaxes(title='\u03A3nSS', range=[0,5])
     fig.update_layout(barmode = "group", title = tt+' total normalized skill score for the '+year+' storm', title_x=0.5)
