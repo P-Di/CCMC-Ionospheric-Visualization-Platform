@@ -262,3 +262,87 @@ def gen_DTM2013_01_data():
         html.H2("More Information", style={"font-size": "20px", "font-weight": "bold"}),
         html.A("https://ccmc.gsfc.nasa.gov/models/DTM~2013/", href="https://ccmc.gsfc.nasa.gov/models/DTM~2013/", target="_blank")
     ], className="data-source-metadata")
+
+
+def gen_TIEGCM_Heelis_01_data():
+    return html.Div([
+        html.H1(["TIEGCM-Heelis-01", html.Br(), "Description"], style={"font-size": "20px", "font-weight": "bold"}),
+        html.P(
+            """
+            The NCAR Thermosphere-Ionosphere- Electrodynamics General Circulation Model
+            (TIE-GCM) is a comprehensive, first-principles, three-dimensional, non-linear
+            representation of the coupled thermosphere and ionosphere system that includes a self-
+            consistent solution of the low-latitude electric field. The model solves the three-
+            dimensional momentum, energy and continuity equations for neutral and ion species at
+            each time step, using a semi-implicit, fourth-order, centered finite difference scheme, on
+            each pressure surface in a staggered vertical grid.
+            """
+        ),
+        html.H2("Solution Type", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("First Principle"),
+        html.H2("Sollution Drivers", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("Solomon & Qian Bands; Heelis-Kp"),
+        html.H2("Version Number", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("2.0"),
+        html.H2("Resolution (latitude, longitude, vertical, output cadence)", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("2.5°, 2.5°, 0.25 scale height, 20 mins"),
+        html.H2("More Information", style={"font-size": "20px", "font-weight": "bold"}),
+        html.A("https://ccmc.gsfc.nasa.gov/models/TIE-GCM~2.0", href="https://ccmc.gsfc.nasa.gov/models/TIE-GCM~2.0", target="_blank")
+    ], className="data-source-metadata")
+
+
+def gen_TIEGCM_Weimer_01_data():
+    return html.Div([
+        html.H1("TIEGCM-Weimer-01 Description", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P(
+            """
+            The NCAR Thermosphere-Ionosphere- Electrodynamics General Circulation Model
+            (TIE-GCM) is a comprehensive, first-principles, three-dimensional, non-linear
+            representation of the coupled thermosphere and ionosphere system that includes a self-
+            consistent solution of the low-latitude electric field. The model solves the three-
+            dimensional momentum, energy and continuity equations for neutral and ion species at
+            each time step, using a semi-implicit, fourth-order, centered finite difference scheme, on
+            each pressure surface in a staggered vertical grid.
+            """
+        ),
+        html.H2("Solution Type", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("First Principle"),
+        html.H2("Sollution Drivers", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("Solomon & Qian Bands; Weimer"),
+        html.H2("Version Number", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("2.0"),
+        html.H2("Resolution (latitude, longitude, vertical, output cadence)", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("2.5°, 2.5°, 0.25 scale height, 20 mins"),
+        html.H2("More Information", style={"font-size": "20px", "font-weight": "bold"}),
+        html.A("https://ccmc.gsfc.nasa.gov/models/TIE-GCM~2.0", href="https://ccmc.gsfc.nasa.gov/models/TIE-GCM~2.0", target="_blank")
+    ], className="data-source-metadata")
+
+
+def gen_CTIPe_01_data():
+    return html.Div([
+        html.H1("CTIPe-01 Description", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P(
+            """
+            The Coupled Thermosphere Ionosphere Plasmasphere Electrodynamics Model (CTIPe)
+            model simulates the time-dependent global structure of the wind vector, temperature,
+            and density of the neutral thermosphere by numerically solving the non-linear primitive
+            equations of momentum, energy, and continuity on a 3D spherical polar grid rotating
+            with the Earth.
+            """
+        ),
+        html.H2("Solution Type", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("First Principle"),
+        html.H2("Sollution Drivers", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P(
+            """
+            F10.7, F81, Solomon &amp; Qian bands; Weimer-2005, solar wind density and velocity,
+            interplanetary magnetic field, Hemispheric Power, Kp
+            """
+        ),
+        html.H2("Version Number", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("4.1"),
+        html.H2("Resolution (latitude, longitude, vertical, output cadence)", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("2°, 18°, 15 levels between 80 to ~500 km, 15 mins"),
+        html.H2("More Information", style={"font-size": "20px", "font-weight": "bold"}),
+        html.A("https://ccmc.gsfc.nasa.gov/models/CTIPe~4.1/", href="https://ccmc.gsfc.nasa.gov/models/CTIPe~4.1/", target="_blank")
+    ], className="data-source-metadata")

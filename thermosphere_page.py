@@ -44,7 +44,7 @@ def generate_labels(label):
 # declare global variables that will be used throughout the program
 filtered_df = pd.DataFrame() # this variables is used to share data between callbacks
 ap_thresholds = [80, 132, 207, 236, 300]
-f107_thresholds = [70, 100, 150, 200, 250]
+f107_thresholds = [60, 100, 150, 200, 250]
 tpid_base_url = "https://kauai.ccmc.gsfc.nasa.gov/CMR/TimeInterval/viewTI?id="
 image_paths = ['assets/CCMC.png', 'assets/airflow1.jpg', "assets/options-icon.svg"]
 
@@ -52,7 +52,7 @@ satellites = ["CHAMP", "GOCE", "GRACE-A", "SWARM-A", "GRACE-FO"]
 satellite_opts = list(map(options_from_list, satellites))
 satellite_labels = list(map(generate_labels, satellites))
 
-models = ["MSISE00-01", "MSIS20-01", "JB2008-01", "DTM2020-01", "DTM2013-01"]
+models = ["MSISE00-01", "MSIS20-01", "JB2008-01", "DTM2020-01", "DTM2013-01", "TIEGCM-Weimer-01", "TIEGCM-Heelis-01", "CTIPe-01"]
 model_opts = list(map(options_from_list, models))
 model_labels = list(map(generate_labels, models))
 
@@ -113,7 +113,6 @@ data_selection = html.Div(
             ),
             html.Div(satellite_labels, id="satellite-labels"),
         ]),
-        html.Br(),
         html.Div([
             html.Div(html.Strong("Models")),
             dcc.Checklist(
@@ -224,7 +223,7 @@ thermosphere_layout = html.Div(
                 'height': '100%', 
                 'position': 'fixed',
                 'margin-top': '0px',
-                'box-shadow': '5px 5px 5px #ededed'
+                'box-shadow': '5px 5px 5px #ededed',
             },
             children=[
                 html.Div([
@@ -565,8 +564,8 @@ def update_content(tab, parameter):
             formatted_bench_main_stats.append(stats_label)
 
         # create a plotly plot for each model and add it to "skill_by_phase_plots"
-        skills_plots_stats: pd.DataFrame = filtered_df.groupby("phase", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2)
-        skills_by_phase_plots = sp.create_phase_stripplots(filtered_df, skills_plots_stats, parameter)
+        # skills_plots_stats: pd.DataFrame = filtered_df.groupby("phase", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2)
+        skills_by_phase_plots = sp.create_phase_stripplots(filtered_df, parameter)
 
         # data  preparation for the pivot table (some more pandas magic)
         skills_by_phase: DataFrameGroupBy = filtered_df.groupby(["model", "phase"], observed=False)[parameter]
@@ -680,8 +679,8 @@ def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, sat
         formatted_main_plot_stats.append(stats_label)
 
     # create skills plots stats
-    skills_plots_stats: pd.DataFrame = filtered_df.groupby("phase", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2) 
-    skills_by_phase_plots = sp.create_phase_stripplots(filtered_df, skills_plots_stats, parameter)
+    # skills_plots_stats: pd.DataFrame = filtered_df.groupby("phase", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2) 
+    skills_by_phase_plots = sp.create_phase_stripplots(filtered_df, parameter)
     
     # data preparation for the pivot table
     skills_by_phase: DataFrameGroupBy = filtered_df.groupby(["model", "phase"], observed=False)[parameter]
