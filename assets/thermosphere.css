@@ -1,0 +1,207 @@
+/*
+DATA SELECTION MENU
+*/
+
+#satellite-description-popup {
+    background-color: #f4f6f7;
+    display: none;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 307px;
+    height: 100%;
+    z-index: 5;
+}
+
+#satellite-desc-x-button {
+    position: absolute;
+    top: 10px;
+    left: 270px;
+}
+
+#satellite-desc-x-button:hover {
+    background-color: lightgray;
+    cursor: pointer;
+}
+
+#satellite-labels {
+    position: relative;
+    bottom: 119px;
+    left: 15px;
+}
+
+.satellite-label {
+    margin-left: 5px;
+    display: inline-flex;
+    width: 248px;
+    justify-content: space-between;
+}
+
+.satellite-label:hover {
+    cursor: pointer;
+}
+
+.options-icon {
+    width: 40px;
+    display: none;
+}
+
+.satellite-label:hover .options-icon {
+    display: inline-block;
+}
+
+/*
+THERMOSPHERE DESCRIPTION PAGE
+*/
+
+.accent-gray {
+    background-color: #f8f8f8;
+    border-left: 3px solid #3498db;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+#description-page {
+    background-color: #f4f6f7;
+    padding-top: 20px;
+    line-height: 1.6;
+}
+
+.TOC {
+    background-color: white;
+    width: 200px;
+    margin: 20px;
+    margin-top: 0px;
+    padding-left: 10px;
+    padding-top: 10px;
+    padding-bottom: 1px;
+    border-radius: 10px;
+    position: sticky;
+    top: 10px;
+
+    /* border: 2px solid black; */
+}
+
+.TOC-link {
+    text-decoration: none;
+}
+
+#content {
+    background-color: white;
+    margin-left: 225px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    border-radius: 10px;
+
+    position: relative;
+    bottom: 206px;
+
+    /* border: 2px solid black; */
+}
+
+#challenges-list {
+    background: #fff9e6;
+    padding: 20px;
+    border-left: 4px solid #ffeb3b;
+    border-radius: 5px;
+}
+
+th, td {
+    padding-right: 20px; 
+}
+
+/*
+THERMOSPHERE ANALYSIS DASHBOARD AND BENCHMARK PAGES
+*/
+
+.stats {
+    position: absolute;
+    top: 480px;
+    right: 175px;
+    font-size: small;
+}
+
+.tpid-menu-button {
+    background-color: #e59b1c;
+    width: 100px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 5px 5px 10px #e2e2e2;
+    border-radius: 20px;
+}
+
+.tpid-menu-button:hover {
+    background-color: #d18708;
+    cursor: pointer;
+}
+
+#tpid-menu-button-1 {
+    position: fixed;
+    bottom: 70px;
+    right: 20px;
+}
+
+#tpid-menu-button-2 {
+    position: sticky;
+    top: 10px;
+
+    margin-left: 10px;
+    margin-top: 10px;
+}
+
+#tpid-menu {
+    background-color: #f1f1f1;
+    width: 310px;
+    height: 100%;
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    z-index: 4;
+    box-shadow: 5px 5px 10px #e2e2e2;
+    padding: 10px;
+    display: none;
+    overflow-y: auto;
+    box-shadow: 0px 0px 5px #e2e2e2;
+}
+
+#tpid-x-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.x-button {
+    width: 25px;
+    height: 25px;
+    border-radius: 7px;
+}
+
+.x-button:hover {
+    background-color: lightgray;
+    cursor: pointer;
+}
+
+.x-component {
+    width: 20px;
+    height: 3px;
+    background-color: black;
+    border-radius: 10px;
+    position: absolute;
+    top: 11px;
+    left: 2px;
+}
+
+#x-arm1 {
+    transform: rotate(45deg);
+}
+
+#x-arm2 {
+    transform: rotate(315deg);
+}

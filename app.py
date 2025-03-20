@@ -20,6 +20,8 @@ import plots.tecRccPlot as tecRccPlot
 import multiFunc
 import plotSelection
 import plots.comparisonPlot as comparisonPlot
+
+import thermosphere_page as tp
 import os
 
 #Import data.
@@ -119,7 +121,7 @@ mathjax = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?confi
 app.config.suppress_callback_exceptions = True
 app.scripts.append_script({ 'external_url' : mathjax })
 #Define the layout: Set the background to a light gray, delete all margines.
-app.layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, children=[  
+ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, children=[  
     html.Div( #Create a background for the CCMC logo image.
         style={'width': '20%', 'background-color': '#f4f6f7', 
                       'height': '200px', 'position': 'fixed',
@@ -136,24 +138,59 @@ app.layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, ch
         target="picture_bg", 
         placement="bottom"
     ),
-    html.Div(id='img_container', children=[ #Airflow Image and text.
-                                        html.Img(id = 'picture_bg', src=image_paths[1],
-                                                 style={"zIndex": "3", 'top': '0', 'width': '100%', 'height': '100px', 'object-fit': 'cover'}),
-                                        html.Div(id='text_overlay',
-                                                children=[
-                                                    html.P("CCMC Ionospheric and Thermospheric Score Board",id='text_box', 
-                                                           style={"zIndex": "4",'position': 'absolute', 'top': '10px', 'left': '10px', 
-                                                                  'color': 'white', 'font-size': '50px', 'overflowX': 'hidden', 'white-space': 'nowrap'})])
-                                            ],style={"zIndex": "3", 'padding': '0', 'margin': '0', 'width': '100%', 'height': '100%', 
-                                                  'position': 'relative', 'margin-left': '20%','overflowX': 'hidden', 'width':'80%'}),
-
+    html.Div(
+        id='img_container', 
+        children=[ #Airflow Image and text.
+            html.Img(
+                id = 'picture_bg', 
+                src=image_paths[1],
+                style={"zIndex": "3", 'top': '0', 'width': '100%', 'height': '100px', 'object-fit': 'cover'}
+            ),
+            html.Div(
+                id='text_overlay',
+                children=[
+                    html.P(
+                        "CCMC Ionospheric and Thermospheric Score Board", 
+                        id='text_box', 
+                        style={
+                            "zIndex": "4",
+                            'position': 'absolute', 
+                            'top': '10px', 
+                            'left': '10px', 
+                            'color': 'white', 
+                            'font-size': '50px', 
+                            'overflowX': 'hidden', 
+                            'white-space': 'nowrap'
+                        }
+                    )
+                ]
+            )
+        ],
+        style={
+            "zIndex": "3", 
+            'padding': '0', 
+            'margin': '0', 
+            'width': '100%', 
+            'height': '100%', 
+            'position': 'relative', 
+            'margin-left': '20%',
+            'overflowX': 'hidden', 
+            'width':'80%'
+        }
+    ),
     # Format the window on the left of the webpage to include all the dropdown menus.
     html.Div([
                 html.Div(children=[html.B(children='Project')], style=dstyles[2]),
-                dcc.Dropdown(id='project', options=[
-                    {'label': 'Ionosphere Model Validation', 'value': 'IMV'},
-                    {'label': 'Ray Tracing', 'value': 'RT', 'disabled': True},
-                    {'label': 'GPS Positioning', 'value': 'GPS', 'disabled': True},], value = 'IMV'),
+                dcc.Dropdown(
+                    id='project',
+                    options=[
+                        {'label': 'Ionosphere Model Validation', 'value': 'IMV'},
+                        {'label': 'Thermosphere Neutral Density Assessment', 'value': "TNDA"},
+                        {'label': 'Ray Tracing', 'value': 'RT', 'disabled': True},
+                        {'label': 'GPS Positioning', 'value': 'GPS', 'disabled': True}
+                    ], 
+                    value = 'IMV'
+                ),
                 html.Div(children=[html.B(children='Storm ID')], style=dstyles[2]),
                 dcc.Dropdown(id='year', options=[
                     {'label': '2013-03-TP-01', 'value': '201303'},
@@ -227,7 +264,7 @@ app.layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, ch
     ]),
             html.Footer(
             children=[html.A("Accessibility", href='https://www.nasa.gov/accessibility', target="_blank"), html.Span(children =" | ")          
-,html.A("Privacy Policy", href='https://www.nasa.gov/privacy/', target="_blank"), html.Span(children =" | Curators: Paul DiMarzio and Dr. Min-Yang Chou | NASA Official: Maria Kuznetsova")],
+,html.A("Privacy Policy", href='https://www.nasa.gov/privacy/', target="_blank"), html.Span(children =" | Curators: Paul DiMarzio, Joseph Sypal, and Dr. Min-Yang Chou | NASA Official: Maria Kuznetsova")],
             style={
                 'margin-left' : '20%',
                 "textAlign": "center",
@@ -237,6 +274,21 @@ app.layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, ch
                 "bottom": 0,
                 "width": "80%"})])
 
+app.layout = html.Div(
+    id="main-content",
+    children=ionosphere_layout
+)
+
+# create a callback to select which project to display
+@app.callback(
+        Output("main-content", "children"),
+        Input("project", "value")
+)
+def select_project(project):
+    if (project == "TNDA"):
+        return tp.thermosphere_layout
+    elif (project == "IMV"):
+        return ionosphere_layout
 
 # Create one callback to handle all graphs, with the input from all the sidebar buttons.
 @app.callback(
@@ -271,8 +323,7 @@ app.layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, ch
          State('child5', 'children'),
          State('child6', 'children'),
          State('child7', 'children'),
-         State('child8', 'children')
-         ]
+         State('child8', 'children')]
 )
 def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4, child5, child6, child7, child8):
 
@@ -418,6 +469,115 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
             plot_options = ['DEF_F1', 'DK_F','DEF_F2', 'MS_F', 'SN_F1', 'SN_F2', 'RCC','SC_F']
             chl = plotSelection.plot_selection_format(plot, plot_options, graphs)
 
-            return chl[0], chl[1], chl[2], chl[3], None, None, chl[6], chl[7],  multi, model_list[2], options_list[2], obs_op, yearid, False, False, plot_value, "$$y = x^2$$" #False, plot_default[0] Final False deals with plot, and is no longer necessary
+            return chl[0], chl[1], chl[2], chl[3], None, None, chl[6], chl[7],  multi, model_list[2], options_list[2], obs_op, yearid, False, False, plot_value, "$$y = x^2$$", #False, plot_default[0] Final False deals with plot, and is no longer necessary
+            #    child6 = dcc.Graph(style=dstyles[3], figure=comparisonPlot.model_comparison_plot(chosen_year['TEC_all'][0], chosen_year['TEC_all'], TITLES[0], cm, dst_scatter_map['z_' + year], year))
+
+            #return child1, child_multi, child3, child4, child5, child6, None, None, multi, options_list[2], options_list[1], obs_op, yearid, False, False, True
+        
+# The following callbacks are all used to update elements of the thermosphere page
+# For the sake of keeping all the thermosphere code together, I implemented the callbacks in thermosphere_page.py and 
+#   simply called those functions in their respective callbacks in this file
+@app.callback(
+    Output("thermosphere-main-content", "children"),
+    [Input("tabs", "value"),
+     Input("parameter_selection", "value")]
+)
+def update_thermosphere_content(tab, parameter):
+    return tp.update_content(tab, parameter)
+
+@app.callback(
+    [Output("skills-by-event-plot", "figure"),
+     Output("skills-by-phase-table", "data"),
+     Output("skills-by-phase-plots", "children"),
+     Output("main-plot-stats", "children"),
+     Output("tpid-list", "children"),
+     Output("basic-storm-data", "children")],
+    [Input("parameter_selection", "value"),
+     Input("category_selections", "value"),
+     Input("ap_max_slider", "value"),
+     Input("f107_max_slider", "value"),
+     Input("satellites", "value")]
+)
+def display_thermosphere_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites):
+    return tp.display_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites)
+
+@app.callback(
+    [Output("tpid-menu", "style")],
+    #  Output("tpid-list", "children"),
+    #  Output("basic-storm-data", "children")],
+    [Input("tpid-menu-button-1", "n_clicks"),
+     Input("tpid-menu-button-2", "n_clicks")],
+    prevent_initial_call=True
+)
+def open_thermosphere_tpid_menu(n_clicks_1, n_clicks_2):
+    # tpid_list, basic_storm_data = tp.open_tpid_menu()
+    return {"display": "block"}, # tpid_list, basic_storm_data
+
+@app.callback(
+    Output("tpid-menu", "style", allow_duplicate=True),
+    Input("tpid-x-button", "n_clicks"),
+    prevent_initial_call=True
+)
+def close_thermosphere_tpid_menu(n_clicks):
+    return {"display": "none"}
+
+@app.callback(
+    Output("fig-1-collapse", "is_open"),
+    Input("fig-1-btn", "n_clicks"),
+    State("fig-1-collapse", "is_open"),
+)
+def toggle_fig1_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
+
+@app.callback(
+    Output("fig-2-collapse", "is_open"),
+    Input("fig-2-btn", "n_clicks"),
+    State("fig-2-collapse", "is_open")
+)
+def toggle_fig2_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
+
+@app.callback(
+    Output("phase-table-collapse", "is_open"),
+    Input("phase-table-btn", "n_clicks"),
+    State("phase-table-collapse", "is_open")
+)
+def toggle_phase_table_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
+
+
+@app.callback(
+    Output("comp-collapse", "is_open"),
+    Input("comp-btn", "n_clicks"),
+    State("comp-collapse", "is_open")
+)
+def toggle_comp_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
+
+@app.callback(
+    [Output("satellite-description-popup", "style"),
+     Output("satellite-description-data", "children")],
+    [Input("CHAMP-opts", "n_clicks")],
+    prevent_initial_call=True
+)
+def open_satellite_description_popup(CHAMP_clicks):
+    return {"display": "block"}, "I'm a message!!!!!! YAAAAAAAY!!!!!"
+    
+@app.callback(
+    Output("satellite-description-popup", "style", allow_duplicate=True),
+    Input("satellite-desc-x-button", "n_clicks"),
+    prevent_initial_call=True
+)
+def close_satellite_description_popup(n_clicks):
+    return {"display": "none"}
+    
 if __name__ == '__main__':
     app.run_server(debug=True)
