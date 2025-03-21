@@ -93,8 +93,8 @@ description_page = html.Div(
                                     html.Li([
                                         html.B("Limited Scope: "),
                                         """
-                                        Validation studies often invloved only one or two events and a subset of models. this approach may not 
-                                        be robust or comprehansive.
+                                        Validation studies often involved only one or two events and a subset of models. This approach may not 
+                                        be robust or comprehensive.
                                         """
                                     ], style={"margin-bottom": "10px"}),
                                     html.Li([
@@ -117,7 +117,7 @@ description_page = html.Div(
                         html.P(
                             """
                             To addres these challenges, an assessment of thermosphere models under storm conditions was initiated within the COSPR 
-                            ISWAT framework, leveraging the international collborative network. This allows the community to systematically track
+                            ISWAT framework, leveraging the international collaborative network. This allows the community to systematically track
                             the progress of thermosphere models over time.
                             """
                         )
@@ -212,7 +212,7 @@ description_page = html.Div(
                             dbc.Collapse(
                                 html.Div(
                                     [html.Img(className="description-fig", src="assets/Thermosphere_fig_2.png", alt="Figure 2."),
-                                    html.P(html.I("""Figure 2. The four phases of the assessment interavl for single-peak (top) and multiple-peak (bottom) storms, with t0
+                                    html.P(html.I("""Figure 2. The four phases of the assessment interval for single-peak (top) and multiple-peak (bottom) storms, with t0
                           centered on the time of the first peak in ap with a minimum of 80. The X-axis represents the day relative to t0.
                           Adapted from Bruinsma and Laurens (2024)."""))],
                                     className="img-container"
