@@ -186,7 +186,7 @@ thermosphere_layout = html.Div(
                     id='text_overlay',
                     children=[
                         html.P(
-                            "Thermosphere Neutral Density Assessment", 
+                            "CCMC Ionospheric and Thermospheric Score Board", 
                             id='text_box', 
                             style={
                                 "zIndex": "4",
@@ -194,7 +194,7 @@ thermosphere_layout = html.Div(
                                 'top': '10px', 
                                 'left': '10px', 
                                 'color': 'white', 
-                                'font-size': '54px', 
+                                'font-size': '50px', 
                                 'overflowX': 'hidden', 
                                 'white-space': 'nowrap'
                             }
@@ -499,7 +499,7 @@ def update_content(tab, parameter):
                             } 
                         ),
                         dcc.Graph(
-                            id="skills-by-event-plot",
+                            id="skills-by-event-plot"
                         ),
                         html.Div(id="main-plot-stats", className="stats")
                     ]),
