@@ -3,11 +3,11 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 # As each row of graphs is added, the colorbar format must be redone.
-format2 = [[[.58], 250, 1.5, 1.35, 80, .22], [[0.849, 0.237], 450,1.2, .53, 80, .22], [[0.91, 0.53, 0.146], 600,1.15, .325, 80, .15], [[0.936, 0.660, 0.384, 0.11],800, 1.1, .240, 80, .1], [[0.945, 0.734, 0.520, 0.30, .084], 1000, 1.05, 0.186, 20, .07], [[0.955, 0.78, 0.6, 0.42, .24, .066], 1250, 1.05, .14, 20, .07], [[0.97, 0.818, 0.665, 0.51, .358, .205, .055], 1500, 1.05, .11, 20, .05], [1000]]
+format2 = [[[.58], 250, 1.5, 1.35, 80, .22], [[0.849, 0.237], 600,1.2, .53, 80, .22], [[0.91, 0.53, 0.146], 600,1.15, .325, 80, .15], [[0.936, 0.660, 0.384, 0.11],800, 1.1, .240, 80, .1], [[0.945, 0.734, 0.520, 0.30, .084], 1000, 1.05, 0.186, 20, .07], [[0.955, 0.78, 0.6, 0.42, .24, .066], 1250, 1.05, .14, 20, .07], [[0.97, 0.818, 0.665, 0.51, .358, .205, .055], 1500, 1.05, .11, 20, .05], [1000]]
 def model_comparison_plot(TEC1, TEC2, TITLES, comp, z, year):
 
     """ Function that takes in the TEC data, desired models, and year, and returns a single plot of ideal model vs selected models."""
-    # Remove comparison plot if present.
+    # If present, remove the first selection, as this is the plot against which other plots are being compared.
     if 0 in comp:
         comp.remove(0)
     if comp == []:

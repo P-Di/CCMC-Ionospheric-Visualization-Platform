@@ -8,7 +8,7 @@ def tec_rcc_plot(CC, RP_par, MP_par, year, TITLES, format):
     """
     The ratios and correlation coefficient of total electron content change (TC).
     """
-
+    math_formula = r"$y = x^2$"
     range1 = format[0]
     range2 = format[1]
     observation = format[2]
@@ -22,7 +22,7 @@ def tec_rcc_plot(CC, RP_par, MP_par, year, TITLES, format):
     width = 0.25  # The width of the bars
     fig = make_subplots(1, 1, shared_xaxes=True, specs=[[{"secondary_y": True}]], subplot_titles=(''), horizontal_spacing=0.02, vertical_spacing=.02)
     fig.add_trace(
-        go.Scatter(x = x1, y = M_ratio_diff8020, name="o-", line=dict(color="steelblue")),
+        go.Scatter(x = x1, y = M_ratio_diff8020, hovertemplate=f'{math_formula}<extra></extra>', name="o-", line=dict(color="steelblue")),
         row=1, col=1, secondary_y=False)
     fig.add_trace(
         go.Scatter(x = x1, y = R_ratio_diff8020, name="o-", line=dict(color="orange")),
@@ -59,14 +59,14 @@ def tec_rcc_plot(CC, RP_par, MP_par, year, TITLES, format):
     # Create an interactive button to enable switching between graphs types.
     buttons=list([
         dict(args=[{'visible': [True, True, True, True, False, False, False, False, False, False]}, 
-                   {'yaxis.range':[-2.5, 3],'yaxis2.range':range1, 'yaxis.title.text':observation[0], 'yaxis2.title.text':observation[3]}], label="RMSE", method="update"),
+                   {'yaxis.range':[-2.5, 3],'yaxis2.range':range1, 'yaxis.title.text':observation[0], 'yaxis2.title.text':observation[3]}], label="Ratio", method="update"),
         dict(args=[{'visible': [False, False, False, False, True, True, True, True, False, False]}, 
-                   {'yaxis.range':[-2.5, 3],'yaxis2.range':range2, 'yaxis.title.text':observation[1], 'yaxis2.title.text':observation[2]}], label="P\u03C3/diff", method="update"),
+                   {'yaxis.range':[-2.5, 3],'yaxis2.range':range2, 'yaxis.title.text':observation[1], 'yaxis2.title.text':observation[2]}], label="Yield", method="update"),
         dict(args=[{'visible': [False, False, False, False, False, False, False, False, True, True]}, 
                    {'yaxis.range':[0, 1.2],'yaxis2.range':[0, 0], 'yaxis.title.text':'Correlation Coefficient (R)', 'yaxis2.title.text':''}], label="Corr. Coeff.", method="update")
     ])
     # Update the layout, removing the legend and adding a dropdown menu to the top right corner.
-    fig.update_layout(showlegend=False, title = year+' Storm ' + observation[4] + ' Observation' , title_x=0.5,
+    fig.update_layout(showlegend=False, title = year+ ' ' + observation[4] + ' change of ratio (obs and model)' , title_x=0.5,
         updatemenus=[
             dict(
                 buttons=buttons,

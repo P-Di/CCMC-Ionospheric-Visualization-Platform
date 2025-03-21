@@ -8,6 +8,7 @@ def ctec_plot(TEC_all, flag, year, multi, xy_range, TITLES, obs_type, c_max_min)
         unit="TECu"
         if flag == 0:
             obs_type = ''
+    elif obs_type[0].lower() == 'h': unit = "km"
     else: unit = "MHz"
     
     fig = make_subplots(1, 1, subplot_titles=(''))

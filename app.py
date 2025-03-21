@@ -1,5 +1,5 @@
 #6/10/2024 - Revisions: Deleted imports, check data.py comments to see original.
- 
+
 import numpy as np
 # Import the dash library and modules 
 import dash
@@ -13,20 +13,27 @@ import plots.dstKpPlot as dstKpPlot
 import plots.rcpmPlot as rcpmPlot
 import plots.globeDistrPlot as globeDistrPlot
 import plots.heatSssmPlot as heatSssmPlot
+import plots.skip as skip
 import plots.sssmPlot as sssmPlot
+
 import plots.tecRccPlot as tecRccPlot
 import multiFunc
 import plotSelection
 import plots.comparisonPlot as comparisonPlot
 
 import thermosphere_page as tp
+
 from thermosphere_helpers import popups
+import os
 
 #Import data.
+
 csmc2_foF2 = np.load('data/foF2_202111_storm.npz')
 csmc2_hmF2 = np.load('data/hmF2_202111_storm.npz')
 dst_scatter_map = np.load('data/dst_scatter_map.npz', allow_pickle=True)
 image_paths = ['assets/CCMC.png', 'assets/airflow1.jpg']
+
+plot_default=[['DK_F', 'DEF_F2', 'MS_F','SN_F1', 'SN_F2', 'SC_F'], ['DEF_F1', 'DEF_F2'], 1]
 
 obs_options=[[
                     {'label': 'Madrigal TEC', 'value': 'TEC'},
@@ -66,28 +73,55 @@ TITLES=[['Madrigal TEC ','GloTEC ','JPL GIM ','SAMI3 ','SAMI3-RCM ','SAMI3-TIEGC
 common_options =[{'label': 'Dst_kp', 'value' : 'DK_F'},
                 {'label': 'Ratios/CC', 'value' : 'RCC'},
                 {'label': 'Metric_Score', 'value' : 'MS_F'},
-                {'label': 'First sum_nSS', 'value' : 'SN_F1'},
-                {'label': 'Second sum_nSS', 'value' : 'SN_F2'},
+                {'label': 'Normalized SS', 'value' : 'SN_F1'},
+                {'label': 'Sum_nSS', 'value' : 'SN_F2'},
                 {'label': 'Model Comparison', 'value' : 'SC_F'}]
 
+options_list = [[
+                {'label': 'CSM2 Models', 'value' : 'DEF_F2'},
+                {'label': 'F7/C2 Distribution', 'value' : 'DEF_F1'},
+                {'label': 'Dst_kp', 'value' : 'DK_F'},
+                {'label': 'TEC', 'value' : 'DEF_F2'},
+                {'label': 'Normalized SS', 'value' : 'SN_F1'},
+                {'label': 'Sum_nSS', 'value' : 'SN_F2'}],
+                [
+                {'label': 'OSSE Change', 'value' : 'DEF_F2'},
+                {'label': 'Model Comparison', 'value' : 'SC_F'},
+                {'label': 'Metric_Score', 'value' : 'MS_F'},
+                {'label': 'Dst_kp', 'value' : 'DK_F'},
+                {'label': 'Ratios/CC', 'value' : 'RCC'}],
+                [
+                {'label': 'Dst_kp', 'value' : 'DK_F'},
+                {'label': 'TEC', 'value' : 'DEF_F2'},
+                {'label': 'Normalized SS', 'value' : 'SN_F1'},
+                {'label': 'Sum_nSS', 'value' : 'SN_F2'}],
+                [
+                {'label': 'TEC Change', 'value' : 'DEF_F1'},
+                {'label': 'Model Comparison', 'value' : 'SC_F'},
+                {'label': 'Metric_Score', 'value' : 'MS_F'},
+                {'label': 'Dst_kp', 'value' : 'DK_F'},
+                {'label': 'Ratios/CC', 'value' : 'RCC'}]]
+model_list = [[],[]]
+"""
 options_list = [[{'label': 'F7/C2 Distribution', 'value' : 'DEF_F1'},
                 {'label': 'CSM2 Models', 'value' : 'DEF_F2'}]+common_options,
                 [
                 {'label': 'TEC Change', 'value' : 'DEF_F1'},
-                {'label': 'TEC', 'value' : 'DEF_F2'}]+common_options]
+                {'label': 'TEC', 'value' : 'DEF_F2'}]+common_options]"""
 
 for i in TITLES:
     sub_op_list = [{'label': 'Show All', 'value' : '15'},]
     for j, k in enumerate(i):
         options_element = {'label': k, 'value': str(j)}
         sub_op_list.append(options_element)
-    options_list.append(sub_op_list)
+    model_list.append(sub_op_list)
         
 
 # Begin Dash App
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+mathjax = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML'
 app.config.suppress_callback_exceptions = True
-
+app.scripts.append_script({ 'external_url' : mathjax })
 #Define the layout: Set the background to a light gray, delete all margines.
 ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, children=[  
     html.Div( #Create a background for the CCMC logo image.
@@ -118,7 +152,7 @@ ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '
                 id='text_overlay',
                 children=[
                     html.P(
-                        "CCMC Ionospheric Validation Campaign", 
+                        "CCMC Ionospheric and Thermospheric Score Board", 
                         id='text_box', 
                         style={
                             "zIndex": "4",
@@ -126,7 +160,7 @@ ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '
                             'top': '10px', 
                             'left': '10px', 
                             'color': 'white', 
-                            'font-size': '54px', 
+                            'font-size': '50px', 
                             'overflowX': 'hidden', 
                             'white-space': 'nowrap'
                         }
@@ -175,11 +209,11 @@ ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '
                     options=options_list[2], multi=True,  value = '0'),
                 html.Div(children=[html.B(children='Task')], style=dstyles[2]),
                 dcc.Dropdown(id='task', options=[
-                    {'label': 'Model-data comparison', 'value': 'MC'},
-                    {'label': 'Storm Capability Evaluation', 'value': 'SCE'}], value = 'MC'),
+                    {'label': 'Model-Data Comparison', 'value': 'MC'},
+                    {'label': 'Impact Based Validation', 'value': 'SCE'}], value = 'MC'),
                 html.Div(children=[html.B(children='Plot')], style=dstyles[2]),
                 dcc.Dropdown(id='plot',
-                    options=options_list[1], multi=True, value = ['DEF_F1', 'DEF_F2']),
+                    options=options_list[1], multi=True, value = plot_default[0]),
             ], style={"zIndex": "2", 'width': '20%', 'background-color': '#f4f6f7', 
                       'padding': '20px', 'height': '100%', 'position': 'fixed',
                       'margin-top': '0px','box-shadow': '5px 5px 5px #ededed '
@@ -193,7 +227,7 @@ ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '
                 dbc.Col(html.Div(style={'height': '15px'}), width=12)]),
             dbc.Row([
                 dbc.Col([
-                    html.Div(id = 'child1', style=dstyles[8], children =[])], width=6),
+                    html.Div(title = "skip", id = 'child1', style=dstyles[8], children =[])], width=6),
                 dbc.Col([
                     html.Div(id = 'child2', style=dstyles[8], children =[])], width=6)
                     ]),
@@ -201,7 +235,12 @@ ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '
                 dbc.Col(html.Div(style={'height': '15px'}), width=12)]),
             dbc.Row([
                 dbc.Col([
-                    html.Div(id = 'child3', style=dstyles[8], children =[])], width=6),
+                    html.Div(id = 'child3', style=dstyles[8], children =[]), 
+                    dbc.Tooltip( #Airflow Image Credits.
+                        dcc.Markdown(id = "ch3m" , children='$x=\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$', mathjax=True),
+                        target="child3", 
+        placement="bottom"
+    ),], width=6),
                 dbc.Col([
                     html.Div(id = 'child4', style=dstyles[8], children =[])], width=6)
                         ]),
@@ -235,8 +274,7 @@ ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '
                 "backgroundColor": "#f1f1f1",
                 "position": "relative", 
                 "bottom": 0,
-                "width": "80%",})
-])
+                "width": "80%"})])
 
 app.layout = html.Div(
     id="main-content",
@@ -253,7 +291,6 @@ def select_project(project):
         return tp.thermosphere_layout
     elif (project == "IMV"):
         return ionosphere_layout
-
 
 # Create one callback to handle all graphs, with the input from all the sidebar buttons.
 @app.callback(
@@ -272,7 +309,10 @@ def select_project(project):
          Output('year', 'value'),
          Output('year', 'disabled'),
          Output('task', 'disabled'),
-         Output('plot', 'disabled')],
+         #Output('plot', 'disabled'),
+         Output('plot', 'value'),
+         Output('ch3m', 'children'),
+         ],
         [Input('multi', 'value'),
          Input('year', 'value'),
          Input('task', 'value'),
@@ -299,7 +339,7 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
 
     # These are conditionals to set up the TEC plot children. They are specially set up to  
     #   contain multiple different graphs since multiple TEC plots can be selected at once.
-    child_multi, child_tec, comp, multi, cm = multiFunc.tec_formatting(multi, obs, task, [chosen_year, TEC_foF2, TEC_hmF2], year, TITLES, dstyles)
+    child_multi, child_tec, comp, multi, cm, child_osse = multiFunc.tec_formatting(multi, obs, task, [chosen_year, TEC_foF2, TEC_hmF2], year, TITLES, dstyles)
 
     # If no values have been selected for plot, change it to an empty string.
     if plot == None: plot = ['']
@@ -310,16 +350,23 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
     plot_options = ['DEF_F1','DEF_F2', 'DK_F', 'MS_F', 'SN_F1', 'SN_F2', 'RCC', 'SC_F']
     if obs == 'FC2':
         # A list of all possible selected graphs.
+        if task == "SCE":
+            options_list_final = options_list[1]
+            second_graph = child_osse
+        else:
+            options_list_final = options_list[0]
+            second_graph = child_multi
+        plot_value = plot
         graphs = [ 
-            child1,
-            child_multi,
-            dcc.Graph(style=dstyles[3], figure=fig1),
-            dcc.Graph(style=dstyles[3], figure=rcpmPlot.rcpm_plot(csmc2_foF2['Alldata'], '2021', TITLES[1], [[0,10],[-5,5],[0,1.2],[-5,5], "foF2"])),
-            dcc.Graph(style=dstyles[7], figure=heatSssmPlot.heatmap_sssm_plot(csmc2_foF2['allphase'], "foF2", '2021', TITLES[1])),
-            dcc.Graph(style=dstyles[3], figure=sssmPlot.skill_scores_sum_plot(csmc2_foF2['All_nss'], '2021', TITLES[1], "foF2")),
-            dcc.Graph(style=dstyles[3], figure=tecRccPlot.tec_rcc_plot(csmc2_foF2['CC'], csmc2_foF2['RP_par'], csmc2_foF2['MP_par'], '2021', TITLES[1], [[0, 200], [0, 100], ["Ratio(95th-5th)", "Ratio_95th",  "RD_95th", "RD(95th)-RD(5th)", "foF2"]])),
-            child_multi #Placeholder for model_comparison_plot
-        ]
+                    child1,
+                    second_graph,
+                    dcc.Graph(style=dstyles[3], figure=fig1),
+                    dcc.Graph(style=dstyles[3], figure=rcpmPlot.rcpm_plot(csmc2_foF2['Alldata'], '2021', TITLES[1], [[0,10],[-5,5],[0,1.2],[-5,5], "foF2"])),
+                    dcc.Graph(style=dstyles[3], figure=skip.heatmap_sssm_plot(csmc2_foF2['allphase'], "foF2", '2021', TITLES[1])),
+                    dcc.Graph(style=dstyles[3], figure=sssmPlot.skill_scores_sum_plot(csmc2_foF2['All_nss'], '2021', TITLES[1], "foF2")),
+                    dcc.Graph(style=dstyles[3], figure=tecRccPlot.tec_rcc_plot(csmc2_foF2['CC'], csmc2_foF2['RP_par'], csmc2_foF2['MP_par'], '2021', TITLES[1], [[0, 200], [0, 100], ["Ratio(95th-5th)", "Ratio_95th",  "RD_95th", "RD(95th)-RD(5th)", "foF2"]])),
+                    child_multi #Placeholder for model_comparison_plot
+                ]
         # Generate the comparison graph based off all selected model excluding comparison model.
         cm = list(map(int, cm))
         if len(cm) == 1 and cm[0] == 0: graphs[-1] = error 
@@ -327,20 +374,26 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
             graphs[-1] = dcc.Graph(style=dstyles[3], figure=comparisonPlot.model_comparison_plot(TEC_foF2[0], TEC_foF2, TITLES[1], cm, dst_scatter_map['z_foF2'], year))
         # Add selected plots and take out others.
         chl = plotSelection.plot_selection_format(plot, plot_options, graphs)
-        return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6],chl[7], multi, options_list[3], options_list[0], obs_options[0], yearid, True, True, False
+        return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6],chl[7], multi, model_list[3], options_list_final, obs_options[0], yearid, True, False, plot_value, "$$y = x^2$$" #False, plot_default[1]
     
     elif obs == 'HC2':
-
+        if task == "SCE":
+            options_list_final = options_list[1]
+            second_graph = child_osse
+        else:
+            options_list_final = options_list[0]
+            second_graph = dcc.Graph(style=dstyles[3], figure=fig1)
+        plot_value = plot
         graphs = [
-            child1,
-            child_multi,
-            dcc.Graph(style=dstyles[3], figure=fig1),
-            dcc.Graph(style=dstyles[3], figure=rcpmPlot.rcpm_plot(csmc2_hmF2['Alldata'], '2021', TITLES[1], [[0,200],[-50,100],[0,1],[-100,100], "hmF2"])),
-            dcc.Graph(style=dstyles[7], figure=heatSssmPlot.heatmap_sssm_plot(csmc2_hmF2['allphase'], "hmF2", '2021', TITLES[1])),
-            dcc.Graph(style=dstyles[3], figure=sssmPlot.skill_scores_sum_plot(csmc2_hmF2['All_nss'], '2021', TITLES[1], "hmF2")),
-            dcc.Graph(style=dstyles[3], figure=tecRccPlot.tec_rcc_plot(csmc2_hmF2['CC'], csmc2_hmF2['RP_par'], csmc2_hmF2['MP_par'], '2021', TITLES[1], [[0, 150], [0, 100], ["Ratio(90th-10th)", "Ratio_90th", "TC_90th", "TC(90th)-TC(10th)", "hmF2"]])),
-            child_multi #Placeholder for model_comparison_plot
-        ]
+                    child1,
+                    second_graph,
+                    dcc.Graph(style=dstyles[3], figure=fig1),
+                    dcc.Graph(style=dstyles[3], figure=rcpmPlot.rcpm_plot(csmc2_hmF2['Alldata'], '2021', TITLES[1], [[0,200],[-50,100],[0,1],[-100,100], "hmF2"])),
+                    dcc.Graph(style=dstyles[3], figure=skip.heatmap_sssm_plot(csmc2_hmF2['allphase'], "hmF2", '2021', TITLES[1])),
+                    dcc.Graph(style=dstyles[3], figure=sssmPlot.skill_scores_sum_plot(csmc2_hmF2['All_nss'], '2021', TITLES[1], "hmF2")),
+                    dcc.Graph(style=dstyles[3], figure=tecRccPlot.tec_rcc_plot(csmc2_hmF2['CC'], csmc2_hmF2['RP_par'], csmc2_hmF2['MP_par'], '2021', TITLES[1], [[0, 150], [0, 100], ["Ratio(90th-10th)", "Ratio_90th", "TC_90th", "TC(90th)-TC(10th)", "hmF2"]])),
+                    child_multi #Placeholder for model_comparison_plot
+                ]
         # Generate the comparison graph based off all selected model excluding comparison model.
         cm = list(map(int, cm))
         if len(cm) == 1 and cm[0] == 0: graphs[-1] = error 
@@ -348,21 +401,29 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
             graphs[-1] = dcc.Graph(style=dstyles[3], figure=comparisonPlot.model_comparison_plot(TEC_hmF2[0], TEC_hmF2, TITLES[1], cm, dst_scatter_map['z_hmF2'], year))
         # Add selected plots and take out others.
         chl = plotSelection.plot_selection_format(plot, plot_options, graphs)
-        return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6],chl[7], multi, options_list[3], options_list[0], obs_options[0], yearid, True, True, False
+        return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6],chl[7], multi, model_list[3], options_list_final, obs_options[0], yearid, True, False, plot_value, "$$y = x^2$$" #False, plot_default[1]
     
 
     else:
         if task == 'SCE':
+            if plot_default[2] == 0:
+                plot_value = plot_default[1]
+                plot_default[2] = 1
+                plot = plot_value
+                print(plot_default[2])
+
+            else:
+                plot_value = plot
             graphs = [
-                child_multi,
-                dcc.Graph(style=dstyles[3], figure=fig1),
-                child_tec, 
-                dcc.Graph(style=dstyles[3], figure=rcpmPlot.rcpm_plot(chosen_year['Alldata'], year, TITLES[0], [[0, 30], [-15, 15], [0, 1.2], [-25, 25], "TEC"])),
-                dcc.Graph(style=dstyles[7], figure=heatSssmPlot.heatmap_sssm_plot(chosen_year['allphase'], "TEC", year, TITLES[0])),
-                dcc.Graph(style=dstyles[3], figure=sssmPlot.skill_scores_sum_plot(chosen_year['All_nss'], year, TITLES[0], "TEC")),
-                dcc.Graph(style=dstyles[3], figure=tecRccPlot.tec_rcc_plot(chosen_year['CC'], chosen_year['RP_par'], chosen_year['MP_par'], year, TITLES[0], [[0, 200], [0, 200], ["Ratio(80th-20th)", "Ratio(80th)", "TC_80th", "TC(80th)-TC(20th)", "TEC"]])),
-                child_tec #Placeholder for model_comparison_plot
-            ]
+                        child_multi,
+                        dcc.Graph(style=dstyles[3], figure=fig1),
+                        child_tec, 
+                        dcc.Graph(style=dstyles[3], figure=rcpmPlot.rcpm_plot(chosen_year['Alldata'], year, TITLES[0], [[0, 30], [-15, 15], [0, 1.2], [-25, 25], "TEC"])),
+                        dcc.Graph(style=dstyles[3], figure=skip.heatmap_sssm_plot(chosen_year['allphase'], "TEC", year, TITLES[0])),
+                        dcc.Graph(style=dstyles[3], figure=sssmPlot.skill_scores_sum_plot(chosen_year['All_nss'], year, TITLES[0], "TEC")),
+                        dcc.Graph(style=dstyles[3], figure=tecRccPlot.tec_rcc_plot(chosen_year['CC'], chosen_year['RP_par'], chosen_year['MP_par'], year, TITLES[0], [[0, 200], [0, 200], ["Ratio(80th-20th)", "Ratio(80th)", "TC_80th", "TC(80th)-TC(20th)", "TEC"]])),
+                        child_tec #Placeholder for model_comparison_plot
+                    ]
 
             cm = list(map(int, cm))
             if len(cm) == 1 and cm[0] == 0: graphs[-1] = error 
@@ -371,22 +432,49 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
             # Generate the comparison graph based off all selected model excluding comparison model.
             plot_options = ['DEF_F1', 'DK_F','DEF_F2', 'MS_F', 'SN_F1', 'SN_F2', 'RCC','SC_F']
             chl = plotSelection.plot_selection_format(plot, plot_options, graphs)
+
             # Add selected plots and take out others.
-            return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6], chl[7], multi, options_list[2], options_list[1], obs_options[0], yearid, False, False, False
+            return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6], chl[7], multi, model_list[2], options_list[3], obs_options[0], yearid, False, False, plot_value, "$$y = x^2$$" #False, plot_default[1]
 
         else:
+            if plot_default[2] == 1:
+                plot_value = plot_default[0]
+                plot = plot_value
+                plot_default[2] = 0
+                print(plot_default[2])
+
+            else:
+                plot_value = plot
+
+            graphs = [
+                        child_multi,
+                        dcc.Graph(style=dstyles[3], figure=fig1),
+                        child_tec, 
+                        dcc.Graph(style=dstyles[3], figure=rcpmPlot.rcpm_plot(chosen_year['Alldata'], year, TITLES[0], [[0, 30], [-15, 15], [0, 1.2], [-25, 25], "TEC"])),
+                        dcc.Graph(style=dstyles[3], figure=skip.heatmap_sssm_plot(chosen_year['allphase'], "TEC", year, TITLES[0])),
+                        dcc.Graph(style=dstyles[3], figure=sssmPlot.skill_scores_sum_plot(chosen_year['All_nss'], year, TITLES[0], "TEC")),
+                        dcc.Graph(style=dstyles[3], figure=tecRccPlot.tec_rcc_plot(chosen_year['CC'], chosen_year['RP_par'], chosen_year['MP_par'], year, TITLES[0], [[0, 200], [0, 200], ["Ratio(80th-20th)", "Ratio(80th)", "TC_80th", "TC(80th)-TC(20th)", "TEC"]])),
+                        child_tec #Placeholder for model_comparison_plot
+                    ]
+
+
 
             child1 = dcc.Graph(style=dstyles[3], figure=fig1)
             child3 = dcc.Graph(style=dstyles[3], figure=rcpmPlot.rcpm_plot(chosen_year['Alldata'], year, TITLES[0], [[0, 30], [-15, 15], [0, 1.2], [-25, 25], "TEC"]))
-            child4 = dcc.Graph(style=dstyles[7], figure=heatSssmPlot.heatmap_sssm_plot(chosen_year['allphase'], "TEC", year, TITLES[0]))
+            child4 = dcc.Graph(style=dstyles[3], figure=skip.heatmap_sssm_plot(chosen_year['allphase'], "TEC", year, TITLES[0]))
             child5 = dcc.Graph(style=dstyles[3], figure=sssmPlot.skill_scores_sum_plot(chosen_year['All_nss'], year, TITLES[0], "TEC"))
             # Generate the comparison graph based off all selected model excluding comparison model.
             cm = list(map(int, cm))
-            if len(cm) == 1 and cm[0] == 0: child6 = error 
+            if len(cm) == 1 and cm[0] == 0: graphs[-1] = error 
             else:     
-                child6 = dcc.Graph(style=dstyles[3], figure=comparisonPlot.model_comparison_plot(chosen_year['TEC_all'][0], chosen_year['TEC_all'], TITLES[0], cm, dst_scatter_map['z_' + year], year))
+                graphs[-1] = dcc.Graph(style=dstyles[3], figure=comparisonPlot.model_comparison_plot(chosen_year['TEC_all'][0], chosen_year['TEC_all'], TITLES[0], cm, dst_scatter_map['z_' + year], year))
+            plot_options = ['DEF_F1', 'DK_F','DEF_F2', 'MS_F', 'SN_F1', 'SN_F2', 'RCC','SC_F']
+            chl = plotSelection.plot_selection_format(plot, plot_options, graphs)
 
-            return child1, child_multi, child3, child4, child5, child6, None, None, multi, options_list[2], options_list[1], obs_op, yearid, False, False, True
+            return chl[0], chl[1], chl[2], chl[3], None, None, chl[6], chl[7],  multi, model_list[2], options_list[2], obs_op, yearid, False, False, plot_value, "$$y = x^2$$", #False, plot_default[0] Final False deals with plot, and is no longer necessary
+            #    child6 = dcc.Graph(style=dstyles[3], figure=comparisonPlot.model_comparison_plot(chosen_year['TEC_all'][0], chosen_year['TEC_all'], TITLES[0], cm, dst_scatter_map['z_' + year], year))
+
+            #return child1, child_multi, child3, child4, child5, child6, None, None, multi, options_list[2], options_list[1], obs_op, yearid, False, False, True
         
 # The following callbacks are all used to update elements of the thermosphere page
 # For the sake of keeping all the thermosphere code together, I implemented the callbacks in thermosphere_page.py and 
@@ -646,4 +734,4 @@ def close_description_popup(n_clicks):
     return {"display": "none"}, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     
 if __name__ == '__main__':
-    app.run(debug=True, port=3000)
+    app.run_server(debug=True)

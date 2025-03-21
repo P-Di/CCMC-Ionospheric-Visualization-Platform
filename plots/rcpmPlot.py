@@ -24,9 +24,9 @@ def rcpm_plot(Alldata, year, TITLES, format):
         t=80,  # top margin
         pad=1
     ))
-    fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='white', tickmode = 'array', showticklabels=True, ticktext =TITLES, ticks="outside", tickvals= x)
+    fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='white', tickmode = 'array', showticklabels=True, ticktext =TITLES[1:], ticks="outside", tickvals= x)
 
-    # Buttons is a list that updates what is displayed on the y-axis only. It changes
+    # Buttons is a list that updates what is displayed on the y-axis only.
     buttons=list([
     dict(args=[{'y':[np.round(p[0][:, 0], 2),np.round(p[0][:, 1], 2), np.round(p[0][:, 2], 2)]},{'yaxis.range':format[0],'yaxis2.range':format[0],'yaxis3.range':format[0], 'yaxis.title.text':'RMSE (TECu)', 'yaxis2.title.text':'RMSE (TECu)', 'yaxis3.title.text':'RMSE (TECu)'}], label="RMSE", method="update"),
     dict(args=[{'y':[np.round(p[1][:, 0], 2),np.round(p[1][:, 1], 2), np.round(p[1][:, 2], 2)]},{'yaxis.range':format[1], 'yaxis2.range':format[1],'yaxis3.range':format[1],  'yaxis.title.text':'P\u03C3,diff (TECu)', 'yaxis2.title.text':'P\u03C3,diff (TECu)', 'yaxis3.title.text':'P\u03C3,diff (TECu)'}], label="P\u03C3", method="update"),

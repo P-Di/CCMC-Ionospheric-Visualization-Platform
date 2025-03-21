@@ -1,3 +1,25 @@
 __pycache__/
 plots/__pycache__/
 .venv/
+ExEnv
+DEPdatafiles
+.ipynb_checkpoints
+__pycache__
+plots/__pycache__
+plots/testFunc6.py
+storm_202111
+globe.py
+Processed COSMIC2 Data
+comparePlotFin.py
+comparePlotRep.py
+test.py
+test3.py
+test4.py
+test5.py
+test6.py
+SAMI3-ICON202111_storm.npz
+test7.py
+oldComp.py
+one.py
+.gitignore
+plots/npzDataSources.py

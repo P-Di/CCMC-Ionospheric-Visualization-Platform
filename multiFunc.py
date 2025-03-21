@@ -4,11 +4,12 @@ from dash import dcc
 
 import plots.ctecPlot as ctecPlot
 import plots.tecContPlot as tecContPlot
+import plots.osseChangePlot as ossePlot
 
 def tec_formatting(multi, obs, task, data, year, TITLES, dstyles):
 
     #Initialize all lists.
-    sub_child, perm_tec, sub_child2, perm_tec2 = [], [], [], []
+    sub_child, perm_tec, osse1, sub_child2, perm_tec2, osse2 = [], [], [], [], [], []
     comp = int(multi[0])
 
     #Set default values.
@@ -16,37 +17,45 @@ def tec_formatting(multi, obs, task, data, year, TITLES, dstyles):
     else: default = 50
 
     # If '15' or "All Graphs" is selected first, change to all graphs.
-    if multi[-1] == '15': 
+    if multi[-1] == '15':
         multi = '15'
-        comp = 1 
+        comp = 1
     # If '15 or "All Graphs" is behind other selections, delete all graphs and keep selected graphs.
     elif multi[0] == '15' and len(multi) > 1: 
         del multi[0]
-        comp = int(multi[0])
+        comp = int(multi[0]) # Comp may be replaced by comp_multi. Double check and remove**
     comp_mult = multi # Copy and preserve multi value.
     # Depending on all selected value, create a list of graphs in two columns, then return list of two columns.
     if len(multi) == 1 and multi[0] != '15':
         if (multi[0] == '10' or multi[0] == '11') and year == '2021': format_tec = 10
+
         else: format_tec = default
 
-        if obs == 'FC2': 
+        if obs == 'FC2':
             fig=ctecPlot.ctec_plot(data[1], int(multi[0]), '2021', 0, [np.arange(0,73,1), np.arange(-45,46,1)], TITLES[1], "foF2", [14, 1])
 
-        elif obs == 'HC2': 
+        elif obs == 'HC2':
             fig=ctecPlot.ctec_plot(data[2], int(multi[0]), '2021', 0, [np.arange(0,73,1), np.arange(-45,46,1)], TITLES[1], "hmF2", [450, 150])
         
-        elif task == 'SCE': 
+        elif task == 'SCE' or task == 'MC': 
             fig=tecContPlot.tec_plot(data[0]['TEC_all'], year, int(multi[0]), 0, TITLES[0])
+
         else: 
             fig=ctecPlot.ctec_plot(data[0]['TEC_all'], int(multi[0]), year, 0, [np.arange(0,72,.5), np.arange(-40,40.5,.5)], TITLES[0], "TECu", [format_tec, 0])
             
         child_multi = html.Div(style=dstyles[4]|dstyles[3], children =dcc.Graph(style=dstyles[3], figure=fig))
         fig=ctecPlot.ctec_plot(data[0]['TEC_all'], int(multi[0]), year, 0, [np.arange(0,72,.5), np.arange(-40,40.5,.5)], TITLES[0], "TECu", [format_tec, 0])
         child_tec = html.Div(style=dstyles[4]|dstyles[3], children =dcc.Graph(style=dstyles[3], figure=fig))
+        fig=ossePlot.secPlot(int(multi[0]), 0)
+        child_osse = html.Div(style=dstyles[4]|dstyles[3], children =dcc.Graph(style=dstyles[3], figure=fig))
 
     else:
-        if multi == '15' and (obs == 'FC2' or obs == 'HC2'):tec = range(12)
-        elif multi == '15': tec = range(15)
+        if multi == '15' and (obs == 'FC2' or obs == 'HC2'):
+            tec = range(12)
+            comp_mult = range(1,12)
+        elif multi == '15': 
+            tec = range(15)
+            comp_mult = range(1,15)
         else:tec = multi
 
         for i in range((int(len(tec)/2))):
@@ -55,11 +64,12 @@ def tec_formatting(multi, obs, task, data, year, TITLES, dstyles):
 
             if obs == 'FC2': 
                 fig=ctecPlot.ctec_plot(data[1], int(tec[i]), '2021', 1, [np.arange(0,73,1), np.arange(-45,46,1)], TITLES[2], "foF2", [14, 1])
+                osse1.append(dcc.Graph(figure=ossePlot.secPlot(int(tec[i]), 1), style=dstyles[6]))
             
             elif obs == 'HC2': 
                 fig=ctecPlot.ctec_plot(data[2], int(tec[i]), '2021', 1, [np.arange(0,73,1), np.arange(-45,46,1)], TITLES[2], "hmF2", [450, 150])
             
-            elif task == 'SCE': 
+            elif task == 'SCE' or task == 'MC': 
                 fig=tecContPlot.tec_plot(data[0]['TEC_all' ], year, int(tec[i]), 1, TITLES[0])
             
             else: 
@@ -74,11 +84,12 @@ def tec_formatting(multi, obs, task, data, year, TITLES, dstyles):
 
             if obs == 'FC2': 
                 fig=ctecPlot.ctec_plot(data[1], int(tec[i]), '2021', 1, [np.arange(0,73,1), np.arange(-45,46,1)], TITLES[2], "foF2", [14, 1])
+                osse2.append(dcc.Graph(figure=ossePlot.secPlot(int(tec[i]), 1), style=dstyles[6]))
             
             elif obs == 'HC2': 
                 fig=ctecPlot.ctec_plot(data[2], int(tec[i]), '2021', 1, [np.arange(0,73,1), np.arange(-45,46,1)], TITLES[2], "hmF2", [450, 150])
             
-            elif task == 'SCE': 
+            elif task == 'SCE' or task == 'MC': 
                 fig=tecContPlot.tec_plot(data[0]['TEC_all'], year, int(tec[i]), 1, TITLES[0])
             
             else: 
@@ -91,5 +102,7 @@ def tec_formatting(multi, obs, task, data, year, TITLES, dstyles):
                 html.Div(style=dstyles[5], children =sub_child2)]
         child_tec = [html.Div(style=dstyles[5], children=perm_tec), 
                 html.Div(style=dstyles[5], children=perm_tec2)]
-        
-    return child_multi, child_tec, comp, multi, comp_mult
+        child_osse = [html.Div(style=dstyles[5], children=osse1), 
+                html.Div(style=dstyles[5], children=osse2)]
+     
+    return child_multi, child_tec, comp, multi, comp_mult, child_osse

@@ -3,12 +3,14 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import pandas as pd
 
-def heatmap_sssm_plot(allphase, tt, year, TITLES): #remove YY if working
+def heatmap_sssm_plot(allphase, tt, year, TITLES):
+    """ Normalized skill score data plotted using a heatmap"""
 
     skillscore = ['nSS_RMSE','nSS_P\u03C3,diff','nSS_R','nSS_ME']
     # plot Figure 4
     PHASE=['Quiet time','Main phase','Recovery phase']
     TITLES = TITLES[1:]
+    TITLES.reverse()
     fig = make_subplots(3, 1, specs=[[{}], [{}], [{}]],subplot_titles=(PHASE[0], PHASE[1], PHASE[2]), vertical_spacing=0.12, horizontal_spacing=0.02)
     flagcol=0
     for z,c in zip(allphase,range(3)):
@@ -34,8 +36,8 @@ def heatmap_sssm_plot(allphase, tt, year, TITLES): #remove YY if working
     fig.update_xaxes(tickmode = 'array', showticklabels=True, ticktext = df.columns, ticks="outside", tickvals= x, row=1, col=1)
     fig.update_xaxes(tickmode = 'array', showticklabels=True, ticktext = df.columns, ticks="outside", tickvals= x, row=2, col=1)
     fig.update_xaxes(tickmode = 'array', showticklabels=True, ticktext = df.columns, ticks="outside", tickvals= x, row=3, col=1)
-    fig.update_layout(barmode = "group", title = tt+' total normalized skill score for the '+year+' storm', title_x=0.53)
-    fig.update_yaxes(title='\u03A3nSS', title_standoff=0) #range=[0,5]
+    fig.update_layout(barmode = "group", title = tt+' normalized skill score for the '+year+' storm', title_x=0.53)
+    #fig.update_yaxes(title='\u03A3nSS', title_standoff=0) #range=[0,5]
     fig.update_yaxes(showticklabels=False, row = 2, col = 1)
     fig.update_yaxes(showticklabels=False, row = 3, col = 1)
     fig.update_yaxes(tickmode = 'array', showticklabels=True, ticktext = TITLES, ticks="outside", tickvals= x)
