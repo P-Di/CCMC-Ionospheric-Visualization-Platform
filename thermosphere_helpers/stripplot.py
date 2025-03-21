@@ -9,7 +9,7 @@ def create_main_stripplot(dataframe: DataFrame, dataframe_stats: DataFrame, para
 
     :param dataframe: A dataframe containing the data that will be plotted
     :param dataframe_stats: A dataframe containing the mean and standard deviation for each model
-    :param parameter: The parameter that will be plotted agains the model
+    :param parameter: The parameter that will be plotted against the model
 
     :return figure: The plotly figure containing the strip plot
     '''
@@ -25,9 +25,20 @@ def create_main_stripplot(dataframe: DataFrame, dataframe_stats: DataFrame, para
 
     return plot
 
-def create_phase_stripplots(dataframe: DataFrame, dataframe_stats: DataFrame, parameter: str):
+def create_phase_stripplots(dataframe: DataFrame, parameter: str) -> list:
+    """
+    Returns a list of dash html components, each containing the plot for a different model.
+
+    :param dataframe: A dataframe containing the data that will be plotted
+    :param dataframe_stats: A dataframe containing the mean and standard deviation for each model
+    :param parameter: The parameter that will be plotted against the model
+
+    :return plots: A list of dash html components containing the plots
+    """
     skills_by_phase_plots = []
     for model in dataframe["model"].unique():
+        df = dataframe[dataframe["model"] == model]
+        stats: DataFrame = df.groupby("phase", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2)
         # since the debias_mean_OC pre_storm value is set to 1 throughout, don't display it on the plots (it adds no info)
         if parameter == "debias_mean_OC":
             debias_df = dataframe[dataframe["phase"] != "pre_storm"]
@@ -39,8 +50,9 @@ def create_phase_stripplots(dataframe: DataFrame, dataframe_stats: DataFrame, pa
             if phase == "pre_storm" and parameter == "debias_mean_OC":
                 continue
 
-            mean = float(dataframe_stats[dataframe_stats["phase"] == phase]["mean"].iloc[0])
-            std = float(dataframe_stats[dataframe_stats["phase"] == phase]["std"].iloc[0])
+            mean = float(stats[stats["phase"] == phase]["mean"].iloc[0])
+            std = float(stats[stats["phase"] == phase]["std"].iloc[0])
+
             x_vals = [phase, phase, phase]
             y_vals = [mean - std, mean, mean + std]
             fig.add_trace(go.Scatter(x=x_vals, y=y_vals, marker={"color": "black", "size": 8}))

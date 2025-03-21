@@ -8,6 +8,7 @@ description_page = html.Div(
                 html.Div(html.H5("Table of Contents")),
                 html.Ul(
                     [
+                        html.Li(html.A("About", href="#about", className="TOC-link")),
                         html.Li(html.A("Introduction", href="#introduction", className="TOC-link")),
                         html.Li(html.A("Challenges", href="#challenges", className="TOC-link")),
                         html.Li(html.A("Campaign Objective", href="#objectives", className="TOC-link")),
@@ -21,6 +22,41 @@ description_page = html.Div(
         ),
         html.Div(
             [
+                html.Div(
+                    [
+                        html.H1("About"),
+                        html.Div([
+                            html.Span([
+                                "ISWAT Team ID: ",
+                                html.A("G2A-01", href="https://www.iswat-cospar.org/g2a-01", target="_blank")
+                            ]),
+                            html.Br(),
+                            "Team Leads:",
+                            html.Ul([
+                                html.Li([
+                                    "Sean Bruinsma (CNES, Toulouse, France), ", 
+                                    html.A("sean.bruinsma@cnes.fr", href="mailto:sean.bruinsma@cnes.fr", target="_blank")
+                                ]),
+                                html.Li([
+                                    "Jia Yue (NASA/GSFC, USA), ",
+                                    html.A("jia.yue@nasa.gov", href="mailto:jia.yue@nasa.gov", target="_blank")
+                                ]),
+                                html.Li([
+                                    "Jack Wang (NASA/GSFC, USA), ",
+                                    html.A("jack.c.wang@nasa.gov", href="mailto:jack.c.wang@nasa.gov", target="_blank")
+                                ])
+                            ]),
+                            html.Span([
+                                "Communications: See the ",
+                                html.A("ISWAT G2A-01 team page", href="https://www.iswat-cospar.org/g2a-01", target="_blank"),
+                                " for an up-to-date list of participants and latest news about the working team."
+                            ]),
+                            html.Br(),
+                            html.Br()
+                        ]),
+                    ],
+                    id="about"
+                ),
                 html.Div(
                     [
                         html.H1("Introduction"),

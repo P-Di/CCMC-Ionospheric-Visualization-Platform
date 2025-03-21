@@ -11,6 +11,7 @@ DATA SELECTION MENU
     width: 307px;
     height: 100%;
     z-index: 5;
+    overflow-y: auto;
 }
 
 #satellite-desc-x-button {
@@ -25,20 +26,29 @@ DATA SELECTION MENU
 }
 
 #satellite-labels {
-    position: relative;
-    bottom: 119px;
-    left: 15px;
+    position: absolute;
+    top: 250px;
+    left: 35px;
 }
 
-.satellite-label {
+#model-labels {
+    position: absolute;
+    top: 394px;
+    left: 35px;
+}
+
+.checklist-label {
     margin-left: 5px;
-    display: inline-flex;
+    border-radius: 5px;
+    padding-left: 5px;
+    display: flex;
     width: 248px;
     justify-content: space-between;
 }
 
-.satellite-label:hover {
+.checklist-label:hover {
     cursor: pointer;
+    background-color: lightgray;
 }
 
 .options-icon {
@@ -46,8 +56,12 @@ DATA SELECTION MENU
     display: none;
 }
 
-.satellite-label:hover .options-icon {
+.checklist-label:hover .options-icon {
     display: inline-block;
+}
+
+.data-source-metadata {
+    padding: 10px;
 }
 
 /*
@@ -99,7 +113,7 @@ THERMOSPHERE DESCRIPTION PAGE
     border-radius: 10px;
 
     position: relative;
-    bottom: 206px;
+    bottom: 232px;
 
     /* border: 2px solid black; */
 }
