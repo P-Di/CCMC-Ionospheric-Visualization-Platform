@@ -13,6 +13,7 @@ description_page = html.Div(
                         html.Li(html.A("Challenges", href="#challenges", className="TOC-link")),
                         html.Li(html.A("Campaign Objective", href="#objectives", className="TOC-link")),
                         html.Li(html.A("Methodology", href="#methodology", className="TOC-link")),
+                        html.Li(html.A("Raw Model Output", href="#raw-output-link", className="TOC-link")),
                         html.Li(html.A("References", href="#references", className="TOC-link"))
                     ],
                     style={"list-style-type": "none"}
@@ -355,6 +356,20 @@ description_page = html.Div(
                         ]),
                     ],
                     id="methodology"
+                ),
+                html.Div(
+                    [
+                        html.H1("Raw Model Output"),
+                        html.Span([
+                            "The raw model output for the models validated on the webpage is availiable at ",
+                            html.A(
+                                "https://github.com/j0a8c2k1/CCCM-Thermospheric-Validation", 
+                                href="https://github.com/j0a8c2k1/CCCM-Thermospheric-Validation", 
+                                target="_blank"
+                            )
+                        ])
+                    ],
+                    id="raw-output-link"
                 ),
                 html.Div(
                     [

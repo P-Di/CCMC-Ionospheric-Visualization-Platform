@@ -44,7 +44,7 @@ def generate_labels(label):
 # declare global variables that will be used throughout the program
 filtered_df = pd.DataFrame() # this variables is used to share data between callbacks
 ap_thresholds = [80, 132, 207, 236, 300]
-f107_thresholds = [60, 100, 150, 200, 250]
+f107_thresholds = [66, 100, 150, 200, 250]
 tpid_base_url = "https://kauai.ccmc.gsfc.nasa.gov/CMR/TimeInterval/viewTI?id="
 image_paths = ['assets/CCMC.png', 'assets/airflow1.jpg', "assets/options-icon.svg"]
 
@@ -52,7 +52,7 @@ satellites = ["CHAMP", "GOCE", "GRACE-A", "SWARM-A", "GRACE-FO"]
 satellite_opts = list(map(options_from_list, satellites))
 satellite_labels = list(map(generate_labels, satellites))
 
-models = ["MSISE00-01", "MSIS20-01", "JB2008-01", "DTM2020-01", "DTM2013-01", "TIEGCM-Weimer-01", "TIEGCM-Heelis-01", "CTIPe-01"]
+models = ["MSISE00-01", "MSIS20-01", "JB2008-01", "DTM2020-01", "DTM2013-01", "TIEGCM-Weimer-01", "TIEGCM-Heelis-01", "CTIPe-01", "GITM-01"]
 model_opts = list(map(options_from_list, models))
 model_labels = list(map(generate_labels, models))
 
@@ -385,7 +385,8 @@ def load_data() -> tuple[pd.DataFrame, pd.DataFrame]:
         "data/thermosphere_data/DTM2020-01_scores.json", 
         "data/thermosphere_data/JB2008-01_scores.json",
         "data/thermosphere_data/MSIS20-01_scores.json",
-        "data/thermosphere_data/MSISE00-01_scores.json"
+        "data/thermosphere_data/MSISE00-01_scores.json",
+        "data/thermosphere_data/GITM-01_scores.json"
     ]
 
     # convert the json data into a dataframe using the "format_data" function
