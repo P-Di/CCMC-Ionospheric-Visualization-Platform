@@ -1,5 +1,6 @@
 import dash_bootstrap_components as dbc
 from dash import html
+import dash_core_components as dcc
 
 description_page = html.Div(
     [
@@ -341,11 +342,25 @@ description_page = html.Div(
                                     html.Ul([
                                         html.Li([
                                             "Average Observed-to-Compute Density (O/C) (= mean scaling factor of the model)",
-                                            html.Ul(html.Li(html.Img(src="assets/Thermosphere_equation_1.png", alt="Mean_OC computation")))
+                                            # html.Ul(html.Li(html.Img(src="assets/Thermosphere_equation_1.png", alt="Mean_OC computation")))
+                                            dcc.Markdown(
+                                                '''
+                                                $Mean \\left( \\frac{O}{C} \\right) = exp \\left( \\frac{1}{N}\\sum_{n=1}^{N}
+                                                {ln \\frac{O_{n}}{C_{n}}} \\right)$
+                                                ''', 
+                                                mathjax=True
+                                            ),
                                         ]),
                                         html.Li([
                                             "Average standard deviation (Std. Dev.) of Observed-to-Compute Density (O/C)",
-                                            html.Ul(html.Li(html.Img(src="assets/Thermosphere_equation_2.png", alt="StdDev_OC computation")))
+                                            # html.Ul(html.Li(html.Img(src="assets/Thermosphere_equation_2.png", alt="StdDev_OC computation")))
+                                            dcc.Markdown(
+                                                '''
+                                                $Std. Dev. \\left( \\frac{O}{C} \\right) = \\sqrt{\\frac{1}{N} \\sum_{n=1}^{N}{ \\left( 
+                                                \\ln\\frac{O_{n}}{C_n} - \\ln Mean \\left( \\frac{O}{C} \\right) \\right)^{2} }}$
+                                                ''',
+                                                mathjax=True
+                                            )
                                         ])
                                     ]),
                                     html.P("where N is the total number of observations.")

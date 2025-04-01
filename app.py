@@ -101,7 +101,7 @@ options_list = [[
                 {'label': 'Metric_Score', 'value' : 'MS_F'},
                 {'label': 'Dst_kp', 'value' : 'DK_F'},
                 {'label': 'Ratios/CC', 'value' : 'RCC'}]]
-model_list = [[],[]]
+model_list = []
 """
 options_list = [[{'label': 'F7/C2 Distribution', 'value' : 'DEF_F1'},
                 {'label': 'CSM2 Models', 'value' : 'DEF_F2'}]+common_options,
@@ -206,7 +206,7 @@ ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '
                     {'label': 'hmF2_ionsonde', 'value': 'HI', 'disabled': True}], value = 'TEC'),
                 html.Div(children=[html.B(children='Model Type')], style=dstyles[2]),
                 dcc.Dropdown(id='multi',
-                    options=options_list[2], multi=True,  value = '0'),
+                    options=model_list[0], multi=True,  value = '0'),
                 html.Div(children=[html.B(children='Task')], style=dstyles[2]),
                 dcc.Dropdown(id='task', options=[
                     {'label': 'Model-Data Comparison', 'value': 'MC'},
@@ -374,7 +374,7 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
             graphs[-1] = dcc.Graph(style=dstyles[3], figure=comparisonPlot.model_comparison_plot(TEC_foF2[0], TEC_foF2, TITLES[1], cm, dst_scatter_map['z_foF2'], year))
         # Add selected plots and take out others.
         chl = plotSelection.plot_selection_format(plot, plot_options, graphs)
-        return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6],chl[7], multi, model_list[3], options_list_final, obs_options[0], yearid, True, False, plot_value, "$$y = x^2$$" #False, plot_default[1]
+        return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6],chl[7], multi, model_list[1], options_list_final, obs_options[0], yearid, True, False, plot_value, "$$y = x^2$$" #False, plot_default[1]
     
     elif obs == 'HC2':
         if task == "SCE":
@@ -401,7 +401,7 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
             graphs[-1] = dcc.Graph(style=dstyles[3], figure=comparisonPlot.model_comparison_plot(TEC_hmF2[0], TEC_hmF2, TITLES[1], cm, dst_scatter_map['z_hmF2'], year))
         # Add selected plots and take out others.
         chl = plotSelection.plot_selection_format(plot, plot_options, graphs)
-        return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6],chl[7], multi, model_list[3], options_list_final, obs_options[0], yearid, True, False, plot_value, "$$y = x^2$$" #False, plot_default[1]
+        return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6],chl[7], multi, model_list[1], options_list_final, obs_options[0], yearid, True, False, plot_value, "$$y = x^2$$" #False, plot_default[1]
     
 
     else:
@@ -434,7 +434,7 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
             chl = plotSelection.plot_selection_format(plot, plot_options, graphs)
 
             # Add selected plots and take out others.
-            return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6], chl[7], multi, model_list[2], options_list[3], obs_options[0], yearid, False, False, plot_value, "$$y = x^2$$" #False, plot_default[1]
+            return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6], chl[7], multi, model_list[0], options_list[3], obs_options[0], yearid, False, False, plot_value, "$$y = x^2$$" #False, plot_default[1]
 
         else:
             if plot_default[2] == 1:
@@ -471,7 +471,7 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
             plot_options = ['DEF_F1', 'DK_F','DEF_F2', 'MS_F', 'SN_F1', 'SN_F2', 'RCC','SC_F']
             chl = plotSelection.plot_selection_format(plot, plot_options, graphs)
 
-            return chl[0], chl[1], chl[2], chl[3], None, None, chl[6], chl[7],  multi, model_list[2], options_list[2], obs_op, yearid, False, False, plot_value, "$$y = x^2$$", #False, plot_default[0] Final False deals with plot, and is no longer necessary
+            return chl[0], chl[1], chl[2], chl[3], None, None, chl[6], chl[7],  multi, model_list[0], options_list[2], obs_op, yearid, False, False, plot_value, "$$y = x^2$$", #False, plot_default[0] Final False deals with plot, and is no longer necessary
             #    child6 = dcc.Graph(style=dstyles[3], figure=comparisonPlot.model_comparison_plot(chosen_year['TEC_all'][0], chosen_year['TEC_all'], TITLES[0], cm, dst_scatter_map['z_' + year], year))
 
             #return child1, child_multi, child3, child4, child5, child6, None, None, multi, options_list[2], options_list[1], obs_op, yearid, False, False, True
