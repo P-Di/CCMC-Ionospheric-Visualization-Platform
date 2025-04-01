@@ -1,3 +1,7 @@
+#project {
+    padding-bottom: 5px;
+}
+
 /*
 DATA SELECTION MENU
 */
@@ -27,14 +31,14 @@ DATA SELECTION MENU
 
 #satellite-labels {
     position: absolute;
-    top: 250px;
-    left: 35px;
+    top: 169px;
+    left: 10px;
 }
 
 #model-labels {
     position: absolute;
-    top: 394px;
-    left: 35px;
+    top: 312px;
+    left: 10px;
 }
 
 .checklist-label {
