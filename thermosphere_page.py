@@ -7,12 +7,16 @@ This module implements the Thermosphere Neutral Density Assessment dashboard. It
 To navigate to a given section search for the section name exactly as it is displayed above
 """
 
-import json
+# Modules to load and store model/solution scores
+import json, os
 import pandas as pd
 from pandas.api.typing import DataFrameGroupBy
+
+# Modules to create the dash layout
 from dash import html, dcc, dash_table 
 import dash_bootstrap_components as dbc
 
+# Modules to create plots and specific components
 import thermosphere_helpers.stripplot as sp
 import thermosphere_helpers.description_page as dp
 
@@ -21,6 +25,23 @@ import thermosphere_helpers.description_page as dp
 # SECTION 1: DECLARATIONS
 ###########################
 
+def create_x_button(id: str) -> html.Div:
+    '''
+    Function to create an x button usually used to close a popup
+
+    :param id: The id to be assigned to the x button
+    :return x_button: Dash markup describing the button
+    '''
+
+    return html.Div(
+        id=id,
+        className="x-button",
+        children=[
+            html.Div(className="x-component", id="x-arm1"),
+            html.Div(className="x-component", id="x-arm2")
+        ]
+    )
+
 def options_from_list(label):
     return {
         "label": html.P(label, style={"display": "none"}),
@@ -28,25 +49,16 @@ def options_from_list(label):
     }
 
 def generate_labels(label):
-    return html.Span(
-        [
-            label,
-            # html.Img(src="assets/options-icon.svg", id= f"{label}-opts", className="options-icon", n_clicks=0),
-            # dbc.Tooltip(
-            #     f"{label} description",
-            #     target=f"{label}-label",
-            #     placement="right"
-            # )
-        ],
-        id=f"{label}-label", className="checklist-label", n_clicks=0 
-    )
+    return html.Span(label, id=f"{label}-label", className="checklist-label", n_clicks=0)
 
 # declare global variables that will be used throughout the program
-filtered_df = pd.DataFrame() # this variables is used to share data between callbacks
+
 ap_thresholds = [80, 132, 207, 236, 300]
 f107_thresholds = [66, 100, 150, 200, 250]
 tpid_base_url = "https://kauai.ccmc.gsfc.nasa.gov/CMR/TimeInterval/viewTI?id="
 image_paths = ['assets/CCMC.png', 'assets/airflow1.jpg', "assets/options-icon.svg"]
+dashboard_data_dir = "data/thermosphere_data"
+benchmark_data_dir = "data/benchmark_scores"
 
 satellites = ["CHAMP", "GOCE", "GRACE-A", "SWARM-A", "GRACE-FO"]
 satellite_opts = list(map(options_from_list, satellites))
@@ -73,6 +85,7 @@ model_labels = list(map(generate_labels, models))
 data_selection = html.Div(
     id="data-selection",
     children=[
+        # Begin paramter selection Dropdown
         html.Div([
             html.Div(html.Strong("Select a Parameter to Analyze")),
             dcc.Dropdown(
@@ -88,7 +101,10 @@ data_selection = html.Div(
                     "margin-top": "15px", 
                 }
             )
-        ]),
+        ]), 
+        # End paramter selection Dropdown
+
+        # Begin event catagory selection Dropdown
         html.Div([
             html.Div(html.Strong("Select Event Category")),
             dcc.Dropdown(
@@ -104,6 +120,9 @@ data_selection = html.Div(
                 }
             )
         ]),
+        # End event category selection Dropdown
+
+        # Begin satellite selection Checklist
         html.Div([
             html.Div(html.Strong("Satellites")),
             dcc.Checklist(
@@ -113,6 +132,9 @@ data_selection = html.Div(
             ),
             html.Div(satellite_labels, id="satellite-labels"),
         ]),
+        # End satellite selection Checklist
+
+        # Begin model selection Checklist
         html.Div([
             html.Div(html.Strong("Models")),
             dcc.Checklist(
@@ -122,20 +144,17 @@ data_selection = html.Div(
             ),
             html.Div(model_labels, id="model-labels")
         ]),
+        # End model selection Checklist
+
+        # Begin satellite and model popup
         html.Div(
             [
-                html.Div(
-                    id="satellite-desc-x-button",
-                    className="x-button",
-                    children=[
-                        html.Div(className="x-component", id="x-arm1"),
-                        html.Div(className="x-component", id="x-arm2")
-                    ]
-                ),
+                create_x_button("satellite-desc-x-button"),
                 html.Div(id="satellite-description-data")
             ],
             id="satellite-description-popup"
         )
+        # End satellite and model popup
     ]
 )
 
@@ -145,7 +164,7 @@ thermosphere_layout = html.Div(
         'backgroundColor':'#f4f6f7', 
         'margin': '0'
     }, 
-    children=[  
+    children=[
         html.Div( #Create a background for the CCMC logo image.
             style={
             'width': '20%', 
@@ -160,7 +179,7 @@ thermosphere_layout = html.Div(
         # Add the properly formatted CCMC image and airflow photo to the top of the page.
         html.Img(
             id="image1", 
-            src=image_paths[0], 
+            src=image_paths[0],
             style={
                 "zIndex": "2",
                 'height': '100px', 
@@ -290,14 +309,7 @@ tpid_menu = html.Div(
     children=[
         html.Div([
             html.Strong("TPID Menu"),
-            html.Div( # made an x button for the tpid menu using three divs and css :)
-                id="tpid-x-button",
-                className="x-button",
-                children=[
-                    html.Div(className="x-component", id="x-arm1"),
-                    html.Div(className="x-component", id="x-arm2")
-                ]
-            ),
+            create_x_button("tpid-x-button"),
             html.Div(
                 id="basic-storm-data"
             )],
@@ -326,12 +338,12 @@ tpid_menu = html.Div(
 # The data is stored as a pandas dataframe in two global variables, thermosphere_df and benchmark_df
 ###########################
 
-def format_data(files: list[str]) -> dict:
+def format_data(data_dir: str) -> dict:
     """
-    Opens and reads each file in `files` and returns the data in the `formatted_data dictionary that can be easily converted 
+    Opens and reads each json file in `data_dir` and returns the data in the `formatted_data` dictionary that can be easily converted 
     into a dataframe.
 
-    :param `files`: A list of paths to json files
+    :param `data_dir`: The directory containing the json files
 
     :return `formatted_data`: A dictionary containing the json data where each key will be a column in the dataframe and maps to
         the values that it will take
@@ -351,6 +363,8 @@ def format_data(files: list[str]) -> dict:
         "R": []
     }
     # loop through each file
+    files = os.listdir(data_dir)
+    files = list(map(lambda file: f"{data_dir}/{file}", files))
     for file in files:
         with open(file, 'r') as f:
             data = json.load(f)
@@ -379,33 +393,12 @@ def load_data() -> tuple[pd.DataFrame, pd.DataFrame]:
 
     :return: A tuple containg the two dataframes with the storm data, `thermosphere_df` and `benchmark_df`
     """
-    # analysis dashboard data
-    dashboard_files = [
-        "data/thermosphere_data/DTM2013-01_scores.json", 
-        "data/thermosphere_data/DTM2020-01_scores.json", 
-        "data/thermosphere_data/JB2008-01_scores.json",
-        "data/thermosphere_data/MSIS20-01_scores.json",
-        "data/thermosphere_data/MSISE00-01_scores.json",
-        "data/thermosphere_data/GITM-01_scores.json"
-    ]
 
     # convert the json data into a dataframe using the "format_data" function
-    thermosphere_df = pd.DataFrame(format_data(dashboard_files))
-
-    # benchmark data
-    benchmark_files = [
-        "data/benchmark_scores/CTIPe-01_benchmark_scores.json",
-        "data/benchmark_scores/DTM2013-01_benchmark_scores.json",
-        "data/benchmark_scores/DTM2020-01_benchmark_scores.json",
-        "data/benchmark_scores/JB2008-01_benchmark_scores.json",
-        "data/benchmark_scores/MSIS20-01_benchmark_scores.json",
-        "data/benchmark_scores/MSISE00-01_benchmark_scores.json",
-        "data/benchmark_scores/TIEGCM-Heelis-01_benchmark_scores.json",
-        "data/benchmark_scores/TIEGCM-Weimer-01_benchmark_scores.json"
-    ]
+    thermosphere_df = pd.DataFrame(format_data(dashboard_data_dir))
 
     # convert the json data into a dataframe using the "format_data" function
-    benchmark_df = pd.DataFrame(format_data(benchmark_files))
+    benchmark_df = pd.DataFrame(format_data(benchmark_data_dir))
 
     # ensure proper ordering of phases column
     phase_order = ["total", "pre_storm", "onset", "main_recovery", "post_storm"]
@@ -529,57 +522,21 @@ def update_content(tab, parameter):
             tpid_menu
         ]
     elif tab == "benchmark":
-        # declare the variable filtered_df global
-        global filtered_df
 
         # filter benchmark_df for peek ap/f107 values that are >= selected slider values
         filtered_df = benchmark_df.copy()
         filtered_df = filtered_df[filtered_df["ap_max"].ge(ap_thresholds[0])]
         filtered_df = filtered_df[filtered_df["f107_max"].ge(ap_thresholds[0])]
 
-        # make benchmark main plot stats (rendered to the right of the plot)
-        # This line does some pandas magic (i.e., I have no idea what it does it just gives me the mean and std)
-        bench_main_stats: pd.DataFrame = filtered_df.groupby("model", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2)
-        # reverse the stats df because for some reason this gives it to me in the opposite order that it is rendered in
-        bench_main_stats = bench_main_stats.iloc[::-1]
+        (
+            main_plot,
+            table_data,
+            skills_by_phase_plots,
+            formatted_bench_main_stats,
+            tpid_list,
+            basic_storm_data
+        ) = sp.create_plots(filtered_df, parameter, "TIEGCM-Weimer-01", tpid_base_url)
 
-        # main plot only uses total phase data
-        main_plot = sp.create_main_stripplot(filtered_df[filtered_df["phase"] == "total"], bench_main_stats, parameter)
-
-        formatted_bench_main_stats = []
-        # iterate through the rows of the stats df
-        for _, row in bench_main_stats.iterrows():
-            # create a div that will have the mean and std data in it
-            # seperate code for the first block because it should have no margin-top styling
-            if  row["model"] == "TIEGCM-Weimer-01":
-                stats_label = html.Div(
-                    children=["Mean: " + str(row["mean"]), html.Br(), "StD: " + str(row["std"])]
-                )
-                formatted_bench_main_stats.append(stats_label)
-                continue
-            stats_label = html.Div(
-                children=["Mean: " + str(row["mean"]), html.Br(), "StD: " + str(row["std"])],
-                style={"margin-top": "25px"}
-            )
-            # add the div to the "formatted_bench_main_stats" variable
-            formatted_bench_main_stats.append(stats_label)
-
-        # create a plotly plot for each model and add it to "skill_by_phase_plots"
-        # skills_plots_stats: pd.DataFrame = filtered_df.groupby("phase", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2)
-        skills_by_phase_plots = sp.create_phase_stripplots(filtered_df, parameter)
-
-        # data  preparation for the pivot table (some more pandas magic)
-        skills_by_phase: DataFrameGroupBy = filtered_df.groupby(["model", "phase"], observed=False)[parameter]
-        skills_by_phase: pd.DataFrame = (
-            skills_by_phase.mean()
-            .reset_index()
-            .pivot(index="model", columns="phase", values=parameter)
-            .round(2)
-        )
-        skills_by_phase.reset_index(inplace=True)
-        table_data = skills_by_phase.to_dict("records")
-
-        tpid_list, basic_storm_data = sp.fetch_tpid_data(filtered_df, tpid_base_url)
         tpid_menu.children[1].children.children = tpid_list
         tpid_menu.children[0].children[2].children = basic_storm_data
 
@@ -645,7 +602,6 @@ def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, sat
     This callback filters thermosphere_df using the input data and populates the plots and table with the filtered dataframe.
     The filtered dataframe is stored in the global variable `filtered_df` so that the tpid callback can access that data
     """
-    global filtered_df
 
     filtered_df = thermosphere_df.copy()
 
@@ -657,51 +613,4 @@ def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, sat
     filtered_df = filtered_df[filtered_df["ap_max"].ge(ap_thresholds[ap_max_threshold])]
     filtered_df = filtered_df[filtered_df["f107_max"].ge(f107_thresholds[f107_max_threshold])]
     
-    # create the elements for the main plot mean and std display
-    main_plot_stats: pd.DataFrame = filtered_df.groupby("model", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2)
-    main_plot_stats = main_plot_stats.iloc[::-1]
-
-    # main plot only uses total phase data
-    main_plot = sp.create_main_stripplot(filtered_df[filtered_df["phase"] == "total"], main_plot_stats, parameter)
-
-    # make stats labels dash components
-    formatted_main_plot_stats = []
-    for _, row in main_plot_stats.iterrows():
-        if  row["model"] == "MSISE00-01":
-            stats_label = html.Div(
-                children=["Mean: " + str(row["mean"]), html.Br(), "StD: " + str(row["std"])]
-            )
-            formatted_main_plot_stats.append(stats_label)
-            continue
-        stats_label = html.Div(
-            children=["Mean: " + str(row["mean"]), html.Br(), "StD: " + str(row["std"])],
-            style={"margin-top": "25px"}
-        )
-        formatted_main_plot_stats.append(stats_label)
-
-    # create skills plots stats
-    # skills_plots_stats: pd.DataFrame = filtered_df.groupby("phase", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2) 
-    skills_by_phase_plots = sp.create_phase_stripplots(filtered_df, parameter)
-    
-    # data preparation for the pivot table
-    skills_by_phase: DataFrameGroupBy = filtered_df.groupby(["model", "phase"], observed=False)[parameter]
-    skills_by_phase: pd.DataFrame = (
-        skills_by_phase.mean()
-        .reset_index()
-        .pivot(index="model", columns="phase", values=parameter)
-        .round(2)
-    )
-    skills_by_phase.reset_index(inplace=True)
-    table_data = skills_by_phase.to_dict("records")
-
-    # get tpid data
-    tpid_list, basic_storm_data = sp.fetch_tpid_data(filtered_df, tpid_base_url)
-
-    return (
-        main_plot, 
-        table_data, 
-        skills_by_phase_plots,
-        formatted_main_plot_stats,
-        tpid_list,
-        basic_storm_data
-    )
+    return sp.create_plots(filtered_df, parameter, "MSISE00-01", tpid_base_url)
