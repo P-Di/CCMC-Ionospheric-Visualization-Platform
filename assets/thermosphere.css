@@ -1,6 +1,18 @@
+#project {
+    padding-bottom: 5px;
+}
+
 /*
 DATA SELECTION MENU
 */
+
+#data-selection {
+    height: 70%;
+    width: 279px;
+    overflow-y: auto;
+    position: fixed;
+    padding-right: 10px;
+}
 
 #satellite-description-popup {
     background-color: #f4f6f7;
@@ -27,14 +39,14 @@ DATA SELECTION MENU
 
 #satellite-labels {
     position: absolute;
-    top: 250px;
-    left: 35px;
+    top: 169px;
+    left: 10px;
 }
 
 #model-labels {
     position: absolute;
-    top: 394px;
-    left: 35px;
+    top: 312px;
+    left: 10px;
 }
 
 .checklist-label {

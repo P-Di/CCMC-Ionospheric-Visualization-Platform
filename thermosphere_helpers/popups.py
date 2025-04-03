@@ -332,7 +332,7 @@ def gen_CTIPe_01_data():
         ),
         html.H2("Solution Type", style={"font-size": "20px", "font-weight": "bold"}),
         html.P("First Principle"),
-        html.H2("Sollution Drivers", style={"font-size": "20px", "font-weight": "bold"}),
+        html.H2("Solution Drivers", style={"font-size": "20px", "font-weight": "bold"}),
         html.P(
             """
             F10.7, F81, Solomon &amp; Qian bands; Weimer-2005, solar wind density and velocity,
@@ -345,4 +345,32 @@ def gen_CTIPe_01_data():
         html.P("2°, 18°, 15 levels between 80 to ~500 km, 15 mins"),
         html.H2("More Information", style={"font-size": "20px", "font-weight": "bold"}),
         html.A("https://ccmc.gsfc.nasa.gov/models/CTIPe~4.1/", href="https://ccmc.gsfc.nasa.gov/models/CTIPe~4.1/", target="_blank")
+    ], className="data-source-metadata")
+
+
+def gen_GITM_01_data():
+    return html.Div([
+        html.H1("GITM-01 Description", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P(
+            """
+            The GITM is a 3-dimensional spherical code that models the Earth&#39;s thermosphere and
+            ionosphere system using a stretched grid in latitude and altitude. GITM allows for non-
+            hydrostatic solutions to develop (i.e., the full vertical momentum equation is solved), so
+            more realistic dynamics in the auroral zone can be simulated.
+            """
+        ),
+        html.H2("Solution Type", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("First Principle"),
+        html.H2("Solution Drivers", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P(
+            """
+            F10.7; Hemispheric Power Index; IMF Solar wind velocity and Solar irradiance
+            """
+        ),
+        html.H2("Version Number", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("21.11"),
+        html.H2("Resolution (latitude, longitude, vertical, output cadence)", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("2.5°, 5°, 0.25 scale height, 10 mins"),
+        html.H2("More Information", style={"font-size": "20px", "font-weight": "bold"}),
+        html.A("https://ccmc.gsfc.nasa.gov/models/GITM~21.11/", href="https://ccmc.gsfc.nasa.gov/models/GITM~21.11/", target="_blank")
     ], className="data-source-metadata")
