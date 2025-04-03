@@ -10,11 +10,11 @@ To navigate to a given section search for the section name exactly as it is disp
 # Modules to load and store model/solution scores
 import json, os
 import pandas as pd
-from pandas.api.typing import DataFrameGroupBy
 
 # Modules to create the dash layout
 from dash import html, dcc, dash_table 
 import dash_bootstrap_components as dbc
+import plotly.graph_objects as go
 
 # Modules to create plots and specific components
 import thermosphere_helpers.stripplot as sp
@@ -597,12 +597,41 @@ def update_content(tab, parameter):
         ]
 
 
-def display_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites, models):
+def display_plots(
+        parameter: str, 
+        category: str, 
+        ap_max_threshold: int, 
+        f107_max_threshold: int, 
+        satellites: list[str], 
+        models: list[str]
+    ) -> tuple[go.Figure, list[dict], list, list, list, list]:
     """
-    This callback filters thermosphere_df using the input data and populates the plots and table with the filtered dataframe.
-    The filtered dataframe is stored in the global variable `filtered_df` so that the tpid callback can access that data
-    """
+    This function is the actual implementation of the `display_thermosphere_plots` callback in `app.py`.
 
+    This function filters the dataframe with all of the storm data to include only data included by the user's selection.
+    Then it passes that data to the `create_plots` function in `stripplot.py` which returns dash firgures and html
+    components that will be displayed on the page.
+
+    :param parameter: A string containing the parameter that will be plotted.
+    :param category: A string containing the category of storm that should be plotted (either 'all', 'single_peak', 'multiple_peak')
+    :param ap_max_threshold: An int containing the minimum ap max value a storm should have to be plotted.
+    :param f107_max_threshold: An int containing the minimum f107 max value a storm should have to be plotted.
+    :param satellites: A list of strings where each string is the name of a satellite. If a storm was observed by a satellite in this
+        list, that observation data should be plotted.
+    :param models: A list of strings where each string is the name of a model/solution. If a model is in this list it will be plotted
+        against `parameter`
+
+    :return main_plot: The main stripplot which plots all models for the 'total' phase
+    :return table_data: The pivot table data obtained from `filtered_df`
+    :return skills_by_phase_plots: A list of figures containing the skills by phase plots for the parameter
+    :return formatted_main_plot_stats: A list of dash html components which are the mean and std labels for the main plot
+    :return tpid_list: A list of the hyperlinks to the storm home page for each unique storm in `filtered_df`
+    :return basic_storm_data: Basic stats on the storms being displayed:
+                              
+                              * Total Storm Count
+                              * Multiple Peak Count
+                              * Single Peak Count
+    """
     filtered_df = thermosphere_df.copy()
 
     # data preparation for the one plot (more to come)

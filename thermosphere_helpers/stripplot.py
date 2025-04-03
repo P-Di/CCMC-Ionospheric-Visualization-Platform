@@ -129,7 +129,8 @@ def create_plots(
         filtered_df: DataFrame,
         parameter: str,
         first_model: str,
-        tpid_base_url: str) -> tuple[go.Figure, list[dict], list, list, list, list]:
+        tpid_base_url: str
+    ) -> tuple[go.Figure, list[dict], list, list, list, list]:
     """
     | This function creates the plots and tables for the analysis dashboard and benchmark page on the Thermosphere web app.
     | The functionalities of this function are the following:
