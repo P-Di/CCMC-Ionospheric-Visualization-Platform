@@ -1,5 +1,4 @@
 #6/10/2024 - Revisions: Deleted imports, check data.py comments to see original.
-# TODO: finish adding GITM_01_clicks to the callback to display it's popup.
 
 import numpy as np
 # Import the dash library and modules 
@@ -486,6 +485,9 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
      Input("parameter_selection", "value")]
 )
 def update_thermosphere_content(tab, parameter):
+    """
+    Callback to switch between tabs (Description, Analysis Dashboard, Benchmark) on the thermosphere page.
+    """
     return tp.update_content(tab, parameter)
 
 @app.callback(
@@ -503,19 +505,25 @@ def update_thermosphere_content(tab, parameter):
      Input("models", "value")]
 )
 def display_thermosphere_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites, models):
+    """
+    This callback is called whenever the user changes some data selection and it updates the data displayed on the page.
+    """
     return tp.display_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites, models)
+
 
 @app.callback(
     [Output("tpid-menu", "style")],
-    #  Output("tpid-list", "children"),
-    #  Output("basic-storm-data", "children")],
     [Input("tpid-menu-button-1", "n_clicks"),
      Input("tpid-menu-button-2", "n_clicks")],
     prevent_initial_call=True
 )
 def open_thermosphere_tpid_menu(n_clicks_1, n_clicks_2):
-    # tpid_list, basic_storm_data = tp.open_tpid_menu()
-    return {"display": "block"}, # tpid_list, basic_storm_data
+    """
+    This callback only displays the tpid popup, that values are populated in the `display_thermosphere_plots` callback.
+    This alows the tpid popup to update immediately when the data selection changes (i.e., the user does not need to 
+    close the popup and re-open it for the changes to be reflected.)
+    """
+    return {"display": "block"}
 
 @app.callback(
     Output("tpid-menu", "style", allow_duplicate=True),
@@ -562,6 +570,9 @@ def toggle_phase_table_collapse(n, is_open):
     State("comp-collapse", "is_open")
 )
 def toggle_comp_collapse(n, is_open):
+    """
+    callback to toggle the computations displayed on the description page
+    """
     if n:
         return not is_open
     return is_open

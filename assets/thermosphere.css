@@ -54,13 +54,15 @@ DATA SELECTION MENU
     border-radius: 5px;
     padding-left: 5px;
     display: flex;
-    width: 248px;
+    width: 248px; 
     justify-content: space-between;
+    text-decoration: underline 0.10em rgba(0, 0, 0, 0);
+    transition: text-decoration-color 300ms;
 }
 
 .checklist-label:hover {
     cursor: pointer;
-    background-color: lightgray;
+    text-decoration-color: rgba(0, 0, 0, 0.8);
 }
 
 .options-icon {
