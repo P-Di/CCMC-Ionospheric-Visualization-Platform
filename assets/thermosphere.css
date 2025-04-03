@@ -6,6 +6,14 @@
 DATA SELECTION MENU
 */
 
+#data-selection {
+    height: 70%;
+    width: 279px;
+    overflow-y: auto;
+    position: fixed;
+    padding-right: 10px;
+}
+
 #satellite-description-popup {
     background-color: #f4f6f7;
     display: none;

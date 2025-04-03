@@ -84,7 +84,6 @@ model_labels = list(map(generate_labels, models))
 # This is the dash layout for the lefthand data selection menu
 data_selection = html.Div(
     id="data-selection",
-    style={"height": "70%", "width": "267px", "overflow-y": "auto", "position": "fixed"},
     children=[
         # Begin paramter selection Dropdown
         html.Div([

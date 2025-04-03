@@ -207,7 +207,6 @@ def create_plots(
     )
     skills_by_phase.reset_index(inplace=True)
     table_data = skills_by_phase.to_dict("records")
-    print(table_data)
 
     # get tpid data
     tpid_list, basic_storm_data = fetch_tpid_data(filtered_df, tpid_base_url)
