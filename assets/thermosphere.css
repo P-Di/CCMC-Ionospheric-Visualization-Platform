@@ -1,6 +1,18 @@
+#project {
+    padding-bottom: 5px;
+}
+
 /*
 DATA SELECTION MENU
 */
+
+#data-selection {
+    height: 70%;
+    width: 279px;
+    overflow-y: auto;
+    position: fixed;
+    padding-right: 10px;
+}
 
 #satellite-description-popup {
     background-color: #f4f6f7;
@@ -27,14 +39,14 @@ DATA SELECTION MENU
 
 #satellite-labels {
     position: absolute;
-    top: 250px;
-    left: 35px;
+    top: 169px;
+    left: 10px;
 }
 
 #model-labels {
     position: absolute;
-    top: 394px;
-    left: 35px;
+    top: 312px;
+    left: 10px;
 }
 
 .checklist-label {
@@ -42,13 +54,15 @@ DATA SELECTION MENU
     border-radius: 5px;
     padding-left: 5px;
     display: flex;
-    width: 248px;
+    width: 248px; 
     justify-content: space-between;
+    text-decoration: underline 0.10em rgba(0, 0, 0, 0);
+    transition: text-decoration-color 300ms;
 }
 
 .checklist-label:hover {
     cursor: pointer;
-    background-color: lightgray;
+    text-decoration-color: rgba(0, 0, 0, 0.8);
 }
 
 .options-icon {
@@ -113,7 +127,7 @@ THERMOSPHERE DESCRIPTION PAGE
     border-radius: 10px;
 
     position: relative;
-    bottom: 232px;
+    bottom: 258px;
 
     /* border: 2px solid black; */
 }

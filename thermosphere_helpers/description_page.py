@@ -1,5 +1,6 @@
 import dash_bootstrap_components as dbc
 from dash import html
+import dash_core_components as dcc
 
 description_page = html.Div(
     [
@@ -13,6 +14,7 @@ description_page = html.Div(
                         html.Li(html.A("Challenges", href="#challenges", className="TOC-link")),
                         html.Li(html.A("Campaign Objective", href="#objectives", className="TOC-link")),
                         html.Li(html.A("Methodology", href="#methodology", className="TOC-link")),
+                        html.Li(html.A("Raw Model Output", href="#raw-output-link", className="TOC-link")),
                         html.Li(html.A("References", href="#references", className="TOC-link"))
                     ],
                     style={"list-style-type": "none"}
@@ -340,11 +342,25 @@ description_page = html.Div(
                                     html.Ul([
                                         html.Li([
                                             "Average Observed-to-Compute Density (O/C) (= mean scaling factor of the model)",
-                                            html.Ul(html.Li(html.Img(src="assets/Thermosphere_equation_1.png", alt="Mean_OC computation")))
+                                            # html.Ul(html.Li(html.Img(src="assets/Thermosphere_equation_1.png", alt="Mean_OC computation")))
+                                            dcc.Markdown(
+                                                '''
+                                                $Mean \\left( \\frac{O}{C} \\right) = exp \\left( \\frac{1}{N}\\sum_{n=1}^{N}
+                                                {ln \\frac{O_{n}}{C_{n}}} \\right)$
+                                                ''', 
+                                                mathjax=True
+                                            ),
                                         ]),
                                         html.Li([
                                             "Average standard deviation (Std. Dev.) of Observed-to-Compute Density (O/C)",
-                                            html.Ul(html.Li(html.Img(src="assets/Thermosphere_equation_2.png", alt="StdDev_OC computation")))
+                                            # html.Ul(html.Li(html.Img(src="assets/Thermosphere_equation_2.png", alt="StdDev_OC computation")))
+                                            dcc.Markdown(
+                                                '''
+                                                $Std. Dev. \\left( \\frac{O}{C} \\right) = \\sqrt{\\frac{1}{N} \\sum_{n=1}^{N}{ \\left( 
+                                                \\ln\\frac{O_{n}}{C_n} - \\ln Mean \\left( \\frac{O}{C} \\right) \\right)^{2} }}$
+                                                ''',
+                                                mathjax=True
+                                            )
                                         ])
                                     ]),
                                     html.P("where N is the total number of observations.")
@@ -355,6 +371,20 @@ description_page = html.Div(
                         ]),
                     ],
                     id="methodology"
+                ),
+                html.Div(
+                    [
+                        html.H1("Raw Model Output"),
+                        html.Span([
+                            "The raw model output for the models validated on the webpage is availiable at ",
+                            html.A(
+                                "https://github.com/j0a8c2k1/CCCM-Thermospheric-Validation", 
+                                href="https://github.com/j0a8c2k1/CCCM-Thermospheric-Validation", 
+                                target="_blank"
+                            )
+                        ])
+                    ],
+                    id="raw-output-link"
                 ),
                 html.Div(
                     [

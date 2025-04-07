@@ -101,7 +101,7 @@ options_list = [[
                 {'label': 'Metric_Score', 'value' : 'MS_F'},
                 {'label': 'Dst_kp', 'value' : 'DK_F'},
                 {'label': 'Ratios/CC', 'value' : 'RCC'}]]
-model_list = [[],[]]
+model_list = []
 """
 options_list = [[{'label': 'F7/C2 Distribution', 'value' : 'DEF_F1'},
                 {'label': 'CSM2 Models', 'value' : 'DEF_F2'}]+common_options,
@@ -206,7 +206,7 @@ ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '
                     {'label': 'hmF2_ionsonde', 'value': 'HI', 'disabled': True}], value = 'TEC'),
                 html.Div(children=[html.B(children='Model Type')], style=dstyles[2]),
                 dcc.Dropdown(id='multi',
-                    options=options_list[2], multi=True,  value = '0'),
+                    options=model_list[0], multi=True,  value = '0'),
                 html.Div(children=[html.B(children='Task')], style=dstyles[2]),
                 dcc.Dropdown(id='task', options=[
                     {'label': 'Model-Data Comparison', 'value': 'MC'},
@@ -374,7 +374,7 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
             graphs[-1] = dcc.Graph(style=dstyles[3], figure=comparisonPlot.model_comparison_plot(TEC_foF2[0], TEC_foF2, TITLES[1], cm, dst_scatter_map['z_foF2'], year))
         # Add selected plots and take out others.
         chl = plotSelection.plot_selection_format(plot, plot_options, graphs)
-        return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6],chl[7], multi, model_list[3], options_list_final, obs_options[0], yearid, True, False, plot_value, "$$y = x^2$$" #False, plot_default[1]
+        return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6],chl[7], multi, model_list[1], options_list_final, obs_options[0], yearid, True, False, plot_value, "$$y = x^2$$" #False, plot_default[1]
     
     elif obs == 'HC2':
         if task == "SCE":
@@ -401,7 +401,7 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
             graphs[-1] = dcc.Graph(style=dstyles[3], figure=comparisonPlot.model_comparison_plot(TEC_hmF2[0], TEC_hmF2, TITLES[1], cm, dst_scatter_map['z_hmF2'], year))
         # Add selected plots and take out others.
         chl = plotSelection.plot_selection_format(plot, plot_options, graphs)
-        return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6],chl[7], multi, model_list[3], options_list_final, obs_options[0], yearid, True, False, plot_value, "$$y = x^2$$" #False, plot_default[1]
+        return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6],chl[7], multi, model_list[1], options_list_final, obs_options[0], yearid, True, False, plot_value, "$$y = x^2$$" #False, plot_default[1]
     
 
     else:
@@ -434,7 +434,7 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
             chl = plotSelection.plot_selection_format(plot, plot_options, graphs)
 
             # Add selected plots and take out others.
-            return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6], chl[7], multi, model_list[2], options_list[3], obs_options[0], yearid, False, False, plot_value, "$$y = x^2$$" #False, plot_default[1]
+            return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6], chl[7], multi, model_list[0], options_list[3], obs_options[0], yearid, False, False, plot_value, "$$y = x^2$$" #False, plot_default[1]
 
         else:
             if plot_default[2] == 1:
@@ -471,7 +471,7 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
             plot_options = ['DEF_F1', 'DK_F','DEF_F2', 'MS_F', 'SN_F1', 'SN_F2', 'RCC','SC_F']
             chl = plotSelection.plot_selection_format(plot, plot_options, graphs)
 
-            return chl[0], chl[1], chl[2], chl[3], None, None, chl[6], chl[7],  multi, model_list[2], options_list[2], obs_op, yearid, False, False, plot_value, "$$y = x^2$$", #False, plot_default[0] Final False deals with plot, and is no longer necessary
+            return chl[0], chl[1], chl[2], chl[3], None, None, chl[6], chl[7],  multi, model_list[0], options_list[2], obs_op, yearid, False, False, plot_value, "$$y = x^2$$", #False, plot_default[0] Final False deals with plot, and is no longer necessary
             #    child6 = dcc.Graph(style=dstyles[3], figure=comparisonPlot.model_comparison_plot(chosen_year['TEC_all'][0], chosen_year['TEC_all'], TITLES[0], cm, dst_scatter_map['z_' + year], year))
 
             #return child1, child_multi, child3, child4, child5, child6, None, None, multi, options_list[2], options_list[1], obs_op, yearid, False, False, True
@@ -485,6 +485,9 @@ def update_graph(multi, yearid, task, plot, obs, child1, child2, child3, child4,
      Input("parameter_selection", "value")]
 )
 def update_thermosphere_content(tab, parameter):
+    """
+    Callback to switch between tabs (Description, Analysis Dashboard, Benchmark) on the thermosphere page.
+    """
     return tp.update_content(tab, parameter)
 
 @app.callback(
@@ -502,19 +505,25 @@ def update_thermosphere_content(tab, parameter):
      Input("models", "value")]
 )
 def display_thermosphere_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites, models):
+    """
+    This callback is called whenever the user changes some data selection and it updates the data displayed on the page.
+    """
     return tp.display_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites, models)
+
 
 @app.callback(
     [Output("tpid-menu", "style")],
-    #  Output("tpid-list", "children"),
-    #  Output("basic-storm-data", "children")],
     [Input("tpid-menu-button-1", "n_clicks"),
      Input("tpid-menu-button-2", "n_clicks")],
     prevent_initial_call=True
 )
 def open_thermosphere_tpid_menu(n_clicks_1, n_clicks_2):
-    # tpid_list, basic_storm_data = tp.open_tpid_menu()
-    return {"display": "block"}, # tpid_list, basic_storm_data
+    """
+    This callback only displays the tpid popup, that values are populated in the `display_thermosphere_plots` callback.
+    This alows the tpid popup to update immediately when the data selection changes (i.e., the user does not need to 
+    close the popup and re-open it for the changes to be reflected.)
+    """
+    return {"display": "block"}
 
 @app.callback(
     Output("tpid-menu", "style", allow_duplicate=True),
@@ -561,6 +570,9 @@ def toggle_phase_table_collapse(n, is_open):
     State("comp-collapse", "is_open")
 )
 def toggle_comp_collapse(n, is_open):
+    """
+    callback to toggle the computations displayed on the description page
+    """
     if n:
         return not is_open
     return is_open
@@ -580,12 +592,14 @@ def toggle_comp_collapse(n, is_open):
      Input("DTM2013-01-label", "n_clicks"),
      Input("TIEGCM-Weimer-01-label", "n_clicks"),
      Input("TIEGCM-Heelis-01-label", "n_clicks"),
-     Input("CTIPe-01-label", "n_clicks")],
+     Input("CTIPe-01-label", "n_clicks"),
+     Input("GITM-01-label", "n_clicks")],
     prevent_initial_call=True
 )
 def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_clicks, GRACE_FO_clicks,
                                      MSISE00_01_clicks, MSIS20_01_clicks, JB2008_01_clicks, DTM2020_01_clicks,
-                                     DTM2013_01_clicks, TIEGCM_Weimer_01_clicks, TIEGCM_Heelis_01_clicks, CTIPe_01_clicks):
+                                     DTM2013_01_clicks, TIEGCM_Weimer_01_clicks, TIEGCM_Heelis_01_clicks, 
+                                     CTIPe_01_clicks, GITM_01_clicks):
     """
     :Description:
 
@@ -599,7 +613,7 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     if (CHAMP_clicks == 1 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
         and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
         and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
-        and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 0):
+        and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 0 and GITM_01_clicks == 0):
 
         return {"display": "block"}, popups.gen_CHAMP_data()
     
@@ -607,7 +621,7 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     elif (CHAMP_clicks == 0 and GOCE_clicks == 1 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 0 and GITM_01_clicks == 0):
         
         return {"display": "block"}, popups.gen_GOCE_data()
     
@@ -615,7 +629,7 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 1 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 0 and GITM_01_clicks == 0):
         
         return {"display": "block"}, popups.gen_GRACE_A_data()
     
@@ -623,7 +637,7 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 1 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 0 and GITM_01_clicks == 0):
         
         return {"display": "block"}, popups.gen_SWARM_A_data()
     
@@ -631,7 +645,7 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 1 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 0 and GITM_01_clicks == 0):
         
         return {"display": "block"}, popups.gen_GRACE_FO_data()
     
@@ -639,7 +653,7 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 1 and MSIS20_01_clicks == 0 
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 0 and GITM_01_clicks == 0):
 
         return {"display": "block"}, popups.gen_MSISE00_01_data()
 
@@ -647,7 +661,7 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 1
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 0 and GITM_01_clicks == 0):
         
         return {"display": "block"}, popups.gen_MSIS20_01_data()
     
@@ -655,7 +669,7 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 1 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 0 and GITM_01_clicks == 0):
 
         return {"display": "block"}, popups.gen_JB2008_01_data()
     
@@ -663,7 +677,7 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0 
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 1 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 0 and GITM_01_clicks == 0):
         
         return {"display": "block"}, popups.gen_DTM2020_01_data()
     
@@ -671,7 +685,7 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0 
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 1
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 0 and GITM_01_clicks == 0):
         
         return {"display": "block"}, popups.gen_DTM2013_01_data()
     
@@ -679,7 +693,7 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0 
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 1 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 1 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 0 and GITM_01_clicks == 0):
         
         return {"display": "block"}, popups.gen_TIEGCM_Weimer_01_data()
     
@@ -687,7 +701,7 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0 
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 1 and CTIPe_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 1 and CTIPe_01_clicks == 0 and GITM_01_clicks == 0):
         
         return {"display": "block"}, popups.gen_TIEGCM_Heelis_01_data()
     
@@ -695,16 +709,24 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0 
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 1):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 1 and GITM_01_clicks == 0):
         
         return {"display": "block"}, popups.gen_CTIPe_01_data()
+
+    # GITM-01 click
+    elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
+          and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0 
+          and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 0 and GITM_01_clicks == 1):
+        
+        return {"display": "block"}, popups.gen_GITM_01_data()
 
     # No click. This state is necessary because setting all n_clicks values to 0 when the x button is clicked 
     # triggers this callback.
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and CTIPe_01_clicks == 0 and GITM_01_clicks == 0):
         
         return {"display": "none"}, ""
 
@@ -726,12 +748,13 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
      Output("DTM2013-01-label", "n_clicks"),
      Output("TIEGCM-Weimer-01-label", "n_clicks"),
      Output("TIEGCM-Heelis-01-label", "n_clicks"),
-     Output("CTIPe-01-label", "n_clicks")],
+     Output("CTIPe-01-label", "n_clicks"),
+     Output("GITM-01-label", "n_clicks")],
     Input("satellite-desc-x-button", "n_clicks"),
     prevent_initial_call=True
 )
 def close_description_popup(n_clicks):
-    return {"display": "none"}, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    return {"display": "none"}, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     
 if __name__ == '__main__':
     app.run_server(debug=True)
