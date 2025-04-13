@@ -28,7 +28,7 @@ def secPlot(z, multi, data_sm, hmfo):
         ERRP[z,:,:]=err1
    # xtitle = YY+' '+TITLES[0][flag]
     
-    fig = make_subplots(1, 1, subplot_titles=('2013 Madrigal '))
+    fig = make_subplots(1, 1, subplot_titles=(''))
 
 
     fig.add_trace(go.Heatmap(
@@ -42,20 +42,19 @@ def secPlot(z, multi, data_sm, hmfo):
         colorscale="RdBu_r",
     ))
 
-    fig.layout.annotations[0].update(text=TITLES[z]+" OSSE " + hmfo + "F2 Rel. Diff.") #annotations previously controlled by flag 3, titles by tl
 
     fig.update_yaxes(title='MLat', range=[-50, 60], tickvals =np.arange(-45,46,15), showgrid=False, 
                      showline=True, linewidth=2, linecolor='black', ticks="outside", mirror=True, title_standoff = 4)
     fig.update_xaxes(title_text="MLT (hr)", showgrid=False,  showline=True, linewidth=2, linecolor='black', 
                      mirror=True,tickmode = 'array',tickvals = np.arange(0, 73, 12), ticks="outside", ticktext = np.mod(np.arange(0,73,12),24))
-
+    
     if not multi:
         b = 70
     else:
         fig.update_traces(colorbar_thickness=10, colorbar_len=data_sm[0])
         fig.update_yaxes(title_standoff = 0)
         b = data_sm[1]
-    fig.update_layout(plot_bgcolor='white', showlegend=False, margin=dict(b=b,  # bottom margin 
+    fig.update_layout(title=TITLES[z]+" OSSE " + hmfo + "F2 Rel. Diff.", title_x=0.5, plot_bgcolor='white', showlegend=False, margin=dict(b=b,  # bottom margin 
                                                                           t=b,  # top margin
                                                                           pad=1))
     return fig

@@ -798,5 +798,7 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
 def close_description_popup(n_clicks):
     return {"display": "none"}, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     
+server = app.server # Expose the Flask server for Gunicorn
+
 if __name__ == '__main__':
     app.run_server(debug=False)
