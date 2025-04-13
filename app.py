@@ -799,4 +799,4 @@ def close_description_popup(n_clicks):
     return {"display": "none"}, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
