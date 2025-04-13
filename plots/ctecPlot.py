@@ -3,7 +3,8 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
         
-def ctec_plot(TEC_all, flag, year, multi, xy_range, TITLES, obs_type, c_max_min):
+def ctec_plot(TEC_all, flag, year, multi, xy_range, TITLES, data_sm, obs_type, c_max_min):
+
     if obs_type[0].lower() == 't': 
         unit="TECu"
         if flag == 0:
@@ -40,10 +41,10 @@ def ctec_plot(TEC_all, flag, year, multi, xy_range, TITLES, obs_type, c_max_min)
             dict(x=14, y=47,xref='x', yref='y',text='Quiet',showarrow=False, font_size=11, font_color='red'),
             dict(x=37, y=47,xref='x', yref='y',text='Main',showarrow=False, font_size=11, font_color='red'),
             dict(x=58, y=47, xref='x', yref='y', text='Recovery',showarrow=False, font_size=11, font_color='red'))
-        fig.update_traces(colorbar_thickness=10, colorbar_len=1.4)
+        fig.update_traces(colorbar_thickness=10, colorbar_len=data_sm[0])
         fig.update_yaxes(title_standoff = 0)
-        b = 15
-    fig.update_layout(title=year+' '+TITLES[flag]+obs_type,title_x=0.5, plot_bgcolor='white', showlegend=False, margin=dict(b=b,  # bottom margin 
-                                                                          t=b,  # top margin
-                                                                          pad=1))
+        b = data_sm[1]
+    fig.update_layout(title=year+' '+TITLES[flag]+obs_type, title_x=0.5, plot_bgcolor='white', showlegend=False, margin=dict(b=b,  # bottom margin 
+        t=b,  # top margin
+        pad=1))
     return fig

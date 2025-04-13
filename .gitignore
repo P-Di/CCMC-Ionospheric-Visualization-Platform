@@ -21,5 +21,9 @@ SAMI3-ICON202111_storm.npz
 test7.py
 oldComp.py
 one.py
+mg.py
+change.py
+shibuya.py
 .gitignore
 plots/npzDataSources.py
+lilbackup.py
