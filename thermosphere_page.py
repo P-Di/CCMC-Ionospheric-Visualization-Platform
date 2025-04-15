@@ -318,7 +318,7 @@ tpid_menu = html.Div(
                 "position": "fixed", 
                 "top": "0px",
                 "right": "0px",
-                "width": "20%",
+                "width": "310px",
                 "background-color": "#f1f1f1",
                 "border-bottom": "1px solid black",
             }
