@@ -379,7 +379,7 @@ description_page = html.Div(
                             "The raw model output for the models validated on the webpage is availiable at ",
                             html.A(
                                 "https://github.com/j0a8c2k1/CCCM-Thermospheric-Validation", 
-                                href="https://github.com/j0a8c2k1/CCCM-Thermospheric-Validation", 
+                                href="https://github.com/j0a8c2k1/CCMC-Thermospheric-Validation", 
                                 target="_blank"
                             )
                         ])
