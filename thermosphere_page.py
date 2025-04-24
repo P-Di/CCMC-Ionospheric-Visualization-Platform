@@ -64,7 +64,7 @@ satellites = ["CHAMP", "GOCE", "GRACE-A", "SWARM-A", "GRACE-FO"]
 satellite_opts = list(map(options_from_list, satellites))
 satellite_labels = list(map(generate_labels, satellites))
 
-models = ["MSISE00-01", "MSIS20-01", "JB2008-01", "DTM2020-01", "DTM2013-01", "TIEGCM-Weimer-01", "TIEGCM-Heelis-01", "CTIPe-01", "GITM-01"]
+models = ["MSISE00-01", "MSIS20-01", "JB2008-01", "DTM2013-01", "DTM2020-01", "GITM-01", "TIEGCM-Weimer-01", "TIEGCM-Heelis-01", "WACCMX-Weimer-01", "WACCMX-Heelis-01"]
 model_opts = list(map(options_from_list, models))
 model_labels = list(map(generate_labels, models))
 
