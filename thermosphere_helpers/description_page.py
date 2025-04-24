@@ -251,8 +251,7 @@ description_page = html.Div(
                                 html.Div(
                                     [html.Img(className="description-fig", src="assets/Thermosphere_fig_2.png", alt="Figure 2."),
                                     html.P(html.I("""Figure 2. The four phases (Phases 1–4) of the assessment interval for single-peak (top) and multiple-peak (bottom) storms, with t0
-                          centered on the time of the first peak in ap with a minimum of 80 (horizontal green line). The X-axis represents the day relative to t0. (Red) Ap index. (Blue) Orbit-mean neutral density.
-                          Adapted from Bruinsma and Laurens (2024)."""))],
+                          centered on the time of the first peak in ap with a minimum of 80 (horizontal green line). The X-axis represents the day relative to t0. (Red) Ap index. (Blue) Orbit-mean neutral density. Adapted from Bruinsma and Laurens (2024)."""))],
                                     className="img-container"
                                 ),
                                 id="fig-2-collapse",
