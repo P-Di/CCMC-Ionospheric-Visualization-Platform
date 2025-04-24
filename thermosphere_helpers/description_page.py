@@ -154,7 +154,7 @@ description_page = html.Div(
                         ),
                         html.P(
                             """
-                            To addres these challenges, an assessment of thermosphere models under storm conditions was initiated within the COSPR 
+                            To addres these challenges, an assessment of thermosphere models under storm conditions was initiated within the COSPAR 
                             ISWAT framework, leveraging the international collaborative network. This allows the community to systematically track
                             the progress of thermosphere models over time.
                             """
