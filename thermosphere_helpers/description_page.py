@@ -189,7 +189,7 @@ description_page = html.Div(
                         html.Div(
                             [
                                 html.H4("Single-Peak (SP) Storms"),
-                                html.P("Figure 2 (top) illustrates the four phases of a single-peak (SP) storm."),
+                                html.P("The top panel of Figure 2 illustrates the four phases of a single-peak (SP) storm."),
                                 html.H6(html.Strong("Phases:")),
                                 html.Ol([
                                     html.Li(
@@ -228,7 +228,7 @@ description_page = html.Div(
                                 html.H4("Multiple-Peaked (MP) Storms"),
                                 html.P(
                                     """
-                                    Figure 2 (bottom) illustrates the phases for double or multiple-peaked (MP) storms, exemplified by the 10–16 July 2004 
+                                    The bottom panel of Figure 2 illustrates the phases for double or multiple-peaked (MP) storms, exemplified by the 10–16 July 2004 
                                     event. For the MP storms, t₀ is defined as the time when ap reaches 80, similar to SP storms. In Figure 2 (bottom), 
                                     Phase 3 for MP storms is extended due to a second occurrence of ap = 80 at t = 1.4. The duration of Phase 3 varies, 
                                     ending when ap falls below 80 again (at t ≈ 3.0 in this example), plus an additional 36 hours. Phase 4 then extends 
