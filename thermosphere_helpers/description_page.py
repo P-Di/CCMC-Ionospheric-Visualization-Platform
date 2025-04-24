@@ -250,8 +250,9 @@ description_page = html.Div(
                             dbc.Collapse(
                                 html.Div(
                                     [html.Img(className="description-fig", src="assets/Thermosphere_fig_2.png", alt="Figure 2."),
-                                    html.P(html.I("""Figure 2. The four phases (Phases 1–4) of the assessment interval for single-peak (top) and multiple-peak (bottom) storms, with t0
-                          centered on the time of the first peak in ap with a minimum of 80 (horizontal green line). The X-axis represents the day relative to t0. (Red) Ap index. (Blue) Orbit-mean neutral density. Adapted from Bruinsma and Laurens (2024)."""))],
+                                    html.P(html.I("""Figure 2. The four phases (Phases 1–4) of the assessment interval for single-peak (top) and multiple-peak (bottom) storms, with t0 
+                                    centered on the time of the first peak in ap with a minimum of 80 (horizontal green line). The X-axis represents the day relative to t0. (Red) Ap index. 
+                                    (Blue) Orbit-mean neutral density. Adapted from Bruinsma and Laurens (2024)."""))],
                                     className="img-container"
                                 ),
                                 id="fig-2-collapse",
@@ -298,7 +299,8 @@ description_page = html.Div(
                                     html.Br(),
                                     html.P(html.I(
                                         """Table 1. The phases and their durations for single-peak (SP) and multiple-peaked (MP) storms, 
-                                        computed relative to t0, as listed below. Adapted from Bruinsma and Laurens (2024)."""
+                                        computed relative to t0, which centered on the time of the first peak in ap with 
+                                        a minimum of 80, as listed below. Adapted from Bruinsma and Laurens (2024)."""
                                     ))
                                 ]),
                                 id="phase-table-collapse",
