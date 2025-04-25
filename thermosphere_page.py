@@ -522,9 +522,6 @@ def update_content(tab, parameter):
             tpid_menu
         ]
     elif tab == "benchmark":
-        model_order = ["DTM2013-01", "DTM2020-01", "GITM-01", "JB2008-01", "MSIS20-01", "MSISE00-01", "TIEGCM-Heelis-01",
-                       "TIEGCM-Weimer-01", "WACCMX-Heelis-01", "WACCMX-Weimer-01"]
-
         # filter benchmark_df for peek ap/f107 values that are >= selected slider values
         filtered_df = benchmark_df.copy()
         filtered_df = filtered_df[filtered_df["ap_max"].ge(ap_thresholds[0])]
@@ -537,7 +534,7 @@ def update_content(tab, parameter):
             formatted_bench_main_stats,
             tpid_list,
             basic_storm_data
-        ) = sp.create_plots(filtered_df, parameter, "TIEGCM-Weimer-01", tpid_base_url)
+        ) = sp.create_plots(filtered_df, parameter, "DTM2013-01", tpid_base_url)
 
         tpid_menu.children[1].children.children = tpid_list
         tpid_menu.children[0].children[2].children = basic_storm_data
@@ -571,7 +568,7 @@ def update_content(tab, parameter):
                             figure=main_plot,
                             style={"height": "650px"}
                         ),
-                        html.Div(id="bench-main-stats", className="stats", children=formatted_bench_main_stats, style={"top": "320px"})
+                        html.Div(id="bench-main-stats", className="stats", children=formatted_bench_main_stats, style={"top": "315px"})
                     ]),
                     html.Div([
                         html.Span(html.Strong(f"Skills By Phase: {parameter}")),

@@ -536,7 +536,7 @@ def update_thermosphere_content(tab, parameter):
     [Output("skills-by-event-plot", "figure"),
      Output("skills-by-phase-table", "data"),
      Output("skills-by-phase-plots", "children"),
-     Output("main-plot-stats", "children"),
+    #  Output("main-plot-stats", "children"),
      Output("tpid-list", "children"),
      Output("basic-storm-data", "children")],
     [Input("parameter_selection", "value"),
@@ -550,7 +550,15 @@ def display_thermosphere_plots(parameter, category, ap_max_threshold, f107_max_t
     """
     This callback is called whenever the user changes some data selection and it updates the data displayed on the page.
     """
-    return tp.display_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites, models)
+    (
+        main_plot,
+        table_data,
+        skills_by_phase_plots,
+        _,
+        tpid_list,
+        basic_storm_data
+    ) = tp.display_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites, models)
+    return main_plot, table_data, skills_by_phase_plots, tpid_list, basic_storm_data
 
 
 @app.callback(
@@ -810,4 +818,4 @@ def close_description_popup(n_clicks):
 server = app.server # Expose the Flask server for Gunicorn
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)

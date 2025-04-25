@@ -319,7 +319,7 @@ def gen_TIEGCM_Weimer_01_data():
 
 def gen_WACCMX_Weimer_01_data():
     return html.Div([
-        html.H1("TIEGCM-Weimer-01 Description", style={"font-size": "20px", "font-weight": "bold"}),
+        html.H1("WACCMX-Weimer-01 Description", style={"font-size": "20px", "font-weight": "bold"}),
         html.P(
             """
             The NCAR Whole Atmosphere Community Climate Model with thermosphere and ionosphere extension 
@@ -345,7 +345,7 @@ def gen_WACCMX_Weimer_01_data():
 
 def gen_WACCMX_Heelis_01_data():
     return html.Div([
-        html.H1("TIEGCM-Weimer-01 Description", style={"font-size": "20px", "font-weight": "bold"}),
+        html.H1("WACCMX-Heelis-01 Description", style={"font-size": "20px", "font-weight": "bold"}),
         html.P(
             """
             The NCAR Whole Atmosphere Community Climate Model with thermosphere and ionosphere extension 
