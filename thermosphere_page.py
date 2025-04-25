@@ -522,6 +522,8 @@ def update_content(tab, parameter):
             tpid_menu
         ]
     elif tab == "benchmark":
+        model_order = ["DTM2013-01", "DTM2020-01", "GITM-01", "JB2008-01", "MSIS20-01", "MSISE00-01", "TIEGCM-Heelis-01",
+                       "TIEGCM-Weimer-01", "WACCMX-Heelis-01", "WACCMX-Weimer-01"]
 
         # filter benchmark_df for peek ap/f107 values that are >= selected slider values
         filtered_df = benchmark_df.copy()
