@@ -483,8 +483,10 @@ def update_content(tab, parameter):
                 },
                 children=[
                     html.Div([ # The main plot on the page, compares thermosphere models
-                        html.Span(
+                        html.Span([
                             html.Strong(f"Skills By Event: {parameter}"),
+                            html.Span(" (Blue) Individual event. (Black) Average with one standard deviation."),
+                            ],
                             style={
                                 "z-index": "3", 
                                 "position": "relative",
@@ -554,8 +556,10 @@ def update_content(tab, parameter):
                 },
                 children=[
                     html.Div([
-                        html.Span(
+                        html.Span([
                             html.Strong(f"Skills By Event: {parameter}"),
+                            html.Span(" (Blue) Individual event. (Black) Average with one standard deviation."),
+                            ],
                             style={
                                 "z-index": "3", 
                                 "position": "relative",
