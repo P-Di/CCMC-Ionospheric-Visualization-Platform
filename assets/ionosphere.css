@@ -1,0 +1,71 @@
+
+#ion-data-selection-menu {
+    width: 100%;
+}
+
+
+@media screen and (max-width: 900px) {
+    #ionosphere-page {
+        margin-left: 0px;
+    }
+
+    #ionosphere-left-side-bar {
+        display: none;
+        width: 370px;
+        height: 100%;
+        position: fixed;
+        z-index: 10;
+        background-color: #f4f6f7;
+    }
+
+    #ion-main-menu-button {
+        display: block;
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        z-index: 10;
+        width: 60px;
+        height: 60px;
+        background-color: #e59b1c;
+        border-radius: 10px;
+    }
+
+    #close-ion-main-menu {
+        display: block;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 11;
+    }
+
+    #ion-footer {
+        width: 100%;
+    }
+}
+
+@media screen and (min-width: 900px) {
+    #ionosphere-page {
+        margin-left: 370px;
+    }
+
+    #ionosphere-left-side-bar {
+        display: block;
+        width: 370px;
+        height: 100%;
+        position: fixed;
+        z-index: 10;
+        background-color: #f4f6f7;
+    }
+
+    #ion-main-menu-button {
+        display: none;
+    }
+
+    #close-ion-main-menu {
+        display: none;
+    }
+
+    #ion-footer {
+        width: 80%;
+    }
+}

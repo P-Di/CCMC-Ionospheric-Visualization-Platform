@@ -77,18 +77,22 @@ def create_phase_stripplots(dataframe: DataFrame, parameter: str) -> list:
         fig.update_layout(showlegend=False)
 
         # creates the actual webpage elements for the plots
-        plot = html.Div([
-            html.Span(
-                html.B(f"Skills By Phase: {parameter} ({model})"),
-                style={
-                    "z-index": "3", 
-                    "position": "relative",
-                    "top": "50px",
-                    "left": "80px"
-                } 
-            ),
-            dcc.Graph(figure=fig)
-        ])
+        plot = html.Div(
+            className='skills-by-phase-plot',
+            children=[
+                html.Span(
+                    html.B(f"Skills By Phase: {parameter} ({model})"),
+                    className='skills-by-phase-title',
+                    style={
+                        "z-index": "3", 
+                        "position": "relative",
+                        "top": "50px",
+                        "left": "80px"
+                    } 
+                ),
+                dcc.Graph(figure=fig)
+            ]
+        )
         skills_by_phase_plots.append(plot)
 
     return skills_by_phase_plots

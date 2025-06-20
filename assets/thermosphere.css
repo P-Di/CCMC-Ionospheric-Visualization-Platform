@@ -2,9 +2,173 @@
     padding-bottom: 5px;
 }
 
+
+@media screen and (max-width: 900px) {
+    #left-side-bar {
+        display: none;
+    }
+
+    #thermosphere-page {
+        margin-left: 0px; 
+    }
+
+    #plots-container {
+        width: 100%;
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+
+    .TOC {
+        display: none;
+    }
+
+    #content {
+        padding-left: 20px;
+        padding-right: 20px;
+        padding-bottom: 10px;
+
+    };
+
+    #therm-main-menu-button {
+        display: block;
+        /* background-color: #e59b1c;
+        position: fixed; 
+        bottom: 20px;
+        left: 20px;
+        z-index: 10;
+        width: 60px;
+        height: 60px;
+        border-radius: 10px; */
+    }
+
+    #close-main-menu {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        display: block;
+    }
+
+    #thermosphere-main-plot-title {
+        z-index: 3;
+        position: relative;
+        top: 50px;
+        left: 10px;
+    }
+    
+    #bench-main-plot-title {
+        z-index: 3; 
+        position: relative;
+        top: 50px;
+        left: 10px;
+    }     
+
+    #bench-main-stats {
+        display: none;
+    }
+
+    #bench-plots {
+        width: 100%;
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+
+    #thermo-footer {
+        width: 100%;
+        margin-left: 0;
+    }
+}
+
+@media screen and (min-width: 900px) {
+    #left-side-bar {
+        display: block;
+    }
+
+    #thermosphere-page {
+        margin-left: 308px;
+    }
+
+    #plots-container {
+        width: 70%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .TOC {
+        display: block;
+    }
+
+    #content {
+        background-color: white;
+        margin-left: 225px;
+        margin-right: 20px;
+        margin-bottom: 20px;
+        margin-top: 20px;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-bottom: 10px;
+        border-radius: 10px;
+
+        position: relative;
+        bottom: 258px;
+
+        /* border: 2px solid black; */
+    }
+
+    #therm-main-menu-button {
+        display: none;
+    }
+
+    #close-main-menu {
+        display: none;
+    }
+
+    #thermosphere-main-plot-title {
+        z-index: 3;
+        position: relative;
+        top: 50px;
+        left: 120px;
+    }
+
+    #bench-main-plot-title {
+        z-index: 3; 
+        position: relative;
+        top: 50px;
+        left: 160px;
+    }     
+    
+    #bench-main-stats {
+        display: block;
+    }
+
+    #bench-plots {
+        width: 70%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    #thermo-footer {
+        width: 80%;
+        margin-left: 20%;
+    }
+}
+
+#left-side-bar {
+    z-index: 21; 
+    width: 308px;
+    background-color: #f4f6f7;
+    padding: 20px;
+    height: 100%;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    margin-top: 0px;
+    box-shadow: 5px 5px 5px #ededed;
+}
+
 /*
 DATA SELECTION MENU
 */
+
 
 #data-selection {
     height: 70%;
@@ -115,22 +279,6 @@ THERMOSPHERE DESCRIPTION PAGE
     text-decoration: none;
 }
 
-#content {
-    background-color: white;
-    margin-left: 225px;
-    margin-right: 20px;
-    margin-bottom: 20px;
-    margin-top: 20px;
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-bottom: 10px;
-    border-radius: 10px;
-
-    position: relative;
-    bottom: 258px;
-
-    /* border: 2px solid black; */
-}
 
 #challenges-list {
     background: #fff9e6;
@@ -163,6 +311,7 @@ THERMOSPHERE ANALYSIS DASHBOARD AND BENCHMARK PAGES
     align-items: center;
     box-shadow: 5px 5px 10px #e2e2e2;
     border-radius: 20px;
+    z-index: 9;
 }
 
 .tpid-menu-button:hover {
@@ -191,7 +340,7 @@ THERMOSPHERE ANALYSIS DASHBOARD AND BENCHMARK PAGES
     position: fixed;
     top: 0px;
     right: 0px;
-    z-index: 4;
+    z-index: 20;
     box-shadow: 5px 5px 10px #e2e2e2;
     padding: 10px;
     display: none;
