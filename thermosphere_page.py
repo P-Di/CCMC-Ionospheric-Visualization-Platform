@@ -86,64 +86,70 @@ data_selection = html.Div(
     id="data-selection",
     children=[
         # Begin paramter selection Dropdown
-        html.Div([
-            html.Div(html.Strong("Select a Parameter to Analyze")),
-            dcc.Dropdown(
-                options=[
-                    "mean_OC", 
-                    "debias_mean_OC", 
-                    "stddev_OC", 
-                    "R"
-                ], 
-                value="mean_OC", 
-                id="parameter_selection",
-                style={
-                    "margin-top": "15px", 
-                }
-            )
-        ]), 
+        html.Div(
+            [
+                html.Div(html.Strong("Select a Parameter to Analyze")),
+                dcc.Dropdown(
+                    options=[
+                        "mean_OC", 
+                        "debias_mean_OC", 
+                        "stddev_OC", 
+                        "R"
+                    ], 
+                    value="mean_OC", 
+                    id="parameter_selection",
+                )
+            ],
+            style={'margin-top': '10px'}
+        ), 
         # End paramter selection Dropdown
 
         # Begin event catagory selection Dropdown
-        html.Div([
-            html.Div(html.Strong("Select Event Category")),
-            dcc.Dropdown(
-                options=[
-                    {"label": "All", "value": "all"},
-                    {"label": "Single Peak", "value": "single_peak"},
-                    {"label": "Multiple Peak", "value": "multiple_peak"}
-                ], 
-                value="all", 
-                id="category_selections",
-                style={
-                    "margin-top": "10px", 
-                }
-            )
-        ]),
+        html.Div(
+            [
+                html.Div(html.Strong("Select Event Category")),
+                dcc.Dropdown(
+                    options=[
+                        {"label": "All", "value": "all"},
+                        {"label": "Single Peak", "value": "single_peak"},
+                        {"label": "Multiple Peak", "value": "multiple_peak"}
+                    ], 
+                    value="all", 
+                    id="category_selections",
+                )
+            ],
+            style={'margin-top': '10px'}
+        ),
         # End event category selection Dropdown
 
         # Begin satellite selection Checklist
-        html.Div([
-            html.Div(html.Strong("Satellites")),
-            dcc.Checklist(
-                id="satellites",
-                options=satellite_opts,
-                value=satellites
-            ),
-            html.Div(satellite_labels, id="satellite-labels"),
-        ]),
+        html.Div(
+            [
+                html.Div(html.Strong("Satellites")),
+                dcc.Checklist(
+                    id="satellites",
+                    options=satellite_opts,
+                    value=satellites
+                ),
+                html.Div(satellite_labels, id="satellite-labels"),
+            ],
+            style={'margin-top': '10px'}
+        ),
         # End satellite selection Checklist
 
         # Begin model selection Checklist
-        html.Div([
-            html.Div(html.Strong("Models")),
-            dcc.Checklist(
-                id="models",
-                options=model_opts,
-                value=models
-            ),
-            html.Div(model_labels, id="model-labels")
-        ]),
+        html.Div(
+            [
+                html.Div(html.Strong("Models")),
+                dcc.Checklist(
+                    id="models",
+                    options=model_opts,
+                    value=models
+                ),
+                html.Div(model_labels, id="model-labels")
+            ],
+            style={'margin-top': '10px'}
+        ),
         # End model selection Checklist
 
         # Begin satellite and model popup
@@ -178,18 +184,6 @@ thermosphere_layout = html.Div(
             children=html.Img(src='assets/menu-icon.svg', width="60px"),
         ),
         html.Div(
-            # style={
-            #     "zIndex": "2", 
-            #     'width': '308px', 
-            #     'background-color': '#f4f6f7', 
-            #     'padding': '20px', 
-            #     'height': '100%', 
-            #     'position': 'fixed',
-            #     'top': '0px',
-            #     'left': '0px',
-            #     'margin-top': '0px',
-            #     'box-shadow': '5px 5px 5px #ededed',
-            # },
             id="left-side-bar",
             children=[
                 create_x_button("close-main-menu"),
@@ -198,25 +192,39 @@ thermosphere_layout = html.Div(
                     src=image_paths[0],
                     style={
                         "zIndex": "2",
-                        'height': '100px', 
-                        'width': 'auto%', 
-                        'background-color': '#f4f6f7'
+                        'width': '370px',
+                        'padding-top': '5px',
+                        'padding-bottom': '6px',
+                        'background-color': 'white',
+                        'border-bottom': '2px solid black',
                     }
                 ),
-                html.Div([
-                    html.Div(html.Strong("Project")),
-                    dcc.Dropdown(
-                        id="project",
-                        options=[
-                            {'label': 'Ionosphere Model Validation', 'value': 'IMV'},
-                            {'label': 'Thermosphere Neutral Density Assessment', 'value': "TNDA"},
-                            {'label': 'Ray Tracing', 'value': 'RT', 'disabled': True},
-                            {'label': 'GPS Positioning', 'value': 'GPS', 'disabled': True}
-                        ],
-                        value="TNDA",
-                    )
-                ]),
-                data_selection,
+                html.Div(
+                    [
+                        html.Div(
+                            [
+                                html.Div(html.Strong("Project")),
+                                dcc.Dropdown(
+                                    id="project",
+                                    options=[
+                                        {'label': 'Ionosphere Model Validation', 'value': 'IMV'},
+                                        {'label': 'Thermosphere Neutral Density Assessment', 'value': "TNDA"},
+                                        {'label': 'Ray Tracing', 'value': 'RT', 'disabled': True},
+                                        {'label': 'GPS Positioning', 'value': 'GPS', 'disabled': True}
+                                    ],
+                                    value="TNDA",
+                                )
+                            ],
+                            style={'padding': '20px'}
+                        ),
+                        data_selection,
+                    ],
+                    style={
+                        'height': '100%',
+                        'box-shadow': '5px 0px 5px #ededed',
+                        'background-color': 'white',
+                    }
+                )
             ]
         ),
         html.Div(
@@ -230,11 +238,6 @@ thermosphere_layout = html.Div(
                 html.Div(
                     id='img_container', 
                     children=[ #Airflow Image and text.
-                        html.Img(
-                            id = 'picture_bg', 
-                            src=image_paths[1],
-                            style={"zIndex": "3", 'top': '0', 'width': '100%', 'height': '100px', 'object-fit': 'cover'}
-                        ),
                         html.Div(
                             id='text_overlay',
                             children=[
@@ -243,13 +246,15 @@ thermosphere_layout = html.Div(
                                     id='text_box', 
                                     style={
                                         "zIndex": "4",
-                                        'position': 'absolute', 
-                                        'top': '10px', 
-                                        'left': '10px', 
                                         'color': 'white', 
-                                        'font-size': '50px', 
+                                        'background-color': 'black',
+                                        'font-size': '38px', 
                                         'overflowX': 'hidden', 
-                                        'white-space': 'nowrap'
+                                        'white-space': 'nowrap',
+                                        'padding-top': '9px',
+                                        'padding-bottom': '9px',
+                                        'padding-left': '5px',
+                                        'margin-bottom': '0px',
                                     }
                                 )
                             ]
@@ -261,17 +266,14 @@ thermosphere_layout = html.Div(
                         'margin': '0', 
                         'width': '100%', 
                         'height': '100%', 
-                        'position': 'relative', 
-                        # 'left': '20%',
                         'overflowX': 'hidden', 
-                        'width':'100%'
                     }
                 ),
                 # This div contains the dcc Tab components that allow the user to switch between tabs
                 html.Div(
                     style={
                         "width": "100%",
-                        "background": "white"
+                        "background": "white",
                     },
                     children=[
                         dcc.Tabs(

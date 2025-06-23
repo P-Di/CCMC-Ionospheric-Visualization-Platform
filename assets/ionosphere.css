@@ -11,11 +11,6 @@
 
     #ionosphere-left-side-bar {
         display: none;
-        width: 370px;
-        height: 100%;
-        position: fixed;
-        z-index: 10;
-        background-color: #f4f6f7;
     }
 
     #ion-main-menu-button {
@@ -36,6 +31,7 @@
         top: 10px;
         right: 10px;
         z-index: 11;
+        background-color: white;
     }
 
     #ion-footer {
@@ -50,11 +46,6 @@
 
     #ionosphere-left-side-bar {
         display: block;
-        width: 370px;
-        height: 100%;
-        position: fixed;
-        z-index: 10;
-        background-color: #f4f6f7;
     }
 
     #ion-main-menu-button {
@@ -68,4 +59,13 @@
     #ion-footer {
         width: 80%;
     }
+}
+
+#ionosphere-left-side-bar {
+    width: 370px;
+    height: 100%;
+    position: fixed;
+    z-index: 10;
+    background-color: #f4f6f7;
+    overflow-y: scroll;
 }

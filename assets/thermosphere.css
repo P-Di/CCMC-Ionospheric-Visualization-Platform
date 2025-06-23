@@ -6,10 +6,16 @@
 @media screen and (max-width: 900px) {
     #left-side-bar {
         display: none;
+        padding-bottom: 30px;
+        overflow-y: scroll;
     }
 
     #thermosphere-page {
         margin-left: 0px; 
+    }
+    
+    #tpid-menu-button-2 {
+        display: none;
     }
 
     #plots-container {
@@ -46,6 +52,7 @@
         right: 10px;
         top: 10px;
         display: block;
+        background-color: white;
     }
 
     #thermosphere-main-plot-title {
@@ -84,7 +91,11 @@
     }
 
     #thermosphere-page {
-        margin-left: 308px;
+        margin-left: 370px;
+    }
+    
+    #tpid-menu-button-2 {
+        display: block;
     }
 
     #plots-container {
@@ -154,15 +165,13 @@
 
 #left-side-bar {
     z-index: 21; 
-    width: 308px;
-    background-color: #f4f6f7;
-    padding: 20px;
+    width: 370px;
+    background-color: white;
     height: 100%;
     position: fixed;
     top: 0px;
     left: 0px;
     margin-top: 0px;
-    box-shadow: 5px 5px 5px #ededed;
 }
 
 /*
@@ -171,11 +180,11 @@ DATA SELECTION MENU
 
 
 #data-selection {
-    height: 70%;
-    width: 279px;
-    overflow-y: auto;
-    position: fixed;
+    height: 100%;
+    width: 340px;
+    overflow-y: hidden;
     padding-right: 10px;
+    padding-left: 20px;
 }
 
 #satellite-description-popup {
@@ -184,7 +193,7 @@ DATA SELECTION MENU
     position: fixed;
     top: 0px;
     left: 0px;
-    width: 307px;
+    width: 370px;
     height: 100%;
     z-index: 5;
     overflow-y: auto;
@@ -193,7 +202,7 @@ DATA SELECTION MENU
 #satellite-desc-x-button {
     position: absolute;
     top: 10px;
-    left: 270px;
+    left: 332px;
 }
 
 #satellite-desc-x-button:hover {
@@ -203,20 +212,19 @@ DATA SELECTION MENU
 
 #satellite-labels {
     position: absolute;
-    top: 169px;
-    left: 10px;
+    top: 353px;
+    left: 33px;
 }
 
 #model-labels {
     position: absolute;
-    top: 312px;
-    left: 10px;
+    top: 507px;
+    left: 33px;
 }
 
 .checklist-label {
     margin-left: 5px;
     border-radius: 5px;
-    padding-left: 5px;
     display: flex;
     width: 248px; 
     justify-content: space-between;

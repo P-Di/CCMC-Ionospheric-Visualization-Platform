@@ -124,15 +124,18 @@ ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '
         id='ionosphere-left-side-bar',
         children=[
             create_x_button("close-ion-main-menu"),
-            html.Div( #Create a background for the CCMC logo image.
-                style={'width': '370px', 'background-color': '#f4f6f7', 
-                            'height': '200px', 'position': 'fixed',
-                            'margin-top': '0px','box-shadow': '5px 5px 5px #ededed ',
-                    "zIndex": "1" # Control the layers of the title, with this being the lowest layer.
-                }
-            ),
-            html.Img(id="image1", src=image_paths[0], style={"zIndex": "2",'height': '100px', 'width': 'auto%', 'position': 'relative',
-                                            'background-color': '#f4f6f7  ','padding-right': '6%', }),
+            html.Img(
+                id="image1", 
+                src=image_paths[0], 
+                style={
+                    "zIndex": "2",
+                    'width': '370px', 
+                    'position': 'relative',
+                    'background-color': 'white',
+                    'border-bottom': '2px solid black',
+                    'padding-top': '5px',
+                    'padding-bottom': '6px',
+                }),
             # Format the window on the left of the webpage to include all the dropdown menus.
             html.Div(
                 [
@@ -170,7 +173,7 @@ ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '
                         options=options_list[1], multi=True, value = plot_default[0]),
                 ],
                 id="ion-data-selection-menu", 
-                style={"zIndex": "2", 'background-color': '#f4f6f7', 
+                style={"zIndex": "2", 'background-color': 'white', 
                             'padding': '20px', 'height': '100%', 'position': 'relative',
                             'margin-top': '0px','box-shadow': '5px 5px 5px #ededed '
                 }
@@ -189,11 +192,6 @@ ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '
             html.Div(
                 id='img_container', 
                 children=[ #Airflow Image and text.
-                    html.Img(
-                        id = 'picture_bg', 
-                        src=image_paths[1],
-                        style={"zIndex": "3", 'top': '0', 'width': '100%', 'height': '100px', 'object-fit': 'cover'}
-                    ),
                     html.Div(
                         id='text_overlay',
                         children=[
@@ -202,13 +200,14 @@ ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '
                                 id='text_box', 
                                 style={
                                     "zIndex": "4",
-                                    'position': 'absolute', 
-                                    'top': '10px', 
-                                    'left': '10px', 
                                     'color': 'white', 
-                                    'font-size': '50px', 
+                                    'background-color': 'black',
+                                    'font-size': '38px', 
                                     'overflowX': 'hidden', 
-                                    'white-space': 'nowrap'
+                                    'white-space': 'nowrap',
+                                    'padding-left': '5px',
+                                    'padding-top': '9px',
+                                    'padding-bottom': '9px',
                                 }
                             )
                         ]
