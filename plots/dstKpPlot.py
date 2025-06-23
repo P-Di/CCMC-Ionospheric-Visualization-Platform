@@ -17,7 +17,7 @@ def dst_kp_plot(YR, dstdata):
         yymmdd1 = dataDate.strftime("%Y/%m/%d")
         dataDate = datetime(YY,MM,DoM1+2,0,0)
         yymmdd2 = dataDate.strftime("%Y/%m/%d")
-        yymm = dataDate.strftime("%Y%m")
+        #yymm = dataDate.strftime("%Y%m")
 
         #Add the bar plot with the data formatted with the above code. Title y axis, and give the line a color.
         fig.add_trace( 
@@ -53,12 +53,12 @@ def dst_kp_plot(YR, dstdata):
     fig.update_layout(plot_bgcolor= "white", paper_bgcolor= "white")
     fig.update_layout(showlegend=False)
     fig['layout'].update(annotations=[
-        dict(x=15, y=13,xref='x', yref='y',text='Quiet phase',showarrow=False, font_size=16),
-        dict(x=37.5, y=13,xref='x', yref='y',text='Main phase',showarrow=False, font_size=16),
-        dict(x=58, y=13, xref='x', yref='y', text='Recovery phase',showarrow=False, font_size=16),
-        dict(x=15, y=13,xref='x', yref='y',text='Quiet phase',showarrow=False, font_size=16),
-        dict(x=37.5, y=13,xref='x', yref='y',text='Main phase',showarrow=False, font_size=16),
-        dict(x=58, y=13, xref='x', yref='y', text='Recovery phase',showarrow=False, font_size=16),
+        dict(x=11, y=13,xref='x', yref='y',text='Quiet phase',showarrow=False, font_size=16),
+        dict(x=28.5, y=13,xref='x', yref='y',text='Main phase',showarrow=False, font_size=16),
+        dict(x=55, y=13, xref='x', yref='y', text='Recovery phase',showarrow=False, font_size=16),
+        dict(x=11, y=13,xref='x', yref='y',text='Quiet phase',showarrow=False, font_size=16),
+        dict(x=28.5, y=13,xref='x', yref='y',text='Main phase',showarrow=False, font_size=16),
+        dict(x=55, y=13, xref='x', yref='y', text='Recovery phase',showarrow=False, font_size=16),
 
         ])
     return fig

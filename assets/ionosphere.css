@@ -59,6 +59,10 @@
     #ion-footer {
         width: 80%;
     }
+
+    #description-page {
+        margin-top: 40px;
+    }
 }
 
 #ionosphere-left-side-bar {
