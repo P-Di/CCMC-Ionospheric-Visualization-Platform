@@ -27,6 +27,7 @@ import des_tab as dt
 
 import thermosphere_page as tp
 
+from thermosphere_page import create_x_button
 from thermosphere_helpers import popups
 
 #Import data.
@@ -122,99 +123,121 @@ app.config.suppress_callback_exceptions = True
 app.scripts.append_script({ 'external_url' : mathjax })
 #Define the layout: Set the background to a light gray, delete all margines.
 ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, children=[  
-    html.Div( #Create a background for the CCMC logo image.
-        style={'width': '20%', 'background-color': '#f4f6f7', 
-                      'height': '200px', 'position': 'fixed',
-                      'margin-top': '0px','box-shadow': '5px 5px 5px #ededed ',
-            "zIndex": "1" # Control the layers of the title, with this being the lowest layer.
-        }
-    ),
-
-    # Add the properly formatted CCMC image and airflow photo to the top of the page.
-    html.Img(id="image1", src=image_paths[0], style={"zIndex": "2",'height': '100px', 'width': '20%', 'position': 'fixed',
-                                    'background-color': '#f4f6f7  ','padding-right': '6%', }),
     html.Div(
-        id='img_container', 
-        children=[ #Airflow Image and text.
+        id='ion-main-menu-button',
+        children=html.Img(src='assets/menu-icon.svg', width="60px")
+    ),
+    html.Div(
+        id='ionosphere-left-side-bar',
+        children=[
+            create_x_button("close-ion-main-menu"),
             html.Img(
-                id = 'picture_bg', 
-                src=image_paths[1],
-                style={"zIndex": "3", 'top': '0', 'width': '100%', 'height': '100px', 'object-fit': 'cover'}
+                id="image1", 
+                src=image_paths[0], 
+                style={
+                    "zIndex": "2",
+                    'width': '370px', 
+                    'position': 'relative',
+                    'background-color': 'white',
+                    'border-bottom': '2px solid black',
+                    'padding-top': '5px',
+                    'padding-bottom': '6px',
+                }),
+            # Format the window on the left of the webpage to include all the dropdown menus.
+            html.Div(
+                [
+                    html.Div(children=[html.B(children='Project')], style=dstyles[2]),
+                    dcc.Dropdown(
+                        id='project',
+                        options=[
+                            {'label': 'Ionosphere Model Validation', 'value': 'IMV'},
+                            {'label': 'Thermosphere Neutral Density Assessment', 'value': "TNDA"},
+                            {'label': 'Ray Tracing', 'value': 'RT', 'disabled': True},
+                            {'label': 'GPS Positioning', 'value': 'GPS', 'disabled': True}
+                        ], 
+                        value = 'IMV'
+                    ),
+                    html.Div(children=[html.B(children='Storm ID')], style=dstyles[2]),
+                    dcc.Dropdown(id='year', options=[
+                        {'label': '2013-03-TP-01', 'value': '201303'},
+                        {'label': '2021-11-TP-01', 'value': '202111'}], multi=True, value = '202111'),
+                    html.Div(children=[html.B(children='Observation')], style=dstyles[2]),
+                    dcc.Dropdown(id='observation', options=[
+                        {'label': 'Madrigal TEC', 'value': 'TEC'},
+                        {'label': 'foF2_COSMIC2', 'value': 'FC2'},
+                        {'label': 'hmF2_COSMIC2', 'value': 'HC2'},
+                        {'label': 'foF2_ionsonde', 'value': 'FI', 'disabled': True},
+                        {'label': 'hmF2_ionsonde', 'value': 'HI', 'disabled': True}], value = 'TEC'),
+                    html.Div(children=[html.B(children='Model Type')], style=dstyles[2]),
+                    dcc.Dropdown(id='multi',
+                        options=model_list[0], multi=True,  value = '0'),
+                    html.Div(children=[html.B(children='Task')], style=dstyles[2]),
+                    dcc.Dropdown(id='task', options=[
+                        {'label': 'Model-Data Comparison', 'value': 'MC'},
+                        {'label': 'Skill Scores', 'value': 'SCE'}], value = 'MC'),
+                    html.Div(children=[html.B(children='Plot')], style=dstyles[2]),
+                    dcc.Dropdown(id='plot',
+                        options=options_list[1], multi=True, value = plot_default[0]),
+                ],
+                id="ion-data-selection-menu", 
+                style={"zIndex": "2", 'background-color': 'white', 
+                            'padding': '20px', 'height': '100%', 'position': 'relative',
+                            'margin-top': '0px','box-shadow': '5px 5px 5px #ededed '
+                }
+            ),
+        ]
+    ),
+    html.Div(
+        id='ionosphere-page',
+        children=[
+            # Add the properly formatted CCMC image and airflow photo to the top of the page.
+            dbc.Tooltip( #Airflow Image Credits.
+                "Image Credit: NASA/Don Pettit",
+                target="picture_bg", 
+                placement="bottom"
             ),
             html.Div(
-                id='text_overlay',
-                children=[
-                    html.P(
-                        "CCMC ITMAP-Ionosphere-Thermosphere Model Assessment & Validation Platform", 
-                        id='text_box', 
-                        style={
-                            "zIndex": "4",
-                            'position': 'absolute', 
-                            'top': '0px', 
-                            'left': '10px', 
-                            'color': 'white', 
-                            'font-size': '37px', 
-                            'overflowX': 'hidden', 
-                            'white-space': 'normal'
-                        }
+                id='img_container', 
+                children=[ #Airflow Image and text.
+                    html.Div(
+                        id='text_overlay',
+                        children=[
+                            html.P(
+                                "CCMC ITMAP-Ionosphere-Thermosphere Model Assessment and Validation Platform", 
+                                id='text_box', 
+                                style={
+                                    "zIndex": "4",
+                                    'color': 'white', 
+                                    'background-color': 'black',
+                                    'font-size': '38px', 
+                                    'overflowX': 'hidden', 
+                                    'white-space': 'nowrap',
+                                    'padding-left': '5px',
+                                    'padding-top': '9px',
+                                    'padding-bottom': '9px',
+                                    'margin-bottom': '0px',
+                                }
+                            )
+                        ]
                     )
-                ]
-            )
-        ],
-        style={
-            "zIndex": "3", 
-            'padding': '0', 
-            'margin': '0', 
-            'width': '100%', 
-            'height': '100%', 
-            'position': 'relative', 
-            'margin-left': '20%',
-            'overflowX': 'hidden', 
-            'width':'80%'
-        }
-    ),
+                ],
+                style={
+                    "zIndex": "3", 
+                    'padding': '0', 
+                    'margin': '0', 
+                    'width': '100%', 
+                    'height': '100%', 
+                    'position': 'relative', 
+                    'margin-left': '0px',
+                    'overflowX': 'hidden', 
+                    'width':'100%'
+                }
+            ),
     # Format the window on the left of the webpage to include all the dropdown menus.
-    html.Div([
-                html.Div(children=[html.B(children='Project')], style=dstyles[2]),
-                dcc.Dropdown(
-                    id='project',
-                    options=[
-                        {'label': 'Ionosphere Model Validation', 'value': 'IMV'},
-                        {'label': 'Thermosphere Neutral Density Assessment', 'value': "TNDA"},
-                        {'label': 'Ray Tracing', 'value': 'RT', 'disabled': True},
-                        {'label': 'GPS Positioning', 'value': 'GPS', 'disabled': True}
-                    ], 
-                    value = 'IMV'
-                ),
-                html.Div(children=[html.B(children='Storm ID')], style=dstyles[2]),
-                dcc.Dropdown(id='year', options=[
-                    {'label': '2013-03-TP-01', 'value': '201303'},
-                    {'label': '2021-11-TP-01', 'value': '202111'}], multi=True, value = '202111'),
-                html.Div(children=[html.B(children='Observation')], style=dstyles[2]),
-                dcc.Dropdown(id='observation', options=[
-                    {'label': 'Madrigal TEC', 'value': 'TEC'},
-                    {'label': 'foF2_COSMIC2', 'value': 'FC2'},
-                    {'label': 'hmF2_COSMIC2', 'value': 'HC2'},
-                    {'label': 'foF2_ionsonde', 'value': 'FI', 'disabled': True},
-                    {'label': 'hmF2_ionsonde', 'value': 'HI', 'disabled': True}], value = 'TEC'),
-                html.Div(children=[html.B(children='Model Type')], style=dstyles[2]),
-                dcc.Dropdown(id='multi',
-                    options=model_list[0], multi=True,  value = '0'),
-                html.Div(children=[html.B(children='Task')], style=dstyles[2]),
-                dcc.Dropdown(id='task', options=[
-                    {'label': 'Model-Data Comparison', 'value': 'MC'},
-                    {'label': 'Skill Scores', 'value': 'SCE'}], value = 'MC'),
-                html.Div(children=[html.B(children='Plot')], style=dstyles[2]),
-                dcc.Dropdown(id='plot',
-                    options=options_list[1], multi=True, value = plot_default[0]),
-            ], style={"zIndex": "1", 'width': '20%', 'background-color': '#f4f6f7', 
-                      'padding': '20px', 'height': '100%', 'position': 'fixed',
-                      'margin-top': '0px','box-shadow': '5px 5px 5px #ededed '
-}),
     #Format the right 80% of the page, which are created from different graphs that are appended to the children of the rows and columns using a callback.
     dcc.Loading(
         
-        html.Div(style = {'margin-left' : '20%'}, children=[ 
+        html.Div(children=[ 
         dcc.Tabs(
             id="tabs",
             style={"zIndex": "1"},
@@ -225,9 +248,11 @@ ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '
                 dcc.Tab(label="Analysis Dashboard", value="dashboard", style={"background-color": "white", "color": "#e59b1c"}, 
                     selected_style={"background-color": "#e59b1c", "color": "white", "border": "none"})
             ]),
-        html.Div(id="tabs-display") 
-    ])),
+            html.Div(id="tabs-display") 
+        ])),
+    ]),
             html.Footer(
+            id="ion-footer",
             children=[html.A("Accessibility", href='https://www.nasa.gov/accessibility', target="_blank"), html.Span(children =" | ")          
 ,html.A("Privacy Policy", href='https://www.nasa.gov/privacy/', target="_blank"), html.Span(children =" | Curators: Paul DiMarzio, Joseph Sypal, and Dr. Min-Yang Chou | NASA Official: Maria Kuznetsova")],
             style={
@@ -236,8 +261,7 @@ ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '
                 "padding": "10px",
                 "backgroundColor": "#f1f1f1",
                 "position": "relative", 
-                "bottom": 0,
-                "width": "80%"})])
+                "bottom": 0})])
 
 app.layout = html.Div(
     id="main-content",
@@ -252,8 +276,6 @@ app.layout = html.Div(
 def select_project(project):
     if (project == "TNDA"):
         return tp.thermosphere_layout
-    elif (project== "GPS"):
-        return gps_layout
     elif (project == "IMV"):
         return ionosphere_layout
     
@@ -857,6 +879,38 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
 )
 def close_description_popup(n_clicks):
     return {"display": "none"}, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+
+@app.callback(
+    Output("left-side-bar", "style"),
+    Input("therm-main-menu-button", "n_clicks"),
+    prevent_initial_call=True
+)
+def open_main_menu(n_clicks):
+    return {"display": "block"}
+
+@app.callback(
+    Output("left-side-bar", "style", allow_duplicate=True),
+    Input("close-main-menu", "n_clicks"),
+    prevent_initial_call=True
+)
+def close_main_menu(n_clicks):
+    return {"display": "none"}
+
+@app.callback(
+    Output("ionosphere-left-side-bar", "style", allow_duplicate=True),
+    Input("ion-main-menu-button", "n_clicks"),
+    prevent_initial_call=True
+)
+def open_ion_main_menu(n_clicks):
+    return {"display": "block"}
+
+@app.callback(
+    Output("ionosphere-left-side-bar", "style", allow_duplicate=True),
+    Input("close-ion-main-menu", "n_clicks"),
+    prevent_initial_call=True
+)
+def close_ion_main_menu(n_clicks):
+    return {"display": "none"}
     
 server = app.server # Expose the Flask server for Gunicorn
 

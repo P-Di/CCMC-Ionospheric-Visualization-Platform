@@ -23,7 +23,6 @@ description_page2 = html.Div(
             [
                 html.Div(
                     [
-                        html.H1("About"),
                         html.Div([
 
                             html.Br(),

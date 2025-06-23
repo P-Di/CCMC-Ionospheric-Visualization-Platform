@@ -86,64 +86,70 @@ data_selection = html.Div(
     id="data-selection",
     children=[
         # Begin paramter selection Dropdown
-        html.Div([
-            html.Div(html.Strong("Select a Parameter to Analyze")),
-            dcc.Dropdown(
-                options=[
-                    "mean_OC", 
-                    "debias_mean_OC", 
-                    "stddev_OC", 
-                    "R"
-                ], 
-                value="mean_OC", 
-                id="parameter_selection",
-                style={
-                    "margin-top": "15px", 
-                }
-            )
-        ]), 
+        html.Div(
+            [
+                html.Div(html.Strong("Select a Parameter to Analyze")),
+                dcc.Dropdown(
+                    options=[
+                        "mean_OC", 
+                        "debias_mean_OC", 
+                        "stddev_OC", 
+                        "R"
+                    ], 
+                    value="mean_OC", 
+                    id="parameter_selection",
+                )
+            ],
+            style={'margin-top': '10px'}
+        ), 
         # End paramter selection Dropdown
 
         # Begin event catagory selection Dropdown
-        html.Div([
-            html.Div(html.Strong("Select Event Category")),
-            dcc.Dropdown(
-                options=[
-                    {"label": "All", "value": "all"},
-                    {"label": "Single Peak", "value": "single_peak"},
-                    {"label": "Multiple Peak", "value": "multiple_peak"}
-                ], 
-                value="all", 
-                id="category_selections",
-                style={
-                    "margin-top": "10px", 
-                }
-            )
-        ]),
+        html.Div(
+            [
+                html.Div(html.Strong("Select Event Category")),
+                dcc.Dropdown(
+                    options=[
+                        {"label": "All", "value": "all"},
+                        {"label": "Single Peak", "value": "single_peak"},
+                        {"label": "Multiple Peak", "value": "multiple_peak"}
+                    ], 
+                    value="all", 
+                    id="category_selections",
+                )
+            ],
+            style={'margin-top': '10px'}
+        ),
         # End event category selection Dropdown
 
         # Begin satellite selection Checklist
-        html.Div([
-            html.Div(html.Strong("Satellites")),
-            dcc.Checklist(
-                id="satellites",
-                options=satellite_opts,
-                value=satellites
-            ),
-            html.Div(satellite_labels, id="satellite-labels"),
-        ]),
+        html.Div(
+            [
+                html.Div(html.Strong("Satellites")),
+                dcc.Checklist(
+                    id="satellites",
+                    options=satellite_opts,
+                    value=satellites
+                ),
+                html.Div(satellite_labels, id="satellite-labels"),
+            ],
+            style={'margin-top': '10px'}
+        ),
         # End satellite selection Checklist
 
         # Begin model selection Checklist
-        html.Div([
-            html.Div(html.Strong("Models")),
-            dcc.Checklist(
-                id="models",
-                options=model_opts,
-                value=models
-            ),
-            html.Div(model_labels, id="model-labels")
-        ]),
+        html.Div(
+            [
+                html.Div(html.Strong("Models")),
+                dcc.Checklist(
+                    id="models",
+                    options=model_opts,
+                    value=models
+                ),
+                html.Div(model_labels, id="model-labels")
+            ],
+            style={'margin-top': '10px'}
+        ),
         # End model selection Checklist
 
         # Begin satellite and model popup
@@ -165,122 +171,125 @@ thermosphere_layout = html.Div(
         'margin': '0'
     }, 
     children=[
-        html.Div( #Create a background for the CCMC logo image.
+        html.Div(
+            id='therm-main-menu-button',
             style={
-            'width': '20%', 
-                'background-color': '#f4f6f7', 
-                'height': '200px', 
-                'position': 'fixed',
-                'margin-top': '0px',
-                'box-shadow': '5px 5px 5px #ededed ',
-                "zIndex": "1" # Control the layers of the title, with this being the lowest layer.
-            }
-        ),
-        # Add the properly formatted CCMC image and airflow photo to the top of the page.
-        html.Img(
-            id="image1", 
-            src=image_paths[0],
-            style={
-                "zIndex": "2",
-                'height': '100px', 
-                'width': 'auto%', 
-                'position': 'fixed',
-                'background-color': '#f4f6f7'
-            }
-        ),
-        dbc.Tooltip( #Airflow Image Credits.
-            "Image Credit: NASA/Don Pettit",
-            target="picture_bg", 
-            placement="bottom"
+                "background-color": "#e59b1c",
+                "position": "fixed",
+                "bottom": "20px",
+                "left": "20px",
+                "border-radius": "10px",
+                "z-index": "20",
+            },
+            children=html.Img(src='assets/menu-icon.svg', width="60px"),
         ),
         html.Div(
-            id='img_container', 
-            children=[ #Airflow Image and text.
+            id="left-side-bar",
+            children=[
+                create_x_button("close-main-menu"),
                 html.Img(
-                    id = 'picture_bg', 
-                    src=image_paths[1],
-                    style={"zIndex": "3", 'top': '0', 'width': '100%', 'height': '100px', 'object-fit': 'cover'}
+                    id="image1", 
+                    src=image_paths[0],
+                    style={
+                        "zIndex": "2",
+                        'width': '370px',
+                        'padding-top': '5px',
+                        'padding-bottom': '6px',
+                        'background-color': 'white',
+                        'border-bottom': '2px solid black',
+                    }
                 ),
                 html.Div(
-                    id='text_overlay',
-                    children=[
-                        html.P(
-                            "CCMC Ionospheric and Thermospheric Score Board", 
-                            id='text_box', 
-                            style={
-                                "zIndex": "4",
-                                'position': 'absolute', 
-                                'top': '10px', 
-                                'left': '10px', 
-                                'color': 'white', 
-                                'font-size': '50px', 
-                                'overflowX': 'hidden', 
-                                'white-space': 'nowrap'
-                            }
-                        )
-                    ]
+                    [
+                        html.Div(
+                            [
+                                html.Div(html.Strong("Project")),
+                                dcc.Dropdown(
+                                    id="project",
+                                    options=[
+                                        {'label': 'Ionosphere Model Validation', 'value': 'IMV'},
+                                        {'label': 'Thermosphere Neutral Density Assessment', 'value': "TNDA"},
+                                        {'label': 'Ray Tracing', 'value': 'RT', 'disabled': True},
+                                        {'label': 'GPS Positioning', 'value': 'GPS', 'disabled': True}
+                                    ],
+                                    value="TNDA",
+                                )
+                            ],
+                            style={'padding': '20px'}
+                        ),
+                        data_selection,
+                    ],
+                    style={
+                        'height': '100%',
+                        'box-shadow': '5px 0px 5px #ededed',
+                        'background-color': 'white',
+                    }
                 )
-            ],
-            style={
-                "zIndex": "3", 
-                'padding': '0', 
-                'margin': '0', 
-                'width': '100%', 
-                'height': '100%', 
-                'position': 'relative', 
-                'margin-left': '20%',
-                'overflowX': 'hidden', 
-                'width':'80%'
-            }
-        ),
-        html.Div(
-            style={
-                "zIndex": "2", 
-                'width': '20%', 
-                'background-color': '#f4f6f7', 
-                'padding': '20px', 
-                'height': '100%', 
-                'position': 'fixed',
-                'margin-top': '0px',
-                'box-shadow': '5px 5px 5px #ededed',
-            },
-            children=[
-                html.Div([
-                    html.Div(html.Strong("Project")),
-                    dcc.Dropdown(
-                        id="project",
-                        options=[
-                            {'label': 'Ionosphere Model Validation', 'value': 'IMV'},
-                            {'label': 'Thermosphere Neutral Density Assessment', 'value': "TNDA"},
-                            {'label': 'Ray Tracing', 'value': 'RT', 'disabled': True},
-                            {'label': 'GPS Positioning', 'value': 'GPS', 'disabled': True}
-                        ],
-                        value="TNDA",
-                    )
-                ]),
-                data_selection,
             ]
         ),
-        # This div contains the dcc Tab components that allow the user to switch between tabs
         html.Div(
-            style={
-                "width": "80%",
-                "margin-left": "20%",
-                "background": "white"
-            },
+            id="thermosphere-page",
             children=[
-                dcc.Tabs(
-                    id="tabs",
-                    value="description",
+                dbc.Tooltip( #Airflow Image Credits.
+                    "Image Credit: NASA/Don Pettit",
+                    target="picture_bg", 
+                    placement="bottom"
+                ),
+                html.Div(
+                    id='img_container', 
+                    children=[ #Airflow Image and text.
+                        html.Div(
+                            id='text_overlay',
+                            children=[
+                                html.P(
+                                    "CCMC ITMAP-Ionosphere-Thermosphere Model Assessment and Validation Platform", 
+                                    id='text_box', 
+                                    style={
+                                        "zIndex": "4",
+                                        'color': 'white', 
+                                        'background-color': 'black',
+                                        'font-size': '38px', 
+                                        'overflowX': 'hidden', 
+                                        'white-space': 'nowrap',
+                                        'padding-top': '9px',
+                                        'padding-bottom': '9px',
+                                        'padding-left': '5px',
+                                        'margin-bottom': '0px',
+                                    }
+                                )
+                            ]
+                        )
+                    ],
+                    style={
+                        "zIndex": "3", 
+                        'padding': '0', 
+                        'margin': '0', 
+                        'width': '100%', 
+                        'height': '100%', 
+                        'overflowX': 'hidden', 
+                    }
+                ),
+                # This div contains the dcc Tab components that allow the user to switch between tabs
+                html.Div(
+                    style={
+                        "width": "100%",
+                        "background": "white",
+                    },
                     children=[
-                        dcc.Tab(label="Description", value="description", style={"background-color": "white", "color": "#e59b1c"}, 
-                            selected_style={"background-color": "#e59b1c", "color": "white", "border": "none"}),
-                        dcc.Tab(label="Analysis Dashboard", value="dashboard", style={"background-color": "white", "color": "#e59b1c"}, 
-                            selected_style={"background-color": "#e59b1c", "color": "white", "border": "none"}),
-                        dcc.Tab(label="Benchmark", value="benchmark", style={"background-color": "white", "color": "#e59b1c"}, 
-                            selected_style={"background-color": "#e59b1c", "color": "white", "border": "none"})
-                    ]),
-                html.Div(id="thermosphere-main-content")
+                        dcc.Tabs(
+                            id="tabs",
+                            value="description",
+                            children=[
+                                dcc.Tab(label="Description", value="description", style={"background-color": "white", "color": "#e59b1c"}, 
+                                    selected_style={"background-color": "#e59b1c", "color": "white", "border": "none"}),
+                                dcc.Tab(label="Analysis Dashboard", value="dashboard", style={"background-color": "white", "color": "#e59b1c"}, 
+                                    selected_style={"background-color": "#e59b1c", "color": "white", "border": "none"}),
+                                dcc.Tab(label="Benchmark", value="benchmark", style={"background-color": "white", "color": "#e59b1c"}, 
+                                    selected_style={"background-color": "#e59b1c", "color": "white", "border": "none"})
+                            ]),
+                        html.Div(id="thermosphere-main-content")
+                    ]
+                ),
             ]
         ),
         html.Footer(
@@ -290,14 +299,13 @@ thermosphere_layout = html.Div(
                 html.A("Privacy Policy", href='https://www.nasa.gov/privacy/', target="_blank"),
                 html.Span(children=" | Curators: Paul DiMarzio, Joseph Sypal, and Dr. Min-Yang Chou | NASA Official: Maria Kuznetsova")
             ],
+            id="thermo-footer",
             style={
-                'margin-left' : '20%',
                 "textAlign": "center",
                 "padding": "10px",
                 "backgroundColor": "#f1f1f1",
                 "position": "relative", 
                 "bottom": "0px",
-                "width": "80%"
             }
         )
     ]
@@ -476,23 +484,14 @@ def update_content(tab, parameter):
                 children="Storm IDs"
             ),
             html.Div(
-                style={
-                    "width": "70%",
-                    "margin-left": "auto",
-                    "margin-right": "auto"
-                },
+                id="plots-container",
                 children=[
                     html.Div([ # The main plot on the page, compares thermosphere models
                         html.Span([
                             html.Strong(f"Skills By Event: {parameter}"),
                             html.Span(" (Blue) Individual event. (Black) Average with one standard deviation."),
                             ],
-                            style={
-                                "z-index": "3", 
-                                "position": "relative",
-                                "top": "50px",
-                                "left": "120px"
-                            } 
+                            id="thermosphere-main-plot-title",
                         ),
                         dcc.Graph(
                             id="skills-by-event-plot"
@@ -549,23 +548,14 @@ def update_content(tab, parameter):
                 children="Storm IDs"
             ),
             html.Div(
-                style={
-                    "width": "70%",
-                    "margin-left": "auto",
-                    "margin-right": "auto"
-                },
+                id="bench-plots",
                 children=[
                     html.Div([
                         html.Span([
                             html.Strong(f"Skills By Event: {parameter}"),
                             html.Span(" (Blue) Individual event. (Black) Average with one standard deviation."),
                             ],
-                            style={
-                                "z-index": "3", 
-                                "position": "relative",
-                                "top": "50px",
-                                "left": "160px"
-                            } 
+                            id="bench-main-plot-title",
                         ),
                         dcc.Graph(
                             id="skills-by-event-plot",
