@@ -317,6 +317,57 @@ def gen_TIEGCM_Weimer_01_data():
         html.A("https://ccmc.gsfc.nasa.gov/models/TIE-GCM~2.0", href="https://ccmc.gsfc.nasa.gov/models/TIE-GCM~2.0", target="_blank")
     ], className="data-source-metadata")
 
+def gen_WACCMX_Weimer_01_data():
+    return html.Div([
+        html.H1("WACCMX-Weimer-01 Description", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P(
+            """
+            The NCAR Whole Atmosphere Community Climate Model with thermosphere and ionosphere extension 
+            (WACCM-X) is a self-consistent general circulation model. It fully couples the chemistry and 
+            dynamics, while calculating three-dimensional temperature, wind, composition, and ionospheric 
+            structures from the surface to the exobase (500-700 km). It is a configuration of the NCAR 
+            Community Earth System Model (CESM), which is currently based on the Community Atmosphere 
+            Model-6 (CAM-6) physics and the three-dimensional chemical transport Model for Ozone and 
+            Related chemical Tracers (MOZART) chemistry.            
+            """
+        ),
+        html.H2("Solution Type", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("First Principle"),
+        html.H2("Sollution Drivers", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("Solomon & Qian Bands; Weimer"),
+        html.H2("Version Number", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("CESM 2.2/WACCM-X 6.2"),
+        html.H2("Resolution (latitude, longitude, vertical, output cadence)", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("0.9°, 1.25°, 0.25 scale height in the thermosphere, 10 mins"),
+        html.H2("More Information", style={"font-size": "20px", "font-weight": "bold"}),
+        html.A("https://ccmc.gsfc.nasa.gov/models/WACCMX~2.2/", href="https://ccmc.gsfc.nasa.gov/models/WACCMX~2.2/", target="_blank")
+    ], className="data-source-metadata")
+
+def gen_WACCMX_Heelis_01_data():
+    return html.Div([
+        html.H1("WACCMX-Heelis-01 Description", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P(
+            """
+            The NCAR Whole Atmosphere Community Climate Model with thermosphere and ionosphere extension 
+            (WACCM-X) is a self-consistent general circulation model. It fully couples the chemistry and 
+            dynamics, while calculating three-dimensional temperature, wind, composition, and ionospheric 
+            structures from the surface to the exobase (500-700 km). It is a configuration of the NCAR 
+            Community Earth System Model (CESM), which is currently based on the Community Atmosphere 
+            Model-6 (CAM-6) physics and the three-dimensional chemical transport Model for Ozone and 
+            Related chemical Tracers (MOZART) chemistry.            
+            """
+        ),
+        html.H2("Solution Type", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("First Principle"),
+        html.H2("Sollution Drivers", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("Solomon & Qian Bands; Heelis-Kp"),
+        html.H2("Version Number", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("CESM 2.2/WACCM-X 6.2"),
+        html.H2("Resolution (latitude, longitude, vertical, output cadence)", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("0.9°, 1.25°, 0.25 scale height in the thermosphere, 10 mins"),
+        html.H2("More Information", style={"font-size": "20px", "font-weight": "bold"}),
+        html.A("https://ccmc.gsfc.nasa.gov/models/WACCMX~2.2/", href="https://ccmc.gsfc.nasa.gov/models/WACCMX~2.2/", target="_blank")
+    ], className="data-source-metadata")
 
 def gen_CTIPe_01_data():
     return html.Div([

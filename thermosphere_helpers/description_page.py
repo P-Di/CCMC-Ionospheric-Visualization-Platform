@@ -154,7 +154,7 @@ description_page = html.Div(
                         ),
                         html.P(
                             """
-                            To addres these challenges, an assessment of thermosphere models under storm conditions was initiated within the COSPR 
+                            To addres these challenges, an assessment of thermosphere models under storm conditions was initiated within the COSPAR 
                             ISWAT framework, leveraging the international collaborative network. This allows the community to systematically track
                             the progress of thermosphere models over time.
                             """
@@ -189,7 +189,7 @@ description_page = html.Div(
                         html.Div(
                             [
                                 html.H4("Single-Peak (SP) Storms"),
-                                html.P("Figure 2 (top) illustrates the four phases of a single-peak (SP) storm."),
+                                html.P("The top panel of Figure 2 illustrates the four phases of a single-peak (SP) storm."),
                                 html.H6(html.Strong("Phases:")),
                                 html.Ol([
                                     html.Li(
@@ -228,7 +228,7 @@ description_page = html.Div(
                                 html.H4("Multiple-Peaked (MP) Storms"),
                                 html.P(
                                     """
-                                    Figure 2 (bottom) illustrates the phases for double or multiple-peaked (MP) storms, exemplified by the 10–16 July 2004 
+                                    The bottom panel of Figure 2 illustrates the phases for double or multiple-peaked (MP) storms, exemplified by the 10–16 July 2004 
                                     event. For the MP storms, t₀ is defined as the time when ap reaches 80, similar to SP storms. In Figure 2 (bottom), 
                                     Phase 3 for MP storms is extended due to a second occurrence of ap = 80 at t = 1.4. The duration of Phase 3 varies, 
                                     ending when ap falls below 80 again (at t ≈ 3.0 in this example), plus an additional 36 hours. Phase 4 then extends 
@@ -250,9 +250,9 @@ description_page = html.Div(
                             dbc.Collapse(
                                 html.Div(
                                     [html.Img(className="description-fig", src="assets/Thermosphere_fig_2.png", alt="Figure 2."),
-                                    html.P(html.I("""Figure 2. The four phases of the assessment interval for single-peak (top) and multiple-peak (bottom) storms, with t0
-                          centered on the time of the first peak in ap with a minimum of 80. The X-axis represents the day relative to t0.
-                          Adapted from Bruinsma and Laurens (2024)."""))],
+                                    html.P(html.I("""Figure 2. The four phases (Phases 1–4) of the assessment interval for single-peak (top) and multiple-peak (bottom) storms, with t0 
+                                    centered on the time of the first peak in ap with a minimum of 80 (horizontal green line). The X-axis represents the day relative to t0. (Red) Ap index. 
+                                    (Blue) Orbit-mean neutral density. Adapted from Bruinsma and Laurens (2024)."""))],
                                     className="img-container"
                                 ),
                                 id="fig-2-collapse",
@@ -299,7 +299,8 @@ description_page = html.Div(
                                     html.Br(),
                                     html.P(html.I(
                                         """Table 1. The phases and their durations for single-peak (SP) and multiple-peaked (MP) storms, 
-                                        computed relative to t0, as listed below. Adapted from Bruinsma and Laurens (2024)."""
+                                        computed relative to t0, which centered on the time of the first peak in ap with 
+                                        a minimum of 80, as listed below. Adapted from Bruinsma and Laurens (2024)."""
                                     ))
                                 ]),
                                 id="phase-table-collapse",
@@ -378,8 +379,8 @@ description_page = html.Div(
                         html.Span([
                             "The raw model output for the models validated on the webpage is availiable at ",
                             html.A(
-                                "https://github.com/j0a8c2k1/CCCM-Thermospheric-Validation", 
-                                href="https://github.com/j0a8c2k1/CCCM-Thermospheric-Validation", 
+                                "https://github.com/j0a8c2k1/CCMC-Thermospheric-Validation", 
+                                href="https://github.com/j0a8c2k1/CCMC-Thermospheric-Validation", 
                                 target="_blank"
                             )
                         ])

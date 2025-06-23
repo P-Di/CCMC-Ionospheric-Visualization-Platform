@@ -15,6 +15,7 @@
 import plotly.graph_objects as go
 import plotly.express as px
 from dash import html, dcc
+import pandas as pd
 from pandas import DataFrame
 from pandas.api.typing import DataFrameGroupBy
 
@@ -50,6 +51,7 @@ def create_phase_stripplots(dataframe: DataFrame, parameter: str) -> list:
 
     :return plots: A list of dash html components containing the plots
     """
+    dataframe = dataframe.iloc[::-1]
     skills_by_phase_plots = []
     for model in dataframe["model"].unique():
         df = dataframe[dataframe["model"] == model]
@@ -129,7 +131,7 @@ def create_plots(
         filtered_df: DataFrame,
         parameter: str,
         first_model: str,
-        tpid_base_url: str
+        tpid_base_url: str,
     ) -> tuple[go.Figure, list[dict], list, list, list, list]:
     """
     | This function creates the plots and tables for the analysis dashboard and benchmark page on the Thermosphere web app.
@@ -160,6 +162,8 @@ def create_plots(
     :param tpid_base_url: A string containing the base url used in the hyperlinks in the tpid menu on the analysis dashboard and
                           benchmark pages.
 
+    :param model_order: A list of model names. This is used to ensure the main plot and main data table order the models consistently.
+
     :return main_plot: The main stripplot which plots all models for the 'total' phase
     :return table_data: The pivot table data obtained from `filtered_df`
     :return skills_by_phase_plots: A list of figures containing the skills by phase plots for the parameter
@@ -171,10 +175,12 @@ def create_plots(
                               * Multiple Peak Count
                               * Single Peak Count
     """
+    filtered_df = filtered_df.sort_values(by="model")
+    filtered_df = filtered_df.iloc[::-1]
     
     # create the elements for the main plot mean and std display
     main_plot_stats: DataFrame = filtered_df.groupby("model", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2)
-    main_plot_stats = main_plot_stats.iloc[::-1]
+    # main_plot_stats = main_plot_stats.iloc[::-1]
 
     # main plot only uses total phase data
     main_plot = create_main_stripplot(filtered_df[filtered_df["phase"] == "total"], main_plot_stats, parameter)
@@ -190,7 +196,7 @@ def create_plots(
             continue
         stats_label = html.Div(
             children=["Mean: " + str(row["mean"]), html.Br(), "StD: " + str(row["std"])],
-            style={"margin-top": "25px"}
+            style={"margin-top": "12px"}
         )
         formatted_main_plot_stats.append(stats_label)
 
@@ -207,6 +213,7 @@ def create_plots(
         .round(2)
     )
     skills_by_phase.reset_index(inplace=True)
+    skills_by_phase = skills_by_phase.sort_values(by="model")
     table_data = skills_by_phase.to_dict("records")
 
     # get tpid data
