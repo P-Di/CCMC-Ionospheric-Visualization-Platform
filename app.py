@@ -1,6 +1,7 @@
 #6/10/2024 - Revisions: Deleted imports, check data.py comments to see original.
 
 import numpy as np
+import thermosphere_helpers.description_page as dp
 # Import the dash library and modules 
 import dash
 from dash import dcc # Dash core componenets (dcc) for graphs and interactivity
@@ -20,6 +21,9 @@ import plots.tecRccPlot as tecRccPlot
 import multiFunc
 import plotSelection
 import plots.comparisonPlot as comparisonPlot
+import des_tab as dt
+# Imports image_paths, dstyles, and gps_layout
+#from gpsLayout import *
 
 import thermosphere_page as tp
 
@@ -31,6 +35,12 @@ csmc2_foF2 = np.load('data/foF2_202111_storm.npz')
 csmc2_hmF2 = np.load('data/hmF2_202111_storm.npz')
 dst_scatter_map = np.load('data/dst_scatter_map.npz', allow_pickle=True)
 image_paths = ['assets/CCMC.png', 'assets/airflow1.jpg']
+dstyles = [{'display': 'flex','overflowY': 'scroll','maxHeight': '43vh', 'overflowX': 'auto'}, 
+           {'height':'200px', 'width': '320px'}, {'margin-top': '20px', 'margin-bottom': '2px'}, 
+           {'height':'100%', 'width': '100%', 'min-width': '600px', 'min-height': '400px'}, {'overflowY': 'scroll', 'overflowX': 'auto'}, 
+           { 'height':'40vh', 'width': '100%', 'min-width': '33vh'}, {'height':'200px', 'min-width': '320px', 'width': '100%'}, 
+           {'height':'1200px', 'min-width': '600px', 'width': '100%'},
+           {'overflowY': 'scroll', "maxHeight":"40vh", 'border-radius': '20px', "backgroundColor": "white", }, {"border" : "none", "margin": "0", "padding": "0", "display": "none",}]
 
 obs_options=[[
                     {'label': 'Madrigal TEC', 'value': 'TEC'},
@@ -45,13 +55,6 @@ obs_options=[[
                     {'label': 'foF2_ionsonde', 'value': 'FI', 'disabled': True},
                     {'label': 'hmF2_ionsonde', 'value': 'HI', 'disabled': True}]]
 
-#Create styles for the graphs and rows
-dstyles = [{'display': 'flex','overflowY': 'scroll','maxHeight': '43vh', 'overflowX': 'auto'}, 
-           {'height':'200px', 'width': '320px'}, {'margin-top': '20px', 'margin-bottom': '2px'}, 
-           {'height':'100%', 'width': '100%', 'min-width': '600px', 'min-height': '400px'}, {'overflowY': 'scroll', 'overflowX': 'auto'}, 
-           { 'height':'40vh', 'width': '100%', 'min-width': '33vh'}, {'height':'200px', 'min-width': '320px', 'width': '100%'}, 
-           {'height':'1200px', 'min-width': '600px', 'width': '100%'},
-           {'display': 'flex','overflowY': 'scroll', 'height': '39vh', 'border-radius': '20px'}]
 #Create error message
 error = html.Div(
                 "No Comparison Available for Standard Model",
@@ -64,7 +67,9 @@ error = html.Div(
                     'fontSize': '24px',
                     'fontWeight': 'bold',
                     'color': 'black',
-                    'width': '100vw',
+                    'width': '100%',
+                    'margin-top': '199px',
+                    'margin-bottom': '200px',
                 }
             )
 
@@ -84,6 +89,7 @@ options_list = [[
                 {'label': 'Model Comparison', 'value' : 'SC_F'},
                 ],
                 [
+                {'label': 'Dst_kp', 'value' : 'DK_F'},
                 {'label': 'Normalized SS', 'value' : 'SN_F1'},
                 {'label': 'Sum_nSS', 'value' : 'SN_F2'},
                 {'label': 'Metric_Score', 'value' : 'MS_F'},
@@ -94,6 +100,7 @@ options_list = [[
                 {'label': 'TEC Change', 'value' : 'DEF_F1'},
                 {'label': 'Model Comparison', 'value' : 'SC_F'},],
                 [
+                {'label': 'Dst_kp', 'value' : 'DK_F'},
                 {'label': 'Normalized SS', 'value' : 'SN_F1'},
                 {'label': 'Sum_nSS', 'value' : 'SN_F2'},                
                 {'label': 'Metric_Score', 'value' : 'MS_F'},
@@ -109,7 +116,7 @@ for i in TITLES:
     model_list.append(sub_op_list)
         
 # Begin Dash App
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], title="ITMAP", suppress_callback_exceptions=True)
 mathjax = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML'
 app.config.suppress_callback_exceptions = True
 app.scripts.append_script({ 'external_url' : mathjax })
@@ -124,13 +131,8 @@ ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '
     ),
 
     # Add the properly formatted CCMC image and airflow photo to the top of the page.
-    html.Img(id="image1", src=image_paths[0], style={"zIndex": "2",'height': '100px', 'width': 'auto%', 'position': 'fixed',
+    html.Img(id="image1", src=image_paths[0], style={"zIndex": "2",'height': '100px', 'width': '20%', 'position': 'fixed',
                                     'background-color': '#f4f6f7  ','padding-right': '6%', }),
-    dbc.Tooltip( #Airflow Image Credits.
-        "Image Credit: NASA/Don Pettit",
-        target="picture_bg", 
-        placement="bottom"
-    ),
     html.Div(
         id='img_container', 
         children=[ #Airflow Image and text.
@@ -143,17 +145,17 @@ ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '
                 id='text_overlay',
                 children=[
                     html.P(
-                        "CCMC Ionospheric and Thermospheric Score Board", 
+                        "CCMC ITMAP-Ionosphere-Thermosphere Model Assessment & Validation Platform", 
                         id='text_box', 
                         style={
                             "zIndex": "4",
                             'position': 'absolute', 
-                            'top': '10px', 
+                            'top': '0px', 
                             'left': '10px', 
                             'color': 'white', 
-                            'font-size': '50px', 
+                            'font-size': '37px', 
                             'overflowX': 'hidden', 
-                            'white-space': 'nowrap'
+                            'white-space': 'normal'
                         }
                     )
                 ]
@@ -205,52 +207,26 @@ ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '
                 html.Div(children=[html.B(children='Plot')], style=dstyles[2]),
                 dcc.Dropdown(id='plot',
                     options=options_list[1], multi=True, value = plot_default[0]),
-            ], style={"zIndex": "2", 'width': '20%', 'background-color': '#f4f6f7', 
+            ], style={"zIndex": "1", 'width': '20%', 'background-color': '#f4f6f7', 
                       'padding': '20px', 'height': '100%', 'position': 'fixed',
                       'margin-top': '0px','box-shadow': '5px 5px 5px #ededed '
 }),
     #Format the right 80% of the page, which are created from different graphs that are appended to the children of the rows and columns using a callback.
-    html.Div(style = {'margin-left' : '25%'}, children=[ 
-
-        dbc.Container
-        ([
-            dbc.Row([
-                dbc.Col(html.Div(style={'height': '15px'}), width=12)]),
-            dbc.Row([
-                dbc.Col([
-                    html.Div(id = 'child1', style=dstyles[8], children =[])], width=6),
-                dbc.Col([
-                    html.Div(id = 'child2', style=dstyles[8], children =[])], width=6)
-                    ]),
-            dbc.Row([
-                dbc.Col(html.Div(style={'height': '15px'}), width=12)]),
-            dbc.Row([
-                dbc.Col([
-                    html.Div(id = 'child3', style=dstyles[8], children =[]), 
-                    ], width=6),
-                dbc.Col([
-                    html.Div(id = 'child4', style=dstyles[8], children =[])], width=6)
-                        ]),
-            dbc.Row([
-                dbc.Col(
-                    html.Div(style={'height': '15px'}), width=12)]),
-            dbc.Row([
-                dbc.Col([
-                    html.Div(id = 'child5', style=dstyles[8], children =[])], width=6),
-                dbc.Col([
-                    html.Div(id = 'child6', style=dstyles[8], children =[])], width=6)
-                        ]),
-            dbc.Row([
-                dbc.Col(
-                    html.Div(style={'height': '15px'}), width=12)]),
-            dbc.Row([
-                dbc.Col([
-                    html.Div(id = 'child7', style=dstyles[8], children =[])], width=6),
-                dbc.Col([
-                    html.Div(id = 'child8', style=dstyles[8], children =[])], width=6),
-                    ])
-        ], fluid=True), 
-    ]),
+    dcc.Loading(
+        
+        html.Div(style = {'margin-left' : '20%'}, children=[ 
+        dcc.Tabs(
+            id="tabs",
+            style={"zIndex": "1"},
+            value="description",
+            children=[
+                dcc.Tab(label="Description", value="description", style={"background-color": "white", "color": "#e59b1c"}, 
+                    selected_style={"background-color": "#e59b1c", "color": "white", "border": "none"}),
+                dcc.Tab(label="Analysis Dashboard", value="dashboard", style={"background-color": "white", "color": "#e59b1c"}, 
+                    selected_style={"background-color": "#e59b1c", "color": "white", "border": "none"})
+            ]),
+        html.Div(id="tabs-display") 
+    ])),
             html.Footer(
             children=[html.A("Accessibility", href='https://www.nasa.gov/accessibility', target="_blank"), html.Span(children =" | ")          
 ,html.A("Privacy Policy", href='https://www.nasa.gov/privacy/', target="_blank"), html.Span(children =" | Curators: Paul DiMarzio, Joseph Sypal, and Dr. Min-Yang Chou | NASA Official: Maria Kuznetsova")],
@@ -276,8 +252,57 @@ app.layout = html.Div(
 def select_project(project):
     if (project == "TNDA"):
         return tp.thermosphere_layout
+    elif (project== "GPS"):
+        return gps_layout
     elif (project == "IMV"):
         return ionosphere_layout
+    
+@app.callback(
+        Output("tabs-display", "children"),
+        Input("tabs", "value")
+)
+def tab_select(tabs):
+    if tabs == "description":
+        return dt.description_page2
+    else:
+        display = dbc.Container([
+            dbc.Row([
+                dbc.Col(html.Div(style={'height': '15px'}), width=12)]),
+                dbc.Row([
+                
+                    dbc.Col([
+                        dbc.Card(id = 'child1', style=dstyles[8], children =[])], width=6),
+                    dbc.Col([
+                        dbc.Card(id = 'child2', style=dstyles[8], children =[])], width=6)
+        ]),
+            dbc.Row([
+                    dbc.Col(html.Div(style={'height': '15px'}), width=12)]),
+                dbc.Row([
+                    dbc.Col([
+                        dbc.Card(id = 'child3', style=dstyles[8], children =[])], width=6),
+                    dbc.Col([
+                        dbc.Card(id = 'child4', style=dstyles[8], children =[])], width=6)
+                        ]),
+            dbc.Row([
+                dbc.Col(
+                    html.Div(style={'height': '15px'}), width=12)]),
+                dbc.Row([
+                    dbc.Col([
+                        dbc.Card(id = 'child5', style=dstyles[8], children =[])], width=6),
+                    dbc.Col([
+                        dbc.Card(id = 'child6', style=dstyles[8], children =[])], width=6)
+                        ]),
+            dbc.Row([
+                dbc.Col(
+                    html.Div(style={'height': '15px'}), width=12)]),
+                dbc.Row([
+                    dbc.Col([
+                        dbc.Card(id = 'child7', style=dstyles[8], children =[])], width=6),
+                    dbc.Col([
+                        dbc.Card(id = 'child8', style=dstyles[8], children =[])], width=6),
+                    ])
+        ], fluid=True)
+        return display
 
 # Create one callback to handle all graphs, with the input from all the sidebar buttons.
 @app.callback(
@@ -289,6 +314,14 @@ def select_project(project):
          Output('child6', 'children'),
          Output('child7', 'children'),
          Output('child8', 'children'),
+         Output('child1', 'style'),
+         Output('child2', 'style'),
+         Output('child3', 'style'),
+         Output('child4', 'style'),
+         Output('child5', 'style'),
+         Output('child6', 'style'),
+         Output('child7', 'style'),
+         Output('child8', 'style'),
          Output('multi', 'value'),
          Output('multi', 'options'),
          Output('plot', 'options'),
@@ -302,13 +335,15 @@ def select_project(project):
          Input('year', 'value'),
          Input('task', 'value'),
          Input('plot', 'value'),
-         Input('observation', 'value')]
+         Input('observation', 'value'),
+         ]
 )
 def update_graph(multi, yearids, task, plot, obs):
+    
     # Combine the TEC data from Cosmic 2.
     TEC_foF2 = np.concatenate([[csmc2_foF2['C2_foF2_map']], csmc2_foF2['All_model_fof2']])
     TEC_hmF2 = np.concatenate([[csmc2_hmF2['C2_hmF2_map']], csmc2_hmF2['All_model_hmf2']])
-
+    
     plot_options =['DEF_F1', 'DK_F','DEF_F2', 'MS_F', 'SN_F1', 'SN_F2', 'RCC','SC_F']
     if isinstance(yearids, list) and len(yearids) == 2:
         yearid = yearids[0]
@@ -353,7 +388,6 @@ def update_graph(multi, yearids, task, plot, obs):
     # These are conditionals to set up the TEC plot children. They are specially set up to  
     #   contain multiple different graphs since multiple TEC plots can be selected at once.
     child_multi, child_tec, multi, cm, child_osse  = multiFunc.tec_formatting(multi, obs, task, [chosen_year, TEC_foF2, TEC_hmF2], year, TITLES, dstyles)
-
     # If no values have been selected for plot, change it to an empty string.
     if plot == None: plot = ['']
     if year == '2013': obs_op = obs_options[1]
@@ -400,8 +434,8 @@ def update_graph(multi, yearids, task, plot, obs):
         else:      
             graphs[-1] = dcc.Graph(style=dstyles[3], figure=comparisonPlot.model_comparison_plot(TEC_foF2[0], TEC_foF2, TITLES[1], cm, dst_scatter_map['z_foF2'], year))
         # Add selected plots and take out others.
-        chl = plotSelection.plot_selection_format(plot, plot_options, graphs)
-        return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6],chl[7], multi, model_list[1], options_list_final, obs_options[0], yearids, True, False, plot_value
+        chl, style_sel = plotSelection.plot_selection_format(plot, plot_options, graphs)
+        return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6],chl[7], dstyles[style_sel[0]],dstyles[style_sel[1]],dstyles[style_sel[2]],dstyles[style_sel[3]],dstyles[style_sel[4]],dstyles[style_sel[5]],dstyles[style_sel[6]],dstyles[style_sel[7]],multi, model_list[1], options_list_final, obs_options[0], yearids, True, False, plot_value
     
     elif obs == 'HC2':
         if task == "SCE":
@@ -441,8 +475,8 @@ def update_graph(multi, yearids, task, plot, obs):
         else:      
             graphs[-1] = dcc.Graph(style=dstyles[3], figure=comparisonPlot.model_comparison_plot(TEC_hmF2[0], TEC_hmF2, TITLES[1], cm, dst_scatter_map['z_hmF2'], year))
         # Add selected plots and take out others.
-        chl = plotSelection.plot_selection_format(plot, plot_options, graphs)
-        return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6],chl[7], multi, model_list[1], options_list_final, obs_options[0], yearids, True, False, plot_value 
+        chl, style_sel = plotSelection.plot_selection_format(plot, plot_options, graphs)
+        return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6],chl[7],dstyles[style_sel[0]],dstyles[style_sel[1]],dstyles[style_sel[2]],dstyles[style_sel[3]],dstyles[style_sel[4]],dstyles[style_sel[5]],dstyles[style_sel[6]],dstyles[style_sel[7]], multi, model_list[1], options_list_final, obs_options[0], yearids, True, False, plot_value 
     
 
     else:
@@ -471,15 +505,19 @@ def update_graph(multi, yearids, task, plot, obs):
                 graphs[-1] = dcc.Graph(style=dstyles[3], figure=comparisonPlot.model_comparison_plot(chosen_year['TEC_all'][0], chosen_year['TEC_all'], TITLES[0], cm, dst_scatter_map['z_' + year], year))
             # Generate the comparison graph based off all selected model excluding comparison model.
             plot_options = ['DEF_F1', 'DK_F','DEF_F2', 'MS_F', 'SN_F1', 'SN_F2', 'RCC','SC_F']
-            chl2 = plotSelection.plot_selection_format(plot, plot_options, graphs2)
-            chl = plotSelection.plot_selection_format(plot, plot_options, graphs)
+            chl2, style_sel2 = plotSelection.plot_selection_format(plot, plot_options, graphs2)
+            chl, style_sel = plotSelection.plot_selection_format(plot, plot_options, graphs)
             if chl2[0] != None:
                 chl.insert(1, chl2[0])
+                style_sel.insert(1, 8)
                 chl.insert(3, chl2[1])
+                style_sel.insert(3, 8)
                 chl.insert(5, chl2[2])
+                style_sel.insert(5, 8)
                 chl.insert(7, chl2[3])
+                style_sel.insert(7, 8)
             # Add selected plots and take out others.
-            return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6], chl[7], multi, model_list[0], options_list[3], obs_op, yearids, False, False, plot_value
+            return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6], chl[7], dstyles[style_sel[0]],dstyles[style_sel[1]],dstyles[style_sel[2]],dstyles[style_sel[3]],dstyles[style_sel[4]],dstyles[style_sel[5]],dstyles[style_sel[6]],dstyles[style_sel[7]],multi, model_list[0], options_list[3], obs_op, yearids, False, False, plot_value
 
         else:
             if plot_default[2] == 1:
@@ -508,14 +546,19 @@ def update_graph(multi, yearids, task, plot, obs):
             else:     
                 graphs[-1] = dcc.Graph(style=dstyles[3], figure=comparisonPlot.model_comparison_plot(chosen_year['TEC_all'][0], chosen_year['TEC_all'], TITLES[0], cm, dst_scatter_map['z_' + year], year))
             plot_options = ['DEF_F1', 'DK_F','DEF_F2', 'MS_F', 'SN_F1', 'SN_F2', 'RCC','SC_F']
-            chl2 = plotSelection.plot_selection_format(plot, plot_options, graphs2)
-            chl = plotSelection.plot_selection_format(plot, plot_options, graphs)
+            chl2, style_sel2 = plotSelection.plot_selection_format(plot, plot_options, graphs2)
+            chl, style_sel = plotSelection.plot_selection_format(plot, plot_options, graphs)
             if chl2[0] != None:
                 chl.insert(1, chl2[0])
+                style_sel.insert(1, 8)
                 chl.insert(3, chl2[1])
+                style_sel.insert(3, 8)
                 chl.insert(5, chl2[2])
+                style_sel.insert(5, 8)
                 chl.insert(7, chl2[3])
-            return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6], chl[7],  multi, model_list[0], options_list[2], obs_op, yearids, False, False, plot_value
+                style_sel.insert(7, 8)
+
+            return chl[0], chl[1], chl[2], chl[3], chl[4], chl[5], chl[6], chl[7],dstyles[style_sel[0]],dstyles[style_sel[1]],dstyles[style_sel[2]],dstyles[style_sel[3]],dstyles[style_sel[4]],dstyles[style_sel[5]],dstyles[style_sel[6]],dstyles[style_sel[7]],  multi, model_list[0], options_list[2], obs_op, yearids, False, False, plot_value
 
         
 # The following callbacks are all used to update elements of the thermosphere page
@@ -801,4 +844,4 @@ def close_description_popup(n_clicks):
 server = app.server # Expose the Flask server for Gunicorn
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)

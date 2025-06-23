@@ -6,7 +6,7 @@ csmc2_hmF2 = np.load('data/hmF2_202111_storm.npz')
 
 osse_foF2 = np.load('data/temp_osse.npy')
 osse_hmF2 = np.load('data/temp_osse2.npy')
-TITLES=['FORMOSAT-7/COSMIC2','GIS_NCKU','IRI2016','IRI2020','SAMI3-RCM','WACCM-X','GITM-SWMF','TIEGCM-Weimer','TIEGCM-Heelis','WAM-IPE']
+TITLES=['FORMOSAT-7/COSMIC2','GIS_NCKU','IRI2016','IRI2020','SAMI3-RCM','SAMI3-TIEGCM','SAMI3-ICON','WACCM-X','GITM-SWMF','TIEGCM-Weimer','TIEGCM-Heelis','WAM-IPE','CTIPe']
 x, y = np.meshgrid(np.arange(0,48,1),np.arange(-45,46,1))
 ERRP=np.zeros([len(TITLES),x.shape[0],x.shape[1]])
         

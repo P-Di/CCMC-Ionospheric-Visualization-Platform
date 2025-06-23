@@ -3,7 +3,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 # As each row of graphs is added, the colorbar format must be redone.
-format2 = [[[.58], 250, 1.5, 1.35, 80, .22], [[0.849, 0.237], 600,1.2, .53, 80, .22], [[0.91, 0.53, 0.146], 600,1.15, .325, 80, .15], [[0.936, 0.660, 0.384, 0.11],800, 1.1, .240, 80, .1], [[0.945, 0.734, 0.520, 0.30, .084], 1000, 1.05, 0.186, 20, .07], [[0.955, 0.78, 0.6, 0.42, .24, .066], 1250, 1.05, .14, 20, .07], [[0.97, 0.818, 0.665, 0.51, .358, .205, .055], 1500, 1.05, .11, 20, .05], [1000]]
+format2 = [[[.58], 250, 1.5, 1.35, 80, .15], [[0.849, 0.237], 600,1.2, .53, 80, .22], [[0.91, 0.53, 0.146], 600,1.15, .325, 80, .15], [[0.936, 0.660, 0.384, 0.11],800, 1.1, .240, 80, .1], [[0.945, 0.734, 0.520, 0.30, .084], 1000, 1.05, 0.186, 20, .07], [[0.955, 0.78, 0.6, 0.42, .24, .066], 1250, 1.05, .14, 20, .07], [[0.97, 0.818, 0.665, 0.51, .358, .205, .055], 1500, 1.05, .11, 20, .05], [1000]]
 def model_comparison_plot(TEC1, TEC2, TITLES, comp, z, year):
 
     """ Function that takes in the TEC data, desired models, and year, and returns a single plot of ideal model vs selected models."""
@@ -72,6 +72,7 @@ def model_comparison_plot(TEC1, TEC2, TITLES, comp, z, year):
                                                    colorscale='Viridis', size=14,
                                                    colorbar=dict(thickness=format[0],
                                                                  title=f'P. Dis.',
+                                                                 outlinecolor='black', outlinewidth=1,
                                                                  x=color_loc,
                                                                  y=format2[mid-1][0][row2[p] - 1],
                                                                  len=format2[mid-1][3]))),
@@ -99,8 +100,8 @@ def model_comparison_plot(TEC1, TEC2, TITLES, comp, z, year):
                dict(args=[{'visible': [v for i in range(len(comp)) for v in [False, False, False, False, False, False, True, True, True]]},
                         {'title': f'{year} Recovery'}], label="Recovery", method="update")]
 
-    fig.update_layout(showlegend=False, height=format2[mid-1][1], width=680, title=dict(text=f'{year} Quiet Phase', pad=dict(t=10, b=0)),  title_x=0.5,
-                      updatemenus=[dict(buttons=buttons, direction="down", pad={"l": 10, "t": 10},
+    fig.update_layout(showlegend=False, height=format2[mid-1][1], title=dict(text=f'{year} Quiet Phase', pad=dict(t=12, b=0)),  title_x=0.5, # width=680,
+                      updatemenus=[dict(buttons=buttons, direction="down", pad={"l": 10, "t": 12},
                                         showactive=True, x=-0.10, xanchor="left", y=format2[mid-1][2], yanchor="top")])
     fig.update_layout(margin=dict(
         l = 0,   #left margin
