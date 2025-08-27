@@ -709,13 +709,14 @@ def toggle_comp_collapse(n, is_open):
      Input("TIEGCM-Heelis-01-label", "n_clicks"),
      Input("WACCMX-Weimer-01-label", "n_clicks"),
      Input("WACCMX-Heelis-01-label", "n_clicks"),
-     Input("GITM-01-label", "n_clicks")],
+     Input("GITM-01-label", "n_clicks"),
+     Input("WAM-IPE-label", "n-clicks")],
     prevent_initial_call=True
 )
 def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_clicks, GRACE_FO_clicks,
                                      MSISE00_01_clicks, MSIS20_01_clicks, JB2008_01_clicks, DTM2020_01_clicks,
                                      DTM2013_01_clicks, TIEGCM_Weimer_01_clicks, TIEGCM_Heelis_01_clicks, 
-                                     WACCMX_Weimer_01_clicks, WACCMX_Heelis_01_clicks, GITM_01_clicks):
+                                     WACCMX_Weimer_01_clicks, WACCMX_Heelis_01_clicks, GITM_01_clicks, WAM_IPE_clicks):
     """
     :Description:
 
@@ -723,12 +724,14 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     a change to the n_clicks property for any of the checklist labels (n_clicks is initially set to 0). When the 
     popup is closed, all label's n_clicks property are set to 0. This ensures that whenever a label is clicked,
     that label's n_clicks property will be 1 and all other n_clicks properties will be 0.
-    """    
+    """
+
     # CHAMP click
     if (CHAMP_clicks == 1 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 
+          and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0 and WAM_IPE_clicks == 0):
 
         return {"display": "block"}, popups.gen_CHAMP_data()
     
@@ -736,7 +739,8 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     elif (CHAMP_clicks == 0 and GOCE_clicks == 1 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 
+          and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0 and WAM_IPE_clicks == 0):
         
         return {"display": "block"}, popups.gen_GOCE_data()
     
@@ -744,7 +748,8 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 1 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 
+          and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0 and WAM_IPE_clicks == 0):
         
         return {"display": "block"}, popups.gen_GRACE_A_data()
     
@@ -752,7 +757,8 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 1
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 
+          and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0 and WAM_IPE_clicks == 0):
         
         return {"display": "block"}, popups.gen_SWARM_A_data()
     
@@ -760,7 +766,8 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 1 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 
+          and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0 and WAM_IPE_clicks == 0):
         
         return {"display": "block"}, popups.gen_GRACE_FO_data()
     
@@ -768,7 +775,8 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 1 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 
+          and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0 and WAM_IPE_clicks == 0):
 
         return {"display": "block"}, popups.gen_MSISE00_01_data()
 
@@ -776,7 +784,8 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 1
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 
+          and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0 and WAM_IPE_clicks == 0):
         
         return {"display": "block"}, popups.gen_MSIS20_01_data()
     
@@ -784,7 +793,8 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 1 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 
+          and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0 and WAM_IPE_clicks == 0):
 
         return {"display": "block"}, popups.gen_JB2008_01_data()
     
@@ -792,7 +802,8 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 1 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 
+          and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0 and WAM_IPE_clicks == 0):
         
         return {"display": "block"}, popups.gen_DTM2020_01_data()
     
@@ -800,7 +811,8 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 1
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 
+          and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0 and WAM_IPE_clicks == 0):
         
         return {"display": "block"}, popups.gen_DTM2013_01_data()
     
@@ -808,7 +820,8 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 1 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 1 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 
+          and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0 and WAM_IPE_clicks == 0):
         
         return {"display": "block"}, popups.gen_TIEGCM_Weimer_01_data()
     
@@ -816,7 +829,8 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 1 and WACCMX_Weimer_01_clicks == 0 and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 1 and WACCMX_Weimer_01_clicks == 0 
+          and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0 and WAM_IPE_clicks == 0):
         
         return {"display": "block"}, popups.gen_TIEGCM_Heelis_01_data()
     
@@ -824,7 +838,8 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 1 and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 1 
+          and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0 and WAM_IPE_clicks == 0):
 
         return {"display": "block"}, popups.gen_WACCMX_Weimer_01_data()
 
@@ -832,7 +847,8 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 and WACCMX_Heelis_01_clicks == 1 and GITM_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 
+          and WACCMX_Heelis_01_clicks == 1 and GITM_01_clicks == 0 and WAM_IPE_clicks == 0):
 
         return {"display": "block"}, popups.gen_WACCMX_Heelis_01_data()
 
@@ -840,21 +856,49 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 1):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 
+          and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 1 and WAM_IPE_clicks == 0):
         
         return {"display": "block"}, popups.gen_GITM_01_data()
+
+    # WAM-IPE
+    elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
+          and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
+          and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 
+          and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0 and WAM_IPE_clicks == 1):
+
+        return {"display": "block"}, popups.gen_WAM_IPE_data() 
 
     # No click. This state is necessary because setting all n_clicks values to 0 when the x button is clicked 
     # triggers this callback.
     elif (CHAMP_clicks == 0 and GOCE_clicks == 0 and GRACE_A_clicks == 0 and SWARM_A_clicks == 0 
           and GRACE_FO_clicks == 0 and MSISE00_01_clicks == 0 and MSIS20_01_clicks == 0
           and JB2008_01_clicks == 0 and DTM2020_01_clicks == 0 and DTM2013_01_clicks == 0
-          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0):
+          and TIEGCM_Weimer_01_clicks == 0 and TIEGCM_Heelis_01_clicks == 0 and WACCMX_Weimer_01_clicks == 0 
+          and WACCMX_Heelis_01_clicks == 0 and GITM_01_clicks == 0 and WAM_IPE_clicks == 0):
         
         return {"display": "none"}, ""
 
     # Error
     else:
+        print("Unrecognized click state:")
+        print(f"CHAMP_clicks = {CHAMP_clicks}")
+        print(f"GOCE_clicks = {GOCE_clicks}")
+        print(f"GRACE_A_clicks = {GRACE_A_clicks}")
+        print(f"SWARM_A_clicks = {SWARM_A_clicks}")
+        print(f"GRACE_FO_clicks = {GRACE_FO_clicks}")
+        print(f"MSISE00_01_clicks = {MSISE00_01_clicks}")
+        print(f"MSIS20_01_clicks = {MSIS20_01_clicks}")
+        print(f"JB2008_01_clicks = {JB2008_01_clicks}")
+        print(f"DTM2020_01_clicks = {DTM2020_01_clicks}")
+        print(f"DTM2013_01_clicks = {DTM2013_01_clicks}")
+        print(f"TIEGCM_Weimer_01_clicks = {TIEGCM_Weimer_01_clicks}")
+        print(f"TIEGCM_Heelis_01_clicks = {TIEGCM_Heelis_01_clicks}")
+        print(f"WACCMX_Weimer_01_clicks = {WACCMX_Weimer_01_clicks}")
+        print(f"WACCMX_Heelis_01_clicks = {WACCMX_Heelis_01_clicks}")
+        print(f"GITM_01_clicks = {GITM_01_clicks}")
+        print(f"WAM_IPE_clicks = {WAM_IPE_clicks}")
         return {"display": "block"}, "ERROR: satellite click state unrecognized."
         
 @app.callback(
@@ -873,12 +917,13 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
      Output("TIEGCM-Heelis-01-label", "n_clicks"),
      Output("WACCMX-Weimer-01-label", "n_clicks"),
      Output("WACCMX-Heelis-01-label", "n_clicks"),
-     Output("GITM-01-label", "n_clicks")],
+     Output("GITM-01-label", "n_clicks"),
+     Output("WAM-IPE-label", "n_clicks")],
     Input("satellite-desc-x-button", "n_clicks"),
     prevent_initial_call=True
 )
 def close_description_popup(n_clicks):
-    return {"display": "none"}, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    return {"display": "none"}, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
 @app.callback(
     Output("left-side-bar", "style"),
@@ -915,4 +960,4 @@ def close_ion_main_menu(n_clicks):
 server = app.server # Expose the Flask server for Gunicorn
 
 if __name__ == '__main__':
-    app.run_server(debug=False)
+    app.run_server(debug=True)

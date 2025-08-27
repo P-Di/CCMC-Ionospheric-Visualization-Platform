@@ -253,7 +253,7 @@ def gen_DTM2013_01_data():
         ),
         html.H2("Solution Type", style={"font-size": "20px", "font-weight": "bold"}),
         html.P("Semiempirical"),
-        html.H2("Sollution Drivers", style={"font-size": "20px", "font-weight": "bold"}),
+        html.H2("Solution Drivers", style={"font-size": "20px", "font-weight": "bold"}),
         html.P("F30; Kp"),
         html.H2("Version Number", style={"font-size": "20px", "font-weight": "bold"}),
         html.P("2013"),
@@ -424,4 +424,33 @@ def gen_GITM_01_data():
         html.P("2.5°, 5°, 0.25 scale height, 10 mins"),
         html.H2("More Information", style={"font-size": "20px", "font-weight": "bold"}),
         html.A("https://ccmc.gsfc.nasa.gov/models/GITM~21.11/", href="https://ccmc.gsfc.nasa.gov/models/GITM~21.11/", target="_blank")
+    ], className="data-source-metadata")
+
+def gen_WAM_IPE_data():
+    return html.Div([
+        html.H1("WAM-IPE Description", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P(
+            """
+            WAM is a physics-based whole atmosphere model and an extension of the global
+            spectral model dynamical core, GFS, extending to approximately 3x10^-7 Pa. The
+            WAM system is used to quantify the impact of lower atmosphere weather on the
+            upper atmosphere and ionosphere, as well as the response to solar and
+            geomagnetic activity. WAM is coupled one-way to IPE.
+            """
+        ),
+        html.P(
+            """
+            IPE is a physics-based model of the ionosphere and plasmasphere extending up to
+            approximately 10,000 km. It is a time-dependent, global, three-dimensional model
+            that provides densities, temperatures, and velocities of ions and electrons from 90
+            km to several Earth radii.
+            """
+        ),
+        html.P(
+            """
+            Caveat: In the CCMC Runs-on-Request setting, WAM-IPE is free-running without
+            data assimilation. There is nothing constraining the lower atmosphere as in the
+            operational WAM-IPE Forecast System (WFS).
+            """
+        ),
     ], className="data-source-metadata")

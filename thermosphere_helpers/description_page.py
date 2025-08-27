@@ -28,32 +28,32 @@ description_page = html.Div(
                     [
                         html.H1("About"),
                         html.Div([
-                            html.Span([
+                            html.Div([
                                 "ISWAT Team ID: ",
                                 html.A("G2A-01", href="https://www.iswat-cospar.org/g2a-01", target="_blank")
                             ]),
                             html.Br(),
-                            "Team Leads:",
-                            html.Ul([
-                                html.Li([
-                                    "Sean Bruinsma (CNES, Toulouse, France), ", 
-                                    html.A("sean.bruinsma@cnes.fr", href="mailto:sean.bruinsma@cnes.fr", target="_blank")
-                                ]),
-                                html.Li([
-                                    "Jia Yue (NASA/GSFC, USA), ",
-                                    html.A("jia.yue@nasa.gov", href="mailto:jia.yue@nasa.gov", target="_blank")
-                                ]),
-                                html.Li([
-                                    "Jack Wang (NASA/GSFC, USA), ",
-                                    html.A("jack.c.wang@nasa.gov", href="mailto:jack.c.wang@nasa.gov", target="_blank")
-                                ])
+                            "Team Lead:",
+                            html.Div([
+                                "Sean Bruinsma (CNES, Toulouse, France), ", 
+                                html.A("sean.bruinsma@cnes.fr", href="mailto:sean.bruinsma@cnes.fr", target="_blank")
                             ]),
-                            html.Span([
+                            html.Br(),
+                            "Team members contributing to this Score Board:",
+                            html.Div([
+                                "Jia Yue (NASA/GSFC, USA), ",
+                                html.A("jia.yue@nasa.gov", href="mailto:jia.yue@nasa.gov", target="_blank")
+                            ]),
+                            html.Div([
+                                "Jack Wang (NASA/GSFC, USA), ",
+                                html.A("jack.c.wang@nasa.gov", href="mailto:jack.c.wang@nasa.gov", target="_blank")
+                            ]),
+                            html.Br(),
+                            html.Div([
                                 "Communications: See the ",
                                 html.A("ISWAT G2A-01 team page", href="https://www.iswat-cospar.org/g2a-01", target="_blank"),
                                 " for an up-to-date list of participants and latest news about the working team."
                             ]),
-                            html.Br(),
                             html.Br()
                         ]),
                     ],
