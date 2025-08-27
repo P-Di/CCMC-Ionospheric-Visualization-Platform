@@ -23,8 +23,9 @@ import plotSelection
 import plots.comparisonPlot as comparisonPlot
 import des_tab as dt
 # Imports image_paths, dstyles, and gps_layout
-#from gpsLayout import *
+from gpsLayout import *
 
+import gps_page as gp
 import thermosphere_page as tp
 
 from thermosphere_page import create_x_button
@@ -42,6 +43,17 @@ dstyles = [{'display': 'flex','overflowY': 'scroll','maxHeight': '43vh', 'overfl
            { 'height':'40vh', 'width': '100%', 'min-width': '33vh'}, {'height':'200px', 'min-width': '320px', 'width': '100%'}, 
            {'height':'1200px', 'min-width': '600px', 'width': '100%'},
            {'overflowY': 'scroll', "maxHeight":"40vh", 'border-radius': '20px', "backgroundColor": "white", }, {"border" : "none", "margin": "0", "padding": "0", "display": "none",}]
+gps_options = [[
+                        {'label': 'Dst_kp Indices', 'value': 'A'},
+                        {'label': 'TEC RMSE Metric Score', 'value': 'B'},
+                        {'label': 'SF PPP 3D Error Metric Score', 'value': 'C'}
+                        ],
+                        [                        {'label': '3D Error', 'value': 'A'},
+                        {'label': '2D Error', 'value': 'B'},
+                        {'label': 'East Error', 'value': 'C'},
+                        {'label': 'North Error', 'value': 'D'},
+                        {'label': 'Up Error', 'value': 'E'},
+                        ]]
 
 obs_options=[[
                     {'label': 'Madrigal TEC', 'value': 'TEC'},
@@ -278,6 +290,20 @@ def select_project(project):
         return tp.thermosphere_layout
     elif (project == "IMV"):
         return ionosphere_layout
+    elif (project == "GPS"):
+        return gp.base
+    
+@app.callback(
+        [Output("tabs-display2", "children"),
+         Output("plotts", "options")],
+
+        Input("tabs", "value")
+)
+def gps_tabs(tab):
+    p = 0
+    if tab == "animation":
+        p = 1
+    return gp.update_gps_content(tab), gps_options[p]
     
 @app.callback(
         Output("tabs-display", "children"),
