@@ -12,6 +12,7 @@
 
 """
 
+from math import exp
 import plotly.graph_objects as go
 import plotly.express as px
 from dash import html, dcc
@@ -219,6 +220,17 @@ def create_plots(
     skills_by_phase.reset_index(inplace=True)
     skills_by_phase = skills_by_phase.sort_values(by="model")
     table_data = skills_by_phase.to_dict("records")
+
+    # compute percentages
+
+    if parameter == "stddev_OC":
+        print(table_data)
+        for model_data in table_data:
+            for key in model_data:
+                if key == 'model':
+                    continue
+                model_data[key] = round(100 * (exp(model_data[key]) - 1), 2)
+        print(table_data)
 
     # get tpid data
     tpid_list, basic_storm_data = fetch_tpid_data(filtered_df, tpid_base_url)

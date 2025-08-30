@@ -737,7 +737,7 @@ def toggle_comp_collapse(n, is_open):
      Input("WACCMX-Heelis-label", "n_clicks"),
      Input("GITM-label", "n_clicks"),
      Input("CTIPe-label", "n_clicks"),
-     Input("WAM-IPE-label", "n_clicks")],
+     Input("WAMIPE-label", "n_clicks")],
     prevent_initial_call=True
 )
 def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_clicks, GRACE_FO_clicks,
@@ -956,7 +956,7 @@ def open_description_popup(CHAMP_clicks, GOCE_clicks, GRACE_A_clicks, SWARM_A_cl
      Output("WACCMX-Heelis-label", "n_clicks"),
      Output("GITM-label", "n_clicks"),
      Output("CTIPe-label", "n_clicks"),
-     Output("WAM-IPE-label", "n_clicks")],
+     Output("WAMIPE-label", "n_clicks")],
     Input("satellite-desc-x-button", "n_clicks"),
     prevent_initial_call=True
 )
