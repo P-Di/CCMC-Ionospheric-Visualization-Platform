@@ -181,7 +181,7 @@ def create_plots(
     """
     filtered_df = filtered_df.sort_values(by="model")
     filtered_df = filtered_df.iloc[::-1]
-    
+
     # create the elements for the main plot mean and std display
     main_plot_stats: DataFrame = filtered_df.groupby("model", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2)
     # main_plot_stats = main_plot_stats.iloc[::-1]

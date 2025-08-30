@@ -76,7 +76,7 @@ models = [
     "WACCMX-Weimer",
     "WACCMX-Heelis", 
     "CTIPe",
-    "WAM-IPE"
+    "WAMIPE"
 ]
 model_opts = list(map(options_from_list, models))
 model_labels = list(map(generate_labels, models))
@@ -393,7 +393,14 @@ def format_data(data_dir: str) -> dict:
                 for satellite in data["events"][key]["satellites"]:
                     for phase in data["events"][key]["satellites"][satellite]:
                         # select the keys we want and append the data to the coorisponding list in the dictionary 
-                        formatted_data["model"].append(data["solution"])
+
+                        # remove the -01 from the model solution labels (if it exists)
+                        if "-01" in data["solution"]:
+                            begin = data["solution"].find("-01")
+                            formatted_data["model"].append(data["solution"][0:begin])
+                        else:
+                            formatted_data["model"].append(data["solution"])
+
                         formatted_data["TP"].append(data["events"][key]["TP"])
                         formatted_data["category"].append(data["events"][key]["category"])
                         formatted_data["satellite"].append(satellite)
