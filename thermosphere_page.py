@@ -528,7 +528,13 @@ def update_content(tab, parameter):
                             },
                             style_cell={
                                 "text-align": "center"
-                            } 
+                            },
+                            style_cell_conditional=[{
+                                "if": {
+                                    "column_id": "total"
+                                }, 
+                                "border-right": "3px solid black"
+                            }]
                         )
                     ]),
                     # This div is a target for the "update_plots" callback and will be populated with plotly graphs for each model plotted against phase

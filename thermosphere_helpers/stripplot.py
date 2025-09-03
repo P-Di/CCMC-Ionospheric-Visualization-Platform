@@ -52,7 +52,7 @@ def create_phase_stripplots(dataframe: DataFrame, parameter: str) -> list:
 
     :return plots: A list of dash html components containing the plots
     """
-    dataframe = dataframe.iloc[::-1]
+    # dataframe = dataframe.iloc[::-1]
     skills_by_phase_plots = []
     for model in dataframe["model"].unique():
         df = dataframe[dataframe["model"] == model]
@@ -60,9 +60,21 @@ def create_phase_stripplots(dataframe: DataFrame, parameter: str) -> list:
         # since the debias_mean_OC pre_storm value is set to 1 throughout, don't display it on the plots (it adds no info)
         if parameter == "debias_mean_OC":
             debias_df = dataframe[dataframe["phase"] != "pre_storm"]
-            fig = px.strip(debias_df[debias_df["model"] == model], x="phase", y=parameter)
+            phase_order = ["total", "onset", "main_recovery", "post_storm"]
+            fig = px.strip(
+                debias_df[debias_df["model"] == model],
+                x="phase",
+                y=parameter,
+                category_orders={"phase": phase_order}
+            )
         else:
-            fig = px.strip(dataframe[dataframe["model"] == model], x="phase", y=parameter)
+            phase_order = ["total", "pre_storm", "onset", "main_recovery", "post_storm"]
+            fig = px.strip(
+                dataframe[dataframe["model"] == model],
+                x="phase",
+                y=parameter,
+                category_orders={"phase": phase_order}
+            )
 
         for phase in dataframe["phase"].unique():
             if phase == "pre_storm" and parameter == "debias_mean_OC":
