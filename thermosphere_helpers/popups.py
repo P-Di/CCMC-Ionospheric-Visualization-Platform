@@ -95,9 +95,36 @@ def gen_SWARM_A_data():
             Swarm comprises a constellation of three satellites in near-polar low orbits to obtain
             better and more varied measurements. The Swarm mission was launched from
             Plesetsk Cosmodrome on 22 November 2013. Swarm A and C form the lower pair of
-
             satellites flying side-by-side (1.4° separation in longitude at the equator) at an altitude of
             462 km (initial altitude) and at 87.35° inclination angle.
+            """
+        ),
+        html.H2("Data Source", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P([
+            "TU Delft (",
+            html.A("ftp://thermosphere.tudelft.nl", href="ftp://thermosphere.tudelft.nl", target="_blank"), 
+            "); PI: Christian Siemes, ",
+            html.A("c.siemes@tudelft.nl", href="mailto:c.siemes@tudelft.nl", target="_blank")
+        ]),
+        html.H2("Density Retrieval Method", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("Derived using precision orbit determination"),
+        html.H2("Data Version", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("Version_01"),
+        html.H2("More Information", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P(html.A("https://earth.esa.int/eogateway/missions/swarm", 
+                      href="https://earth.esa.int/eogateway/missions/swarm", target="_blank")),
+        html.P(html.A("http://thermosphere.tudelft.nl/", href="http://thermosphere.tudelft.nl/", target="_blank"))
+    ], className="data-source-metadata")
+
+
+def gen_SWARM_B_data():
+    return html.Div([
+        html.H1("SWARM-B Description", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P(
+            """
+            Swarm comprises a constellation of three satellites in near-polar low orbits to obtain
+            better and more varied measurements. The Swarm mission was launched from
+            Plesetsk Cosmodrome on 22 November 2013. 
             """
         ),
         html.H2("Data Source", style={"font-size": "20px", "font-weight": "bold"}),

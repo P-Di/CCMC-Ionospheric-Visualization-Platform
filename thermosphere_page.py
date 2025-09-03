@@ -60,7 +60,7 @@ image_paths = ['assets/CCMC.png', 'assets/airflow1.jpg', "assets/options-icon.sv
 dashboard_data_dir = "data/thermosphere_data"
 benchmark_data_dir = "data/benchmark_scores"
 
-satellites = ["CHAMP", "GOCE", "GRACE-A", "SWARM-A", "GRACE-FO"]
+satellites = ["CHAMP", "GOCE", "GRACE-A", "SWARM-A", "SWARM-B", "GRACE-FO"]
 satellite_opts = list(map(options_from_list, satellites))
 satellite_labels = list(map(generate_labels, satellites))
 
