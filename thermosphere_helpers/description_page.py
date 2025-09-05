@@ -1,6 +1,5 @@
 import dash_bootstrap_components as dbc
-from dash import html
-import dash_core_components as dcc
+from dash import html, dcc
 
 description_page = html.Div(
     [

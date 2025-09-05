@@ -635,9 +635,16 @@ def update_thermosphere_content(tab, parameter):
      Input("ap_max_slider", "value"),
      Input("f107_max_slider", "value"),
      Input("satellites", "value"),
-     Input("models", "value")]
+     Input("models", "value")],
 )
-def display_thermosphere_plots(parameter, category, ap_max_threshold, f107_max_threshold, satellites, models):
+def display_thermosphere_plots(
+    parameter, 
+    category, 
+    ap_max_threshold, 
+    f107_max_threshold, 
+    satellites, 
+    models, 
+):
     """
     This callback is called whenever the user changes some data selection and it updates the data displayed on the page.
     """
@@ -1010,4 +1017,4 @@ def close_ion_main_menu(n_clicks):
 server = app.server # Expose the Flask server for Gunicorn
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run(debug=True)

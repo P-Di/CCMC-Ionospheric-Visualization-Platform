@@ -2,7 +2,7 @@
     padding-bottom: 5px;
 }
 
-
+/* MOBILE STYLES */
 @media screen and (max-width: 900px) {
     #left-side-bar {
         display: none;
@@ -85,6 +85,7 @@
     }
 }
 
+/* DESKTOP STYLES */
 @media screen and (min-width: 900px) {
     #left-side-bar {
         display: block;
