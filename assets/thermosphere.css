@@ -305,11 +305,19 @@ th, td {
 THERMOSPHERE ANALYSIS DASHBOARD AND BENCHMARK PAGES
 */
 
+.stats-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#skills-by-event-plot {
+    flex: 1;
+}
+
 .stats {
-    position: absolute;
-    top: 480px;
-    right: 175px;
     font-size: small;
+    margin-top: 60px;
 }
 
 .tpid-menu-button {

@@ -207,13 +207,14 @@ def create_plots(
     for _, row in main_plot_stats.iterrows():
         if  row["model"] == first_model:
             stats_label = html.Div(
-                children=["Mean: " + str(row["mean"]), html.Br(), "StD: " + str(row["std"])]
+                children=["Mean: " + str(row["mean"]), html.Br(), "StD: " + str(row["std"])],
+                style={"width": "100px"}
             )
             formatted_main_plot_stats.append(stats_label)
             continue
         stats_label = html.Div(
             children=["Mean: " + str(row["mean"]), html.Br(), "StD: " + str(row["std"])],
-            style={"margin-top": "12px"}
+            style={"margin-top": "12px", "width": "100px"}
         )
         formatted_main_plot_stats.append(stats_label)
 

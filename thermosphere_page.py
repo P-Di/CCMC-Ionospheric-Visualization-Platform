@@ -513,10 +513,16 @@ def update_content(tab, parameter):
                             ],
                             id="thermosphere-main-plot-title",
                         ),
-                        dcc.Graph(
-                            id="skills-by-event-plot"
+                        html.Div(
+                            className="stats-wrapper",
+                            children=[
+                                dcc.Graph(
+                                    id="skills-by-event-plot",
+                                    style={"height": "770px"},
+                                ),
+                                html.Div(id="main-plot-stats", className="stats")
+                            ]
                         ),
-                        html.Div(id="main-plot-stats", className="stats")
                     ]),
                     html.Div([ # Data table showing average parameter value for each phase for each model
                         html.Span(html.Strong("Skills By Phase")),
@@ -583,12 +589,17 @@ def update_content(tab, parameter):
                             ],
                             id="bench-main-plot-title",
                         ),
-                        dcc.Graph(
-                            id="skills-by-event-plot",
-                            figure=main_plot,
-                            style={"height": "650px"}
-                        ),
-                        html.Div(id="bench-main-stats", className="stats", children=formatted_bench_main_stats, style={"top": "315px"})
+                        html.Div(
+                            className="stats-wrapper",
+                            children=[
+                                dcc.Graph(
+                                    id="skills-by-event-plot",
+                                    figure=main_plot,
+                                    style={"height": "770px"}
+                                ),
+                                html.Div(id="bench-main-stats", className="stats", children=formatted_bench_main_stats, style={"top": "315px"})
+                            ]
+                        )
                     ]),
                     html.Div([
                         html.Span(html.Strong(f"Skills By Phase: {parameter}")),
@@ -601,6 +612,12 @@ def update_content(tab, parameter):
                             style_cell={
                                 "text-align": "center"
                             },
+                            style_cell_conditional=[{
+                                "if": {
+                                    "column_id": "total"
+                                }, 
+                                "border-right": "3px solid black"
+                            }],
                             data=table_data 
                         )
                     ]),
