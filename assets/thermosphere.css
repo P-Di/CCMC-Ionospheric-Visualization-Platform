@@ -28,7 +28,7 @@
         display: none;
     }
 
-    #content {
+    #thermosphere-content {
         padding-left: 20px;
         padding-right: 20px;
         padding-bottom: 10px;
@@ -109,7 +109,7 @@
         display: block;
     }
 
-    #content {
+    .content {
         background-color: white;
         margin-left: 225px;
         margin-right: 20px;

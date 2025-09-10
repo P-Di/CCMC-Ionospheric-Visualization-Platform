@@ -406,7 +406,8 @@ description_page2 = html.Div(style={'marginTop': '30px'},
                     id="references"
                 )
             ],
-            id="content"
+            className="content",
+            id="ionosphere-content",
         )   
  
     ],

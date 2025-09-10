@@ -16,7 +16,7 @@ from math import exp
 import plotly.graph_objects as go
 import plotly.express as px
 from dash import html, dcc
-import pandas as pd
+from dash.dash_table import FormatTemplate, Format
 from pandas import DataFrame
 from pandas.api.typing import DataFrameGroupBy
 
@@ -235,22 +235,19 @@ def create_plots(
     table_data = skills_by_phase.to_dict("records")
 
     # compute percentages
-
     if parameter == "stddev_OC":
-        print(table_data)
         for model_data in table_data:
             for key in model_data:
                 if key == 'model':
                     continue
-                model_data[key] = round(100 * (exp(model_data[key]) - 1), 2)
-        print(table_data)
+                model_data[key] = f"{round(100 * (exp(model_data[key]) - 1), 2)}%"
 
     # get tpid data
     tpid_list, basic_storm_data = fetch_tpid_data(filtered_df, tpid_base_url)
 
     return (
         main_plot, 
-        table_data, 
+        table_data,
         skills_by_phase_plots,
         formatted_main_plot_stats,
         tpid_list,

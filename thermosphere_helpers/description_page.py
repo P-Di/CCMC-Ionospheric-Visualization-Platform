@@ -414,7 +414,8 @@ description_page = html.Div(
                     id="references"
                 )
             ],
-            id="content"
+            className="content",
+            id="thermosphere-content",
         )    
     ],
     id="description-page"

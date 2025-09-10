@@ -12,7 +12,7 @@ import json, os
 import pandas as pd
 
 # Modules to create the dash layout
-from dash import html, dcc, dash_table 
+from dash import html, dcc, dash_table
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 
@@ -616,7 +616,7 @@ def update_content(tab, parameter):
                                 "if": {
                                     "column_id": "total"
                                 }, 
-                                "border-right": "3px solid black"
+                                "border-right": "3px solid black",
                             }],
                             data=table_data 
                         )
