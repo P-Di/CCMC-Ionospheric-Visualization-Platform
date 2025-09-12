@@ -4,6 +4,10 @@
 
 /* MOBILE STYLES */
 @media screen and (max-width: 900px) {
+    body {
+        overflow-x: hidden;
+    }
+
     #left-side-bar {
         display: none;
         padding-bottom: 30px;
@@ -22,6 +26,8 @@
         width: 100%;
         margin-left: 0px;
         margin-right: 0px;
+
+        margin-top: 30px;
     }
 
     .TOC {
@@ -32,7 +38,6 @@
         padding-left: 20px;
         padding-right: 20px;
         padding-bottom: 10px;
-
     };
 
     #therm-main-menu-button {
@@ -58,7 +63,7 @@
     #thermosphere-main-plot-title {
         z-index: 3;
         position: relative;
-        top: 50px;
+        top: 0px;
         left: 10px;
     }
     
@@ -82,6 +87,14 @@
     #thermo-footer {
         width: 100%;
         margin-left: 0;
+    }
+
+    #main-plot-stats {
+        display: none;
+    }
+
+    #skills-by-phase-table {
+        overflow-x: auto;
     }
 }
 
