@@ -1017,4 +1017,4 @@ def close_ion_main_menu(n_clicks):
 server = app.server # Expose the Flask server for Gunicorn
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
