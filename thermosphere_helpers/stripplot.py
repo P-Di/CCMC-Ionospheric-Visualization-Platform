@@ -16,7 +16,6 @@ from math import exp
 import plotly.graph_objects as go
 import plotly.express as px
 from dash import html, dcc
-from dash.dash_table import FormatTemplate, Format
 from pandas import DataFrame
 from pandas.api.typing import DataFrameGroupBy
 
@@ -39,6 +38,9 @@ def create_main_stripplot(dataframe: DataFrame, dataframe_stats: DataFrame, para
         plot.add_trace(go.Scatter(x=x_vals, y=y_vals, marker={"color": "black", "size": 8}))
     plot.update_traces(hoverinfo="none", hovertemplate=None)
     plot.update_layout(showlegend=False)
+    
+    if parameter == "stddev_OC":
+        plot.update_xaxes(ticksuffix="%")
 
     return plot
 
@@ -58,26 +60,17 @@ def create_phase_stripplots(dataframe: DataFrame, parameter: str) -> list:
         df = dataframe[dataframe["model"] == model]
         stats: DataFrame = df.groupby("phase", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2)
         # since the debias_mean_OC pre_storm value is set to 1 throughout, don't display it on the plots (it adds no info)
-        if parameter == "debias_mean_OC":
-            debias_df = dataframe[dataframe["phase"] != "pre_storm"]
-            phase_order = ["total", "onset", "main_recovery", "post_storm"]
-            fig = px.strip(
-                debias_df[debias_df["model"] == model],
-                x="phase",
-                y=parameter,
-                category_orders={"phase": phase_order}
-            )
-        else:
-            phase_order = ["total", "pre_storm", "onset", "main_recovery", "post_storm"]
-            fig = px.strip(
-                dataframe[dataframe["model"] == model],
-                x="phase",
-                y=parameter,
-                category_orders={"phase": phase_order}
-            )
+        debias_df = dataframe[dataframe["phase"] != "pre_storm"]
+        phase_order = ["total", "onset", "main_recovery", "post_storm"]
+        fig = px.strip(
+            debias_df[debias_df["model"] == model],
+            x="phase",
+            y=parameter,
+            category_orders={"phase": phase_order}
+        )
 
         for phase in dataframe["phase"].unique():
-            if phase == "pre_storm" and parameter == "debias_mean_OC":
+            if phase == "pre_storm":
                 continue
 
             mean = float(stats[stats["phase"] == phase]["mean"].iloc[0])
@@ -195,6 +188,9 @@ def create_plots(
     filtered_df = filtered_df.sort_values(by="model")
     filtered_df = filtered_df.iloc[::-1]
 
+    if parameter == "stddev_OC":
+        filtered_df["stddev_OC"] = filtered_df["stddev_OC"].apply(lambda x: round(100 * (exp(x) - 1), 2))
+
     # create the elements for the main plot mean and std display
     main_plot_stats: DataFrame = filtered_df.groupby("model", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2)
     # main_plot_stats = main_plot_stats.iloc[::-1]
@@ -218,12 +214,13 @@ def create_plots(
         )
         formatted_main_plot_stats.append(stats_label)
 
-    # create skills plots stats
+    # create skills plots statstherm
     # skills_plots_stats: pd.DataFrame = filtered_df.groupby("phase", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2) 
     skills_by_phase_plots = create_phase_stripplots(filtered_df, parameter)
     
     # data preparation for the pivot table
     skills_by_phase: DataFrameGroupBy = filtered_df.groupby(["model", "phase"], observed=False)[parameter]
+
     skills_by_phase: DataFrame = (
         skills_by_phase.mean()
         .reset_index()
@@ -232,6 +229,7 @@ def create_plots(
     )
     skills_by_phase.reset_index(inplace=True)
     skills_by_phase = skills_by_phase.sort_values(by="model")
+    skills_by_phase.drop("pre_storm", axis=1, inplace=True)
     table_data = skills_by_phase.to_dict("records")
 
     # compute percentages
@@ -240,7 +238,7 @@ def create_plots(
             for key in model_data:
                 if key == 'model':
                     continue
-                model_data[key] = f"{round(100 * (exp(model_data[key]) - 1), 2)}%"
+                model_data[key] = f"{model_data[key]}%"
 
     # get tpid data
     tpid_list, basic_storm_data = fetch_tpid_data(filtered_df, tpid_base_url)
