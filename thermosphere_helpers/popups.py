@@ -1,3 +1,4 @@
+from os import wait
 from dash import html
 
 
@@ -455,7 +456,7 @@ def gen_GITM_01_data():
 
 def gen_WAM_IPE_data():
     return html.Div([
-        html.H1("WAM-IPE Description", style={"font-size": "20px", "font-weight": "bold"}),
+        html.H1("WAMIPE-01 Description", style={"font-size": "20px", "font-weight": "bold"}),
         html.P(
             """
             WAM is a physics-based whole atmosphere model and an extension of the global
@@ -465,14 +466,7 @@ def gen_WAM_IPE_data():
             geomagnetic activity. WAM is coupled one-way to IPE.
             """
         ),
-        html.P(
-            """
-            IPE is a physics-based model of the ionosphere and plasmasphere extending up to
-            approximately 10,000 km. It is a time-dependent, global, three-dimensional model
-            that provides densities, temperatures, and velocities of ions and electrons from 90
-            km to several Earth radii.
-            """
-        ),
+        html.H2("Caveat", style={"font-size": "20px", "font-weight": "bold"}),
         html.P(
             """
             Caveat: In the CCMC Runs-on-Request setting, WAM-IPE is free-running without
@@ -480,4 +474,18 @@ def gen_WAM_IPE_data():
             operational WAM-IPE Forecast System (WFS).
             """
         ),
+        html.H2("Solution Type", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("First Principle"),
+        html.H2("Solution Drivers", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P(
+            """
+            F10.7; Kp index; IMF Solar wind speed and density; By; Bz
+            """
+        ),
+        html.H2("Version Number", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("1.25"),
+        html.H2("Resolution (latitude, longitude, vertical, output cadence)", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("2°, 4°, quarter scale height, 20 mins"),
+        html.H2("More Information", style={"font-size": "20px", "font-weight": "bold"}),
+        html.A("https://ccmc.gsfc.nasa.gov/models/WAM-IPE~1.2", href="https://ccmc.gsfc.nasa.gov/models/WAM-IPE~1.2/", target="_blank")
     ], className="data-source-metadata")

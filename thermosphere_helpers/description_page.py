@@ -323,6 +323,15 @@ description_page = html.Div(
                             (e.g., waves, the short duration effect of large flares) and instrumental noise in the observations.
                             """
                         ),
+                        html.P(
+                            """
+                            Benchmark storms are identified when ap index &gt;=132 (equivalent to Kp &gt;= 7o) and are
+                            included in the benchmark analysis only when sufficient observation data are available.
+                            Each benchmark event is required to exhibit a single peak in the ap time series (Single
+                            Peak Storm). Phase definitions follow the same procedure as in Methodology, ensuring
+                            consistency with the general storm‐phase framework.
+                            """
+                        ),
                         html.Div([
                             dbc.Button(
                                 "Mean/Std Computations",
