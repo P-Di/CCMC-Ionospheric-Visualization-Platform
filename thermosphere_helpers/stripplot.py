@@ -192,7 +192,7 @@ def create_plots(
         filtered_df["stddev_OC"] = filtered_df["stddev_OC"].apply(lambda x: round(100 * (exp(x) - 1), 2))
 
     # create the elements for the main plot mean and std display
-    main_plot_stats: DataFrame = filtered_df.groupby("model", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2)
+    main_plot_stats: DataFrame = filtered_df[filtered_df["phase"] == "total"].groupby("model", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2)
     # main_plot_stats = main_plot_stats.iloc[::-1]
 
     # main plot only uses total phase data
@@ -251,3 +251,4 @@ def create_plots(
         tpid_list,
         basic_storm_data
     )
+
