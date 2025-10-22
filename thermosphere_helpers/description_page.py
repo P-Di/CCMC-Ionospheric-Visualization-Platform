@@ -13,6 +13,7 @@ description_page = html.Div(
                         html.Li(html.A("Challenges", href="#challenges", className="TOC-link")),
                         html.Li(html.A("Campaign Objective", href="#objectives", className="TOC-link")),
                         html.Li(html.A("Methodology", href="#methodology", className="TOC-link")),
+                        html.Li(html.A("Benchmark", href="#benchmark", className="TOC-link")),
                         html.Li(html.A("Raw Model Output", href="#raw-output-link", className="TOC-link")),
                         html.Li(html.A("References", href="#references", className="TOC-link"))
                     ],
@@ -323,15 +324,6 @@ description_page = html.Div(
                             (e.g., waves, the short duration effect of large flares) and instrumental noise in the observations.
                             """
                         ),
-                        html.P(
-                            """
-                            Benchmark storms are identified when ap index &gt;=132 (equivalent to Kp &gt;= 7o) and are
-                            included in the benchmark analysis only when sufficient observation data are available.
-                            Each benchmark event is required to exhibit a single peak in the ap time series (Single
-                            Peak Storm). Phase definitions follow the same procedure as in Methodology, ensuring
-                            consistency with the general storm‐phase framework.
-                            """
-                        ),
                         html.Div([
                             dbc.Button(
                                 "Mean/Std Computations",
@@ -383,6 +375,21 @@ description_page = html.Div(
                 ),
                 html.Div(
                     [
+                        html.H1("Benchmark"),
+                        html.P(
+                            """
+                            Benchmark storms are identified when ap index >=132 (equivalent to Kp >= 7o) and are
+                            included in the benchmark analysis only when sufficient observation data are available.
+                            Each benchmark event is required to exhibit a single peak in the ap time series (Single
+                            Peak Storm). Phase definitions follow the same procedure as in Methodology, ensuring
+                            consistency with the general storm‐phase framework.
+                            """
+                        ),
+                    ],
+                    id="benchmark"
+                ),
+                html.Div(
+                    [
                         html.H1("Raw Model Output"),
                         html.Span([
                             "The raw model output for the models validated on the webpage is availiable at ",
@@ -429,3 +436,4 @@ description_page = html.Div(
     ],
     id="description-page"
 )
+
