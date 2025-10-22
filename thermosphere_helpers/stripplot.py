@@ -16,7 +16,7 @@ from math import exp
 import plotly.graph_objects as go
 import plotly.express as px
 from dash import html, dcc
-from pandas import DataFrame
+from pandas import DataFrame, Series
 from pandas.api.typing import DataFrameGroupBy
 
 def create_main_stripplot(dataframe: DataFrame, dataframe_stats: DataFrame, parameter: str) -> go.Figure:
@@ -313,5 +313,6 @@ def create_plots(
         tpid_list,
         basic_storm_data
     )
+
 
 
