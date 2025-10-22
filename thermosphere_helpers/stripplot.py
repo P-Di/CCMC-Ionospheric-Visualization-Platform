@@ -192,46 +192,108 @@ def create_plots(
         filtered_df["stddev_OC"] = filtered_df["stddev_OC"].apply(lambda x: round(100 * (exp(x) - 1), 2))
 
     # create the elements for the main plot mean and std display
+    # only uses total phase data
     main_plot_stats: DataFrame = filtered_df[filtered_df["phase"] == "total"].groupby("model", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2)
     # main_plot_stats = main_plot_stats.iloc[::-1]
 
     # main plot only uses total phase data
     main_plot = create_main_stripplot(filtered_df[filtered_df["phase"] == "total"], main_plot_stats, parameter)
-
+    skills_by_phase_plots = create_phase_stripplots(filtered_df, parameter)
     # make stats labels dash components
     formatted_main_plot_stats = []
-    for _, row in main_plot_stats.iterrows():
-        if  row["model"] == first_model:
+
+    if parameter == 'debias_mean_OC' or parameter == 'mean_OC':
+        # make stats labels dash components
+        formatted_main_plot_stats = []
+        for _, row in main_plot_stats.iterrows():
+            if  row["model"] == first_model:
+                stats_label = html.Div(
+                    children=["Mean: " + format(row["mean"],".2f"), html.Br(), "StD: " + format(row["std"]*100, ".1f") + "%"],
+                    style={"width": "100px"}
+                )
+                formatted_main_plot_stats.append(stats_label)
+                continue
             stats_label = html.Div(
-                children=["Mean: " + str(row["mean"]), html.Br(), "StD: " + str(row["std"])],
-                style={"width": "100px"}
+                children=["Mean: " + format(row["mean"],".2f"), html.Br(), "StD: " + format(row["std"]*100, ".1f") + "%"],
+                style={"margin-top": "14px", "width": "100px"}
             )
             formatted_main_plot_stats.append(stats_label)
-            continue
-        stats_label = html.Div(
-            children=["Mean: " + str(row["mean"]), html.Br(), "StD: " + str(row["std"])],
-            style={"margin-top": "12px", "width": "100px"}
-        )
-        formatted_main_plot_stats.append(stats_label)
 
-    # create skills plots statstherm
-    # skills_plots_stats: pd.DataFrame = filtered_df.groupby("phase", observed=False)[parameter].agg(["mean", "std"]).reset_index().round(2) 
-    skills_by_phase_plots = create_phase_stripplots(filtered_df, parameter)
+        # create skills plots statstherm        
+        # data preparation for the pivot table
+        skills_by_phase: DataFrameGroupBy = filtered_df.groupby(["model", "phase"], observed=False)[parameter].agg(["mean", "std"]).reset_index()
+
+        # Convert to wide format: columns like 'post_storm', 'recovery', etc, with "mean ± std"
+        skills_by_phase = skills_by_phase.pivot(index="model", columns="phase", values=["mean", "std"])
+        # Combine mean and std (std multiplied by 100 and with 1 decimal place)
+        def combine_mean_std(row):
+            phases = skills_by_phase.columns.levels[1]  # All phase names
+            combined = {}
+            for phase in phases:
+                if ("mean", phase) in row and ("std", phase) in row:
+                    mean_val = row[("mean", phase)]
+                    std_val = row[("std", phase)]
+                    combined[phase] = f"{mean_val:.2f} ± {std_val*100:.1f}%"
+            return Series(combined)
+
+        skills_by_phase = skills_by_phase.apply(combine_mean_std, axis=1)
+
+    else:
+        skills_by_phase: DataFrameGroupBy = filtered_df.groupby(["model", "phase"], observed=False)[parameter]
+
+        if parameter == "stddev_OC":
+            # make stats labels dash components
+            formatted_main_plot_stats = []
+            for _, row in main_plot_stats.iterrows():
+                if  row["model"] == first_model:
+                    stats_label = html.Div(
+                        children=["Mean: " + format(row["mean"],".1f") + "%", html.Br(), html.Br()],
+                        style={"width": "100px"}
+                    )
+                    formatted_main_plot_stats.append(stats_label)
+                    continue
+                stats_label = html.Div(
+                    children=["Mean: " + format(row["mean"],".1f") + "%", html.Br(), html.Br()],
+                    style={"margin-top": "15px", "width": "100px"}
+                )
+                formatted_main_plot_stats.append(stats_label)
+
+            # create skills plots statstherm        
+            skills_by_phase: DataFrame = (
+                skills_by_phase.mean()
+                .reset_index()
+                .pivot(index="model", columns="phase", values=parameter)
+                .round(1)
+            )
+        else:
+            # make stats labels dash components
+            for _, row in main_plot_stats.iterrows():
+                if  row["model"] == first_model:
+                    stats_label = html.Div(
+                        children=["Mean: " + format(row["mean"],".2f"), html.Br(), html.Br()],
+                        style={"width": "100px"}
+                    )
+                    formatted_main_plot_stats.append(stats_label)
+                    continue
+                stats_label = html.Div(
+                    children=["Mean: " + format(row["mean"],".2f"), html.Br(), html.Br()],
+                    style={"margin-top": "15px", "width": "100px"}
+                )
+                formatted_main_plot_stats.append(stats_label)
+
+            # create skills plots statstherm        
+            skills_by_phase: DataFrame = (
+                skills_by_phase.mean()
+                .reset_index()
+                .pivot(index="model", columns="phase", values=parameter)
+                .round(2)
+            )
     
-    # data preparation for the pivot table
-    skills_by_phase: DataFrameGroupBy = filtered_df.groupby(["model", "phase"], observed=False)[parameter]
-
-    skills_by_phase: DataFrame = (
-        skills_by_phase.mean()
-        .reset_index()
-        .pivot(index="model", columns="phase", values=parameter)
-        .round(2)
-    )
     skills_by_phase.reset_index(inplace=True)
     skills_by_phase = skills_by_phase.sort_values(by="model")
     skills_by_phase.drop("pre_storm", axis=1, inplace=True)
     table_data = skills_by_phase.to_dict("records")
-
+        
     # compute percentages
     if parameter == "stddev_OC":
         for model_data in table_data:
@@ -251,4 +313,5 @@ def create_plots(
         tpid_list,
         basic_storm_data
     )
+
 
