@@ -12,7 +12,7 @@ dstyles = [{'display': 'flex','overflowY': 'scroll','maxHeight': '43vh', 'overfl
            {'height':'1200px', 'min-width': '600px', 'width': '100%'},
            {'overflowY': 'scroll', "maxHeight":"40vh", 'border-radius': '20px', "backgroundColor": "white", }, {"border" : "none", "margin": "0", "padding": "0", "display": "none",}]
 
-TITLES = [["Klabuchar", " IRI2020", "GloTEC", "GIS", "CTIPe", "SAMI3-TIEGCM", "SAMI3-HWM", "TIEGCM-Heelis", "WAMIPE", "WACCMX"]]
+TITLES = [["Klobuchar", "IRI2020", "IRTAM", "GloTEC", "GIS", "NEDM", "CTIPe", "SAMI3-TIEGCM", "SAMI3-HWM", "SAMI3-WACCMX", "SAMI3-MSIS-WACCMX", "TIEGCM-Weimer", "TIEGCM-Heelis", "WAMIPE", "WACCMX-Heelis", "GITM", "GITM-FTA-MSIS"]]
 model_list = []
 
 
@@ -105,48 +105,9 @@ html.Video(
 ])
     ])
 
-gps_animation = html.Div(children=[ html.Div([
-    #html.H1("MP4 Video Example"),
-    html.Video(
-        controls=True,
-        autoPlay=True,    
-        loop=True,
-        #width='1080',
-        style={
-            "width": "100%",
-            "zIndex": "-1",
-            "padding": "40px",
-            "backgroundColor": "black",
-            "margin": "0 auto",
-            "height": "auto",  # Maintain aspect ratio
-            "maxWidth": "100%"  # Prevent it from stretching beyond container
-        },
-        children=[
-            html.Source(src="assets/movie.mp4", type="video/mp4")
-        ]
-    ),
-html.Video(
-        controls=True,
-        autoPlay=True,    
-        loop=True,
-        #width='1080',
-        style={
-            "width": "100%",
-            "zIndex": "-1",
-            "padding": "40px",
-            "backgroundColor": "black",
-            "margin": "0 auto",
-            "height": "auto",  # Maintain aspect ratio
-            "maxWidth": "100%"  # Prevent it from stretching beyond container
-        },
-        children=[
-            html.Source(src="assets/movie2.mp4", type="video/mp4")
-        ]
-    )
-])
-    ])
+gps_animation = html.Div(id="gps-animation-container", children=[])
 
-gps_layout =html.Div( style={'marginTop': '30px'},
+gps_layout = html.Div(style={'marginTop': '30px'},
     children=[
         html.Div(
             [
@@ -154,9 +115,12 @@ gps_layout =html.Div( style={'marginTop': '30px'},
                 html.Ul(
                     [
                         html.Li(html.A("Introduction", href="#about", className="TOC-link")),
-                        html.Li(html.A("Model Description", href="#model", className="TOC-link")),
-
-                        html.Li(html.A("References", href="#references", className="TOC-link"))
+                        html.Li(html.A("Vertical TEC and Ionospheric Pattern Evaluation", href="#vertical-tec", className="TOC-link")),
+                        html.Li(html.A("Storm-Induced TEC Anomaly Evaluation", href="#tec-anomaly", className="TOC-link")),
+                        html.Li(html.A("Model Performance in Single-Frequency GNSS SPP", href="#gnss-spp", className="TOC-link")),
+                        html.Li(html.A("Metrics and Skill Score", href="#metrics", className="TOC-link")),
+                        html.Li(html.A("Models Included in This Study", href="#model", className="TOC-link")),
+                        html.Li(html.A("References", href="#references", className="TOC-link")),
                     ],
                     style={"list-style-type": "none"}
                 )
@@ -165,290 +129,435 @@ gps_layout =html.Div( style={'marginTop': '30px'},
         ),
         html.Div(
             [
-                html.Div(
-                    [
-                        html.Div([
+                # Anchor (no spacer — content starts immediately)
+                html.Div(id="about"),
 
-                            html.Br(),
-                            html.Br()
-                        ]),
-                    ],
-                    id="about"
-                ),
+                # ── Introduction ──────────────────────────────────────────────
                 html.Div(
                     [
                         html.H1("Introduction: Ionospheric Model Validation"),
                         html.P(
-                            """
-                        NASA Goddard Space Flight Center Community Coordinated Modeling Center (CCMC) is a multi-agency partnership dedicated to supporting the development, evaluation and dissemination of advanced space science and space weather models. CCMC provides the broader space weather and aeronomy community with access to a suite of state-of-the-art models developed by research institutions and operational agencies around the world. These models are made available through runs-on-request and instant run to facilitate research and improve understanding of space weather impacts on technological systems. 
-                            """
-                        ),
-                        
-                        html.P(
-                            """
-                        A key part of model development at CCMC is the systematic and quantitative evaluation of space weather models. The model validation process is essential not only to verify model accuracy but also to identify missing physical processes, ultimately enhancing model capability for real-time space weather forecasting. CCMC acts as an unbiased evaluator to provide a mechanism by which research and/or operational models can be validated, tested, and improved for eventual use in space weather forecasting. 
-                            """
-                        ),
-                        html.P([
-                        "Recently, CCMC has initiated the historic storm event model validation campaign, which assess the performance of ionospheric models during geomagnetic storms across solar cycles 23 to 25 (",
-                        html.A("https://kauai.ccmc.gsfc.nasa.gov/CMR/TimeInterval/viewAllTI", href="https://kauai.ccmc.gsfc.nasa.gov/CMR/TimeInterval/viewAllTI", target="_blank"),
-                        "To support community engagement and open science, CCMC has developed the ",
-                        html.Strong("Ionosphere- Thermosphere Model Assessment and validation Platform (ITMAP). ITMAP"),
-                        " is an interactive tool designed to visualize the ionospheric model validation results for the historic storm events, enabling users to explore the model validation outcomes. The current ITMAP ionospheric validation projects focus on key ionospheric parameters including critical for navigation and communication systems:"
-                        ]),
-                        html.P(
-                        html.Strong("•	Total Electron Content (TEC)"),
+                            "Recently, CCMC has initiated the historic storm event model validation campaign, which "
+                            "assesses the performance of ionospheric models during geomagnetic storms across "
+                            "solar cycles 23 to 25. As part of this campaign, this study assesses 17 ionospheric "
+                            "models during the extreme G5 2024 Mother\u2019s Day geomagnetic storm. The "
+                            "geomagnetic storm resulted in a significant TEC enhancement of ~125%, accompanied "
+                            "by large density gradients, over the Continental United States (CONUS). These "
+                            "conditions provide an important opportunity to evaluate ionospheric models under "
+                            "extreme space weather forcing rather than climatological conditions. This study "
+                            "validates the models against ground-based GNSS observations, emphasizing (1) "
+                            "vertical TEC and ionospheric pattern accuracy, (2) the models\u2019 ability to capture the "
+                            "storm-induced TEC anomaly, and (3) their practical effectiveness in single-frequency "
+                            "(SF) GNSS single point positioning (SPP)."
                         ),
                         html.P(
-                        html.Strong("•	Critical frequency of the F2 layer (foF2)"),
+                            "To evaluate ionospheric model performance during geomagnetic storm conditions, the "
+                            "storm phases, quiet phase, main phase and recovery phase, are defined based on the "
+                            "Dst and Kp indices as shown in Figure 1. These geomagnetic indices serve as proxies "
+                            "for storm intensity and timing, allowing for a consistent segmentation of the storm "
+                            "period. Model outputs are then validated against observations separately for each "
+                            "phase to assess how well the models capture ionospheric responses throughout the "
+                            "storm\u2019s evolution."
+                        ),
+                        html.Img(
+                            className="description-fig",
+                            src="assets/DSTGS.png",
+                            style={'maxWidth': '600px', 'width': '100%', 'height': 'auto', 'display': 'block', 'margin': '10px auto'},
+                            alt="Figure 1. The Dst and Kp index for the 2024 Mother's Day storm."
                         ),
                         html.P(
-                        html.Strong("•	Peak height of the F2 layer (hmF2)"),
+                            "Figure 1. The Dst and Kp index for the 2024 Mother\u2019s Day storm.",
+                            style={'textAlign': 'center', 'fontStyle': 'italic'}
                         ),
-                        html.P([
-                        
-                        "These parameters are vital to understanding ionospheric behavior and its influence on satellite-based systems, including GPS and high-frequency radio communications. To evaluate ionospheric model performance during geomagnetic storm conditions, the storm phases, quiet phase, main phase and recovery phase, are defined based on the Dst and Kp indices as shown in Figure 1. These geomagnetic indices serve as proxies for storm intensity and timing, allowing for a consistent segmentation of the storm period. Model outputs are then validated against observations separately for each phase to assess how well the models capture ionospheric responses throughout the storm’s evolution.",
-                        html.Strong(" Note that due to the complexity of geomagnetic storm dynamics, only storm events characterized by a single Dst index trough are selected for validation. This criterion ensures a clearer definition of storm phases and avoids ambiguity in the timing of the main and recovery phases."),
-                        ]),
-                        html.Div([
-                        html.Img(className="description-fig", src="assets/DST_KP.png", style={'width': '200px', 'height': 'auto', 'display': 'block', 'margin': '0 auto'}, alt="Figure 2."),
-                        html.P("Bias uses mean error to indicate systematic underestimation or overestimation of model values:", style={'textAlign': 'center', 'marginTop': '10px'}),
-                        ]),
-                        html.Img(className="description-fig", src="assets/ME.png", style={'width': '100px', 'height': 'auto'}, alt="Figure 2."),
-                        html.P(
-                            """       
-                        Association is denoted by the Pearson linear correlation coefficient (R):
-
-                            """
-                        ),
-                        html.Img(className="description-fig", src="assets/Pearson.png", style={'width': '200px', 'height': 'auto'}, alt="Figure 2."),
-
-                        html.P(
-                            """
-                        This measures the strength of the linear relationship between the model and observation. Precision is given by the difference in standard deviations between the model and observations:
-                            """
-                        ),
-                        html.Img(className="description-fig", src="assets/STD.png", style={'width': '200px', 'height': 'auto'}, alt="Figure 2."),
-                        html.P(
-                            """
-                        From these metrics, the skill score can be calculated against a reference model. Any reference model can be chosen, but in this case IRI 2016 was used. A skill score of one means the new model matches the best metric value, 0 means it performed the same as the reference model, and negative means it performed worse. The skill score can then be normalized: 
-                            """
-                        ),
-                        html.Img(className="description-fig", src="assets/nSS.png", style={'width': '200px', 'height': 'auto'}, alt="Figure 2."),
-                        html.P(
-                            """
-                        This Normalized Skill Score has a maximum of four and a minimum of zero.
-                            """
-                        ),
-                        html.P(
-                            """
-                        To assess the models’ ability to capture ionospheric storm anomaly, three other metrics are used. These metrics are based on the relative TEC change (TC) between quiet and storm time:
-                            """
-                        ),
-                        html.Img(className="description-fig", src="assets/TC.png", style={'width': '250px', 'height': 'auto'}, alt="Figure 2."),
-                        html.P(
-                            """
-                        From this, ratios of TC can be used to capture storm induced TC changes during the main and recovery phases. The first ratio avoids outliers by including only a certain percentile, the 80th to 20th for TEC and 95th to 5th for foF2 and hmF2. The ratio between the model and observation is then:
-                            """
-                        ),
-                        html.Img(className="description-fig", src="assets/Rat8020.png", style={'width': '400px', 'height': 'auto'}, alt="Figure 2."),
-                        html.P(
-                            """
-                        The second metric is similar, but includes the lower percentile in the ratio:
-                            """
-                        ),
-                        html.Img(className="description-fig", src="assets/Rat80.png", style={'width': '250px', 'height': 'auto'}, alt="Figure 2."),
-                        html.P(
-                            """
-                        Finally, the correlation coefficient between the model and observation TEC change is used to assess the model’s capability in capturing the special distribution of ionospheric anomaly.
-                            """                        
-                        ),                                                
                     ],
                     id="introduction"
                 ),
 
-
+                # ── Vertical TEC ──────────────────────────────────────────────
                 html.Div(
                     [
-                        html.H1("List of Models Used"),
-                        html.H3("Empirical Models:"),
+                        html.H2("Vertical TEC and Ionospheric Pattern Evaluation"),
+                        html.P(
+                            "Model-derived vertical TEC is evaluated against GNSS-based TEC observations from "
+                            "the Madrigal database over the CONUS region. TEC maps are examined over the "
+                            "CONUS during the main phase of the geomagnetic storm. Notably, all versions of "
+                            "SAMI3, WACCMX-Heelis and GITM exhibit apparent storm-enhanced density (SED) "
+                            "features extending from mid-latitudes toward the polar region."
+                        ),
+                        html.P(
+                            "TEC maps are shown as a function of universal time (UT) and latitude for various "
+                            "models from May 9\u201312, 2024. These TEC maps are constructed by binning the TEC "
+                            "data into 1 hr \u00d7 1\u00b0 (UT \u00d7 LAT) grids and calculating the average values at each grid "
+                            "point."
+                        ),
+                        html.P(
+                            "Quantitative performance evaluation of each model shows the RMSE and TSS over the "
+                            "CONUS (75\u2013125W, 30\u201350N). The analysis covers the quiet, main, recovery, and "
+                            "combined (main + recovery) phases. RMSE evaluates model accuracy, and TSS "
+                            "assesses pattern skill by combining the TEC variability and correlation."
+                        ),
+                        html.Img(
+                            className="description-fig",
+                            src="assets/VerTEC.png",
+                            style={'maxWidth': '700px', 'width': '100%', 'height': 'auto', 'display': 'block', 'margin': '10px auto'},
+                            alt="Figure 2. Madrigal and model TEC maps over the CONUS at 22:00 UT on May 10, 2024."
+                        ),
+                        html.P(
+                            "Figure 2. Madrigal and model TEC maps over the CONUS at 22:00 UT on May 10, "
+                            "2024 during the main phase of the geomagnetic storm.",
+                            style={'textAlign': 'center', 'fontStyle': 'italic'}
+                        ),
+                    ],
+                    id="vertical-tec"
+                ),
+
+                # ── Storm-Induced TEC Anomaly ─────────────────────────────────
+                html.Div(
+                    [
+                        html.H2("Storm-Induced TEC Anomaly Evaluation"),
+                        html.P(
+                            "To assess the models\u2019 capability in responding to the geomagnetic storm, we calculate "
+                            "the relative TEC change between the quiet phase "
+                            "(May 9, used as a reference) and storm phases:"
+                        ),
+                        html.Img(
+                            className="description-fig",
+                            src="assets/deltTEC.png",
+                            style={'height': '40px', 'width': 'auto', 'display': 'block', 'margin': '8px auto'},
+                            alt="Relative TEC change formula"
+                        ),
+                        html.P(
+                            "Figure 3 shows an example of the "
+                            "relative TEC change maps over the CONUS are presented for the Madrigal TEC "
+                            "observation and all models at 22:00 UT on May 10, 2024. The Madrigal TEC "
+                            "observation exhibits large density gradients over the central US, with a peak TEC "
+                            "enhancement of ~125% and a simultaneous decrease of ~50% over Canada. A clear "
+                            "SED structure can also be identified, extending from the mid-latitude toward the polar "
+                            "region."
+                        ),
+                        html.P(
+                            "The zonal average relative TEC change maps are shown as a function of universal time "
+                            "(UT) and latitude from May 10\u201312, 2024. These maps are constructed by binning the "
+                            "\u0394TC data into 1 hr \u00d7 1\u00b0 (UT \u00d7 LAT) grids."
+                        ),
+                        html.P(
+                            "Model performance is quantitatively evaluated using pattern-based metrics. The "
+                            "Structure Similarity Index Measure (SSIM) is used to evaluate the model\u2019s capability in "
+                            "simulating the storm-induced TEC variation (relative TEC change). SSIM evaluates how "
+                            "well the model replicates the perceived structure of observations, considering "
+                            "differences in luminance, contrast, and overall pattern correlation. The Taylor Skill "
+                            "Score (TSS) is also employed, combining correlation coefficient, standard deviation, "
+                            "and centered root mean square difference into a single metric suitable for multiple "
+                            "model comparisons."
+                        ),
+                        html.P(
+                            "TSS confirms that the overall statistical behavior and large-scale patterns of the change "
+                            "field are realistic. SSIM focuses on the morphological and structural fidelity, confirming "
+                            "that the local structures are in the right places and look correct. For example, a high "
+                            "TSS and low SSIM indicate that a model captures the overall magnitude of TEC "
+                            "variations but fails to reproduce the structure, and vice versa."
+                        ),
+                        html.Img(
+                            className="description-fig",
+                            src="assets/RelTEC.png",
+                            style={'maxWidth': '700px', 'width': '100%', 'height': 'auto', 'display': 'block', 'margin': '10px auto'},
+                            alt="Figure 3. Relative TEC change maps over the CONUS at 22:00 UT on May 10, 2024."
+                        ),
+                        html.P(
+                            "Figure 3. Relative TEC change maps over the CONUS at 22:00 UT on May 10, 2024 "
+                            "during the main phase of the geomagnetic storm.",
+                            style={'textAlign': 'center', 'fontStyle': 'italic'}
+                        ),
+                    ],
+                    id="tec-anomaly"
+                ),
+
+                # ── GNSS SPP ──────────────────────────────────────────────────
+                html.Div(
+                    [
+                        html.H2("Model Performance in Single-Frequency GNSS Single Point Positioning"),
+                        html.P(
+                            "To assess the practical utility of the ionospheric models in a real-world technological "
+                            "application, GNSS SPP is processed in kinematic mode. Single-frequency positioning is "
+                            "highly sensitive to ionospheric delay errors. The GNSS positioning technique can be "
+                            "used as a technological metric to evaluate the model performance and their practical "
+                            "effectiveness in GNSS applications, as the ionosphere is the primary error source of "
+                            "GNSS positioning."
+                        ),
+                        html.P(
+                            "Both the 2D and 3D positioning errors (Figure 4) are employed as diagnostic metrics. "
+                            "For GNSS positioning, horizontal positioning accuracy is particularly sensitive to spatial "
+                            "TEC gradients, which induce differential ionospheric delays among satellites and "
+                            "degrade the relative geometry of the SPP solution. Consequently, the 2D positioning "
+                            "error serves as a technologically relevant metric to assess the model\u2019s capability to "
+                            "capture TEC gradients."
+                        ),
+                        html.P(
+                            "In contrast, the 3D positioning error incorporates both vertical and horizontal positioning "
+                            "uncertainties, with the vertical component being strongly influenced by the absolute "
+                            "slant TEC along the satellite-receiver paths. Therefore, the 3D positioning error provides "
+                            "an effective indicator of the models\u2019 ability to represent large-scale TEC enhancements "
+                            "and storm-time ionospheric responses."
+                        ),
+                        html.Img(
+                            className="description-fig",
+                            src="assets/GNSSSPP.png",
+                            style={'maxWidth': '700px', 'width': '100%', 'height': 'auto', 'display': 'block', 'margin': '10px auto'},
+                            alt="Figure 4. GNSS SPP 3D positioning error maps over the CONUS at 22:00 UT on May 10, 2024."
+                        ),
+                        html.P(
+                            "Figure 4. GNSS SPP 3D positioning error maps over the CONUS at 22:00 UT on May "
+                            "10, 2024 during the main phase of the geomagnetic storm.",
+                            style={'textAlign': 'center', 'fontStyle': 'italic'}
+                        ),
+                    ],
+                    id="gnss-spp"
+                ),
+
+                # ── Metrics and Skill Score ───────────────────────────────────
+                html.Div(
+                    [
+                        html.H2("Metrics and Skill Score"),
+                        html.P(
+                            "To ensure a comprehensive evaluation, several statistical metrics are applied to "
+                            "quantify the model accuracy and structural fidelity, including the Root Mean Square "
+                            "Error (RMSE), weighted RMSE, the Taylor Skill Score (TSS), and the Structure "
+                            "Similarity Index Measure (SSIM)."
+                        ),
+
+                        html.H3("Root Mean Square Error (RMSE)"),
+                        html.P(
+                            "RMSE is used as an accuracy metric that quantifies the overall difference and quality of "
+                            "the model-data comparison:"
+                        ),
+                        html.Img(
+                            className="description-fig",
+                            src="assets/RMSE.png",
+                            style={'height': '60px', 'width': 'auto', 'display': 'block', 'margin': '8px auto'},
+                            alt="RMSE formula"
+                        ),
+                        html.P(
+                            "where M and O denote the model and observational values, respectively, and N is the "
+                            "total number of observations. Lower RMSE indicates higher model accuracy. "
+                            "Additionally, weighted RMSE is used to evaluate the model performance across the "
+                            "entire storm phases (main + recovery phases). This aims to address the temporal "
+                            "disparity between phases (i.e., the recovery phase contains more data points than the "
+                            "main phase)."
+                        ),
+
+                        html.H3("Taylor Skill Score (TSS)"),
+                        html.P(
+                            "The TSS is commonly used in meteorology and climate science for model validation "
+                            "(Taylor, 2001). It provides a statistical measure to quantify how well a model reproduces "
+                            "observed patterns, combining correlation coefficient, standard deviation, and centered "
+                            "root mean square difference into a single metric suitable for multiple model "
+                            "comparisons. The TSS is defined as:"
+                        ),
+                        html.Img(
+                            className="description-fig",
+                            src="assets/TSS.png",
+                            style={'height': '70px', 'width': 'auto', 'display': 'block', 'margin': '8px auto'},
+                            alt="TSS formula"
+                        ),
+                        html.P(
+                            "where R is the correlation coefficient, \u03c3\u2098 and \u03c3\u2092 are the standard deviations, and R\u2080 is "
+                            "the maximum correlation coefficient (R\u2080 = 1). The TSS ranges from 0 to 1. A score of 1 "
+                            "indicates a perfect model, while a score close to 0 indicates a poor-performing model."
+                        ),
+
+                        html.H3("Structure Similarity Index Measure (SSIM)"),
+                        html.P(
+                            "The SSIM is a perceptual metric initially used to evaluate the similarity between two "
+                            "images (Wang et al., 2004). Here, SSIM is used to evaluate the model\u2019s capability in "
+                            "simulating the storm-induced TEC variation (relative TEC change). SSIM evaluates how "
+                            "well the model replicates the perceived structure of observations, considering "
+                            "differences in luminance, contrast, and overall pattern correlation. The definition of "
+                            "SSIM is:"
+                        ),
+                        html.Img(
+                            className="description-fig",
+                            src="assets/SSIM.png",
+                            style={'height': '30px', 'width': 'auto', 'display': 'block', 'margin': '8px auto'},
+                            alt="SSIM formula"
+                        ),
                         html.P([
-                            html.Strong("IRI-2016"),
-                            """
-                             (International Reference Ionosphere) is a project sponsored by the committee on Space Research and International Union of Radio Science. Data is gathered from Ionosondes, ISIS topside sounders, Alouette topside sounders, incoherent scatter radars, and in-situ measurements from satellites and rockets. (Bilitza et al., 2017)
-                            """
-                    ]),
+                            "where ",
+                            html.Img(src="assets/l.png", style={'height': '40px', 'width': 'auto', 'verticalAlign': 'middle', 'margin': '0 4px'}, alt="l formula"),
+                            ", ",
+                            html.Img(src="assets/c.png", style={'height': '40px', 'width': 'auto', 'verticalAlign': 'middle', 'margin': '0 4px'}, alt="c formula"),
+                            ", and ",
+                            html.Img(src="assets/s.png", style={'height': '40px', 'width': 'auto', 'verticalAlign': 'middle', 'margin': '0 4px'}, alt="s formula"),
+                            ". l(obs, model) is the luminance term that measures similarity in mean amplitudes (\u03bc); "
+                            "c(obs, model) is the contrast term that measures similarity in standard deviation (\u03c3); "
+                            "s(obs, model) is the structure term that uses covariance (\u03c3",
+                            html.Sub("obs,model"),
+                            ") to compare the similarity of spatial structures. "
+                            "\u03b1, \u03b2, and \u03b3 are parameters used to adjust the relative importance of the three components, "
+                            "which are set to 1. Constants c1, c2 and c3 are used to stabilize the division. "
+                            "SSIM ranges from \u22121 to 1, with values closer to 1 indicating higher structural similarity "
+                            "and values at or below 0 denoting no structural resemblance."
+                        ]),
+                    ],
+                    id="metrics"
+                ),
+
+                # ── Models Included ───────────────────────────────────────────
+                html.Div(
+                    [
+                        html.H1("Models Included in This Study"),
+                        html.P(
+                            "This study evaluates 17 ionospheric models representing broadcast, empirical, data "
+                            "assimilation, and physics-based approaches."
+                        ),
+
+                        html.H3("Broadcast Model"),
+                        html.P([
+                            html.Strong("Klobuchar"),
+                            " model is the standard broadcast ionospheric correction model used by "
+                            "SF GPS users (Klobuchar, 1987). It is an analytical single-layer model that assumes the "
+                            "ionosphere as a thin shell at 350 km, with eight parameters broadcast along with the "
+                            "GPS navigation message."
+                        ]),
+
+                        html.H3("Empirical Models"),
                         html.P([
                             html.Strong("IRI-2020"),
-                            """
-                             builds on the 2016 version by including more satellite measurements and equatorial vertical ion drift models. (Bilitza et al., 2022)
-                            """
-                    ]),
+                            " provides a climatological specification of the global ionosphere based on long-"
+                            "term observational data (Bilitza et al., 2017; 2022)."
+                        ]),
                         html.P([
-                            html.Strong("JPL GIM"),
-                            """
-                             (NASA Jet Propulsion Laboratory Global Ionospheric Map) creates TEC maps using ground based GNSS TEC measurements and climatological models, with a Kalman filter for smoothing in time. 
-                            """
-                    ]),
-                        html.H3("Data Assimilation Models:"),
+                            html.Strong("NEDM2020"),
+                            " is a 3D ionosphere model developed at the German Aerospace Center "
+                            "(Hoque et al., 2022). The altitudinal range for NEDM TEC integration is 65\u201320000 km."
+                        ]),
+
+                        html.H3("Data Assimilation Models"),
                         html.P([
                             html.Strong("GloTEC"),
-                            """
-                             (National Oceanic and Atmospheric Administration Space Weather Prediction Center Global TEC) is an empirically based data assimilation model used to estimate three-dimensional ionospheric electron density. This version uses a Gauss-Markov Kalman filter and IRI-2016 as ionospheric models, which are assimilated with ground based GNSS TEC. 
-                            """
-                    ]),
+                            " (National Oceanic and Atmospheric Administration Space Weather Prediction "
+                            "Center Global TEC) constructs global ionospheric TEC maps by assimilating ground-"
+                            "based GNSS TEC and space-based radio occultation TEC observations. GloTEC "
+                            "provides high-resolution TEC maps with a spatial resolution of 1\u00b0 \u00d7 1\u00b0 and a temporal "
+                            "resolution of 15 minutes. The post-processed GloTEC product incorporates all available "
+                            "observational data after 34 hours."
+                        ]),
                         html.P([
-                            html.Strong("WAM-IPE"),
-                            """
-                             (Whole Atmosphere Model-Ionosphere Plasmasphere Electrodynamics) physics based whole atmosphere data assimilation model that uses solar, geomagnetic, and lower atmospheric forcing to specify ionosphere and thermosphere conditions. (Fang et al., 2022)
-                            """
-                    ]),
+                            html.Strong("GIS"),
+                            " is designed to provide global 3D electron density structures (Lin et al., 2015; 2017; "
+                            "2020). GIS assimilates slant TEC from ground-based GNSS receivers and radio "
+                            "occultation TEC from FORMOSAT-7/COSMIC-2 using a Gaussian Markov Kalman "
+                            "filter."
+                        ]),
                         html.P([
-                            html.Strong("GIS-NCKU"),
-                            """
-                             (Global Ionospheric Specification-National Cheng Kung University) is a data assimilation model that uses a Gauss-Markov Kalman filter on the IRI model to fit ground based and space-based slant TEC observations. (Lin et al., 2015)
-                            """
-                    ]),
-                        html.H3("Physics Based Models:"),
+                            html.Strong("IRTAM"),
+                            " provides a real-time, global specification of the ionosphere, functioning as an "
+                            "advanced data-driven version of the IRI model (Galkin et al., 2012)."
+                        ]),
+
+                        html.H3("Physics-Based Models"),
                         html.P([
                             html.Strong("SAMI3"),
-                            """
-                             has three versions. The first is SAMI3 v3.22, which uses neutral compositions, temperatures, neutral winds, and high latitude electric fields from empirical models NRLMSIS2.0, Horizontal Wind Model 14, and Weimer model. The second is SAMI3-Rice Convection Model (RCM), which simulates the ionosphere-plasmasphere ring current response to geomagnetic storms. The Third version is SAMI3-TIEGCM, which is largely the same as SAMI3 v3.22 but the neutral compositions, temperatures, and neutral winds are determined by TIEGCM instead of NRLMSIS2.0 and Horizontal Wind Model 14. (Huba et al., 2020)
-                            """
-                    ]),
+                            " is a fully 3D physics-based model of the ionosphere developed by the Naval "
+                            "Research Laboratory (Huba et al., 2000). Four versions are used: SAMI3-HWM (v3.22), "
+                            "SAMI3-WACCMX, SAMI3-TIEGCM, and SAMI3-MSIS-WACCMX. The altitudinal range "
+                            "for calculating SAMI3 TEC is 85\u20133000 km."
+                        ]),
                         html.P([
                             html.Strong("CTIPe"),
-                            """
-                             (Coupled Thermosphere Ionosphere Plasmasphere Electrodynamics) model nonlinear, coupled thermosphere-ionosphere-plasmasphere electrodynamic model that consists of four components: a global thermosphere, a high-latitude ionosphere, a mid- and low-latitude ionosphere/plasmasphere, and an electrodynamical calculation of the global dynamo electric field.  (Codrescu et al., 2012)
-                            """
-                    ]),
+                            " is a nonlinear, coupled thermosphere\u2013ionosphere\u2013plasmasphere electrodynamic "
+                            "model (Codrescu et al., 2012). The altitudinal range for TEC integration is approximately "
+                            "140\u20132000 km."
+                        ]),
                         html.P([
                             html.Strong("GITM"),
-                            """
-                             (Global Ionosphere Thermosphere Model) is a three-dimensional spherical code that models the Earth’s thermosphere and ionosphere. Solar wind data and IRI are used to set the initial state. (Ridley et al., 2006)
-                            """
-                    ]),
+                            " is a 3D model of the Earth\u2019s thermosphere and ionosphere (Ridley et al., 2006). "
+                            "Two versions are used: GITM (v25.11.13) and GITM-FTA-MSIS."
+                        ]),
                         html.P([
                             html.Strong("TIEGCM v2.0"),
-                            """
-                             v2.0 comprehensive, first principles, three-dimensional, non-linear representation of the coupled thermosphere and ionosphere system that includes a self-consistent solution of the low-latitude electric field. TIEGCM parameterizes energetic particle precipitation in the high latitude and polar region. The polar region energy inputs associated with electric potential and auroral particle precipitation are prescribed either by empirical Weimer or Heelis. (Richmond et al., 1992)
-                            """
-                    ]),
+                            " is a comprehensive, first-principles, three-dimensional model of the "
+                            "coupled thermosphere\u2013ionosphere system (Richmond et al., 1992). The altitudinal "
+                            "range for TEC integration is approximately 95\u2013750 km."
+                        ]),
                         html.P([
                             html.Strong("WACCM-X"),
-                            """
-                             is a specific configuration of the NCAR Community Earth System Model that extends the atmospheric component into the thermosphere from 500 to 700 km. It calculates three dimensional ionospheric structures, incorporating all the features from the NCAR Whole Atmosphere Community. 
-                            """
-                    ]),
+                            " is an extension of the NCAR Community Earth System Model into the "
+                            "thermosphere. The integration range is approximately 80\u2013850 km."
+                        ]),
                         html.P([
-                            html.Strong("PBMOD"),
-                            """
-                              is a system of Physics Based MODels that described the three-dimensional time-dependent evolution of low-latitude ionosphere on different spatial scales. (Retterer et al., 2005)
-                              """
-                    ]),
+                            html.Strong("WAMIPE v1.2.5"),
+                            " is operated as a free-running model as implemented in CCMC ROR "
+                            "system (90\u20132000 km)."
+                        ]),
                     ],
                     id="model"
                 ),
+
+                # ── References ────────────────────────────────────────────────
                 html.Div(
                     [
                         html.H1("References"),
-                        html.P([
-                            """
-                            Chou, M.-Y., Yue, J., Wang, J., Huba, J. D., El Alaoui, M., Kuznetsova, M. M., et al. (2023). Validation of ionospheric modeled TEC in the equatorial ionosphere during the 2013 March and 2021 November geomagnetic storms.
-                            Space Weather, 21, e2023SW003480. 
-                            """,
-                            html.A("https://doi.org/10.1029/2023SW003480.", href="https://doi.org/10.1029/2023SW003480", target="_blank")
-                        ]),
-                        html.P([
-                            """
-                            Bilitza, D., D. Altadill, V. Truhlik, V. Shubin, I. Galkin, B. Reinisch, and X. Huang (2017), International Reference Ionosphere 2016: From ionospheric climate to real-time weather predictions.
-                            Space Weather, 15, 418–429.
-                            """,
-                            html.A("doi:10.1002/2016SW001593.", href="10.1002/2016SW001593", target="_blank")
-                        ]),
-                        html.P([
-                            """
-                            Bilitza, D., Pezzopane, M., Truhlik, V., Altadill, D., Reinisch, B. W., & Pignalberi, A. (2022). The International Reference Ionosphere model: A review and description of an ionospheric benchmark. 
-                            Reviews of Geophysics, 60, e2022RG000792. 
-                            """,
-                            html.A("https://doi.org/10.1029/2022RG000792 .", href="https://doi.org/10.1029/2022RG000792", target="_blank")
-                        ]),
-                        html.P([
-                            """
-                            Hurrell, J. W., Holland, M. M., Gent, P. R., Ghan, S., Kay, J. E., Kushner, P. J., et al. (2013). The community Earth system model: A framework for collaborative research. 
-                            Bulletin of the American Meteorological Society, 94(9), 1339–1360. 
-                            """,
-                            html.A("https://doi.org/10.1175/BAMS-D-12-00121.1.", href="https://doi.org/10.1175/BAMS-D-12-00121.1", target="_blank")
-                        ]),
-                        html.P([
-                            """
-                            Hurrell, J. W., Holland, M. M., Gent, P. R., Ghan, S., Kay, J. E., Kushner, P. J., et al. (2013). The community Earth system model: A framework for collaborative research. 
-                            Bulletin of the American Meteorological Society, 94(9), 1339–1360. 
-                            """,
-                            html.A("https://doi.org/10.1175/BAMS-D-12-00121.1.", href="https://doi.org/10.1175/BAMS-D-12-00121.1", target="_blank")
-                        ]),
-                        html.P([
-                            """
-                            Fang, T.-W., Kubaryk, A., Goldstein, D., Li, Z., Fuller-Rowell, T., Millward, G., et al. (2022). Space weather environment during the SpaceX Starlink satellite loss in February 2022. 
-                            Space Weather, 20(11), e2022SW003193. 
-                            """,
-                            html.A("https://doi.org/10.1029/2022SW003193.", href="https://doi.org/10.1029/2022SW003193", target="_blank")
-                        ]),
-                        html.P([
-                            """
-                            Huba, J. D., & Liu, H.-L. (2020). Global modeling of equatorial spread F with SAMI3/WACCM-X. 
-                            Geophysical Research Letters, 47(14), e2020GL088258. 
-                            """,
-                            html.A("https://doi.org/10.1029/2020GL088258.", href="https://doi.org/10.1029/2020GL088258", target="_blank")
-                        ]),
-                        html.P([
-                            """
-                            Richmond, A. D., Ridley, E. C., & Roble, R. G. (1992). A thermosphere/ionosphere general circulation model with coupled electrodynamics. 
-                            Geophysical Research Letters, 19(6), 601–604.
-                            """,
-                            html.A("https://doi.org/10.1029/92gl00401.", href="https://doi.org/10.1029/92gl00401", target="_blank")
-                        ]),
-                        html.P([
-                            """
-                            Codrescu, M. V., Negrea, C., Fedrizzi, M., Fuller-Rowell, T. J., Dobin, A., Jakowsky, N., et al. (2012). A real-time run of the coupled thermosphere ionosphere plasmasphere electrodynamics (CTIPe) model. 
-                            Space Weather, 10(2), S02001. 
-                            """,
-                            html.A("https://doi.org/10.1029/2011SW000736.", href="https://doi.org/10.1029/2011SW000736", target="_blank")
-                        ]),
-                        html.P([
-                            """
-                            Ridley, A. J., Deng, Y., & Tóth, G. (2006). The global ionosphere-thermosphere model. 
-                            Journal of Atmospheric and Solar-Terrestrial Physics, 68(8), 839–864. 
-                            """,
-                            html.A("https://doi.org/10.1016/j.jastp.2006.01.008.", href="https://doi.org/10.1016/j.jastp.2006.01.008", target="_blank")
-                        ]),
-                        html.P([
-                            """
-                            Hurrell, J. W., Holland, M. M., Gent, P. R., Ghan, S., Kay, J. E., Kushner, P. J., et al. (2013). The community Earth system model: A framework for collaborative research. 
-                            Bulletin of the American Meteorological Society, 94(9), 1339–1360. 
-                            """,
-                            html.A("https://doi.org/10.1175/BAMS-D-12-00121.1.", href="https://doi.org/10.1175/BAMS-D-12-00121.1", target="_blank")
-                        ]),
-                        html.P([
-                            """
-                            Retterer, J. M. (2005). Physics-based forecasts of equatorial radio scintillation for the communication and navigation outage forecasting system (C/NOFS). 
-                            Space Weather, 3(12), S12C03. 
-                            """,
-                            html.A("https://doi.org/10.1029/2005SW000146.", href="https://doi.org/10.1029/2005SW000146", target="_blank")
-                        ]),
-                        html.P([
-                            """
-                            Lin, C. Y., Matsuo, T., Liu, J. Y., Lin, C. H., Tsai, H. F., and Araujo-Pradere, E. A.: Ionospheric assimilation of radio occultation and ground-based GPS data using non-stationary background model error covariance. 
-                            Atmos. Meas. Tech., 8, 171–182.
-                            """,
-                            html.A("https://doi.org/10.5194/amt-8-171-2015.", href="https://doi.org/10.5194/amt-8-171-2015", target="_blank")
-                        ])
+                        html.P(
+                            "Bilitza, D., Altadill, D., Truhlik, V., Shubin, V., Galkin, I., Reinisch, B., & Huang, X. "
+                            "(2017). International Reference Ionosphere 2016: From ionospheric climate to real-time "
+                            "weather predictions. Space Weather, 15, 418\u2013429."
+                        ),
+                        html.P(
+                            "Bilitza, D., Pezzopane, M., Truhlik, V., Altadill, D., Reinisch, B. W., & Pignalberi, A. "
+                            "(2022). The International Reference Ionosphere model: A review and description of an "
+                            "ionospheric benchmark. Reviews of Geophysics, 60(4), e2022RG000792."
+                        ),
+                        html.P(
+                            "Codrescu, M. V., Fuller-Rowell, T. J., & Foster, J. C. (2012). Coupled thermosphere\u2013"
+                            "ionosphere\u2013plasmasphere electrodynamics model. Space Weather."
+                        ),
+                        html.P(
+                            "Galkin, I. A., Reinisch, B. W., Huang, X., & Bilitza, D. (2012). Assimilation of GIRO data "
+                            "into a real-time IRI. Radio Science, 47, RS0L07."
+                        ),
+                        html.P(
+                            "Hoque, M. M., Jakowski, N., & Berdermann, J. (2022). An ionosphere broadcast model "
+                            "for next generation GNSS. Navigation, 69(3), navi.528."
+                        ),
+                        html.P(
+                            "Huba, J. D., Joyce, G., & Fedder, J. A. (2000). Sami2 is Another Model of the "
+                            "Ionosphere (SAMI2): A new low-latitude ionosphere model. Journal of Geophysical "
+                            "Research, 105(A10), 23035\u201323053."
+                        ),
+                        html.P(
+                            "Klobuchar, J. A. (1987). Ionospheric time-delay algorithm for single-frequency GPS "
+                            "users. IEEE Transactions on Aerospace and Electronic Systems, AES-23(3), 325\u2013331."
+                        ),
+                        html.P(
+                            "Lin, C. Y., Matsuo, T., Liu, J. Y., Lin, C. H., Tsai, H. F., & Araujo-Pradere, E. A. (2015). "
+                            "Ionospheric assimilation of radio occultation and ground-based GPS data using non-"
+                            "stationary background model error covariance. Atmospheric Measurement Techniques, "
+                            "8, 171\u2013182."
+                        ),
+                        html.P(
+                            "Richmond, A. D., Ridley, E. C., & Roble, R. G. (1992). A thermosphere/ionosphere "
+                            "general circulation model with coupled electrodynamics. Geophysical Research Letters, "
+                            "19(6), 601\u2013604."
+                        ),
+                        html.P(
+                            "Ridley, A. J., Deng, Y., & T\u00f3th, G. (2006). The global ionosphere-thermosphere model. "
+                            "Journal of Atmospheric and Solar-Terrestrial Physics, 68(8), 839\u2013864."
+                        ),
+                        html.P(
+                            "Taylor, K. E. (2001). Summarizing multiple aspects of model performance in a single "
+                            "diagram. Journal of Geophysical Research, 106(D7), 7183\u20137192."
+                        ),
+                        html.P(
+                            "Wang, Z., Bovik, A. C., Sheikh, H. R., & Simoncelli, E. P. (2004). Image quality "
+                            "assessment: From error visibility to structural similarity. IEEE Transactions on Image "
+                            "Processing, 13(4), 600\u2013612."
+                        ),
                     ],
                     id="references"
-                )
+                ),
             ],
             id="content"
-        )    
+        )
     ],
     id="description-page"
 )

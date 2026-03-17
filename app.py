@@ -2,6 +2,7 @@
 
 import numpy as np
 import thermosphere_helpers.description_page as dp
+import logging
 # Import the dash library and modules 
 import dash
 from dash import dcc # Dash core componenets (dcc) for graphs and interactivity
@@ -18,12 +19,15 @@ import plots.skip as skip
 import plots.sssmPlot as sssmPlot
 
 import plots.tecRccPlot as tecRccPlot
+import plots.sppp_plots as sppp_plots
+sppp_plots.start_warm_cache_thread()
 import multiFunc
 import plotSelection
 import plots.comparisonPlot as comparisonPlot
 import des_tab as dt
 # Imports image_paths, dstyles, and gps_layout
 from gpsLayout import *
+import gpsLayout as gps_layout
 
 import gps_page as gp
 import thermosphere_page as tp
@@ -31,11 +35,53 @@ import thermosphere_page as tp
 from thermosphere_page import create_x_button
 from thermosphere_helpers import popups
 
+logger = logging.getLogger(__name__)
+
 #Import data.
 
 csmc2_foF2 = np.load('data/foF2_202111_storm.npz')
 csmc2_hmF2 = np.load('data/hmF2_202111_storm.npz')
 dst_scatter_map = np.load('data/dst_scatter_map.npz', allow_pickle=True)
+
+# In-process cache and warm precompute for IMV figures (main page)
+FIG_CACHE_IMV = {}
+
+def _imv_cache_get_or_build(key, builder):
+    if key in FIG_CACHE_IMV:
+        return FIG_CACHE_IMV[key]
+    fig = builder()
+    FIG_CACHE_IMV[key] = fig
+    return fig
+
+def get_imv_dstkp_fig(year_int: int):
+    key = ("imv_dstkp", int(year_int))
+    return _imv_cache_get_or_build(key, lambda: dstKpPlot.dst_kp_plot(int(year_int), dst_scatter_map['dst_' + str(int(year_int))]))
+
+def get_imv_globedistr_fig():
+    key = ("imv_globedistr",)
+    return _imv_cache_get_or_build(
+        key,
+        lambda: globeDistrPlot.c2_map_plot(dst_scatter_map['c2_lon'], dst_scatter_map['c2_lat'], dst_scatter_map['II_list'])
+    )
+
+def _warm_caches_imv():
+    try:
+        # Precompute a few likely-used figures for faster first paint
+        get_imv_globedistr_fig()
+        for yr in (2013, 2021):
+            get_imv_dstkp_fig(yr)
+    except Exception:
+        # Never block startup on warm failures
+        pass
+
+def start_warm_cache_thread_imv():
+    import threading
+    t = threading.Thread(target=_warm_caches_imv, daemon=True)
+    t.start()
+
+# kick off warm cache thread for IMV
+start_warm_cache_thread_imv()
+
 image_paths = ['assets/CCMC.png', 'assets/airflow1.jpg']
 dstyles = [{'display': 'flex','overflowY': 'scroll','maxHeight': '43vh', 'overflowX': 'auto'}, 
            {'height':'200px', 'width': '320px'}, {'margin-top': '20px', 'margin-bottom': '2px'}, 
@@ -165,7 +211,7 @@ ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '
                             {'label': 'Ionosphere Model Validation', 'value': 'IMV'},
                             {'label': 'Thermosphere Neutral Density Assessment', 'value': "TNDA"},
                             {'label': 'Ray Tracing', 'value': 'RT', 'disabled': True},
-                            {'label': 'GPS Positioning', 'value': 'GPS', 'disabled': True}
+                            {'label': 'Single Frequency GNSS PPP', 'value': 'GPS'}
                         ], 
                         value = 'IMV'
                     ),
@@ -286,6 +332,11 @@ app.layout = html.Div(
         Input("project", "value")
 )
 def select_project(project):
+    # Validate project switching behavior (helps debug unexpected project dropdown resets)
+    try:
+        logger.debug("select_project() called with project=%s", project)
+    except Exception:
+        pass
     if (project == "TNDA"):
         return tp.thermosphere_layout
     elif (project == "IMV"):
@@ -295,15 +346,243 @@ def select_project(project):
     
 @app.callback(
         [Output("tabs-display2", "children"),
-         Output("plotts", "options")],
-
-        Input("tabs", "value")
+         Output("plotts", "options"),
+         Output("plotts", "value")],
+        [Input("tabs", "value"),
+         Input("plotts", "value"),
+         Input("year", "value"),
+         Input("multi", "value")]
 )
-def gps_tabs(tab):
-    p = 0
+def gps_tabs(tab, plotts_value, yearids, multi_value):
+    # Define options per tab as requested
+    analysis_options = [
+        {'label': 'Dst_kp Index', 'value': 'dstkp'},
+        {'label': 'TEC (UT vs Latitude)', 'value': 'tec_utlat'},
+        {'label': 'TEC RMSE (UT vs Latitude)', 'value': 'tec_rmse_utlat'},
+        {'label': 'TEC Gradient (UT vs Latitude)', 'value': 'tec_gradient_utlat'},
+        {'label': 'TEC Gradient RMSE (UT vs Latitude)', 'value': 'tec_gradient_rmse_utlat'},
+        {'label': 'Relative TEC Change (UT vs Latitude)', 'value': 'relative_tec_change'},
+        {'label': 'GNSS 3D Error (UT vs Latitude)', 'value': 'gnss_3d_utlat'},
+        {'label': 'GNSS 2D Error (UT vs Latitude)', 'value': 'gnss_2d_utlat'},
+        {'label': 'GNSS Up Error (UT vs Latitude)', 'value': 'gnss_u_utlat'},
+    ]
+    skill_options = [
+        {'label': 'Dst_kp Index', 'value': 'dstkp'},
+        {'label': 'TEC RMSE', 'value': 'tec_rmse_bars'},
+        {'label': 'TEC TSS', 'value': 'tec_tss_bars'},
+        {'label': 'SSIM', 'value': 'ssim_bars'},
+        {'label': '3D Positioning RMSE', 'value': 'pos_3d_rmse_bars'},
+        {'label': '2D Positioning RMSE', 'value': 'pos_2d_rmse_bars'},
+        {'label': 'Up Positioning RMSE', 'value': 'pos_u_rmse_bars'},
+    ]
+    animation_options = [
+        {'label': 'TEC', 'value': 'video_tec'},
+        {'label': 'TEC Change', 'value': 'video_tec_change'},
+        {'label': 'TEC Gradient', 'value': 'video_tec_gradient'},
+        {'label': '3D Error', 'value': 'video_3d_error'},
+        {'label': '2D Error', 'value': 'video_2d_error'},
+        {'label': 'Up Error', 'value': 'video_up_error'},
+    ]
+
+    # Helper: normalize lists
+    def to_list(v):
+        if v is None:
+            return []
+        return v if isinstance(v, list) else [v]
+
+    # Map 'multi' (model type selection) -> model names used by npz keys
+    def resolve_models(multi):
+        vals = to_list(multi)
+        # Show All -> display all
+        if len(vals) == 0 or '15' in vals:
+            return None
+        models = []
+        for v in vals:
+            try:
+                idx = int(v)
+            except Exception:
+                continue
+            if idx >= len(gps_layout.TITLES[0]):
+                continue
+            label = gps_layout.TITLES[0][idx].strip()
+            # Normalize label differences between UI and dataset keys
+            if label == "Klabuchar":
+                label = "Klobuchar"
+            # Map UI labels to exact dataset keys
+            if label == "WACCMX":
+                models.extend(["WACCMX-Weimer", "WACCMX-Heelis"])
+            elif label == "WACCMX-Heelis":
+                models.append("WACCMX-Heelis")
+            elif label == "TIEGCM-Weimer":
+                models.append("TIEGCM-Weimer")
+            elif label == "TIEGCM-Heelis":
+                models.append("TIEGCM-Heelis")
+            else:
+                models.append(label)
+        # Remove duplicates while preserving order
+        seen = set()
+        ordered = []
+        for m in models:
+            if m not in seen:
+                seen.add(m)
+                ordered.append(m)
+        return ordered if len(ordered) > 0 else None
+
+    # Wrap a list of components into a 2-column grid of Bootstrap cards
+    def as_card_grid(elems):
+        # Slightly taller cards for GNSS PPP and add top/bottom spacing, matching IMV look
+        card_style = {**dstyles[8], "maxHeight": "45vh", "marginTop": "12px", "marginBottom": "12px"}
+        cards = [dbc.Card(style=card_style, children=[e]) for e in elems]
+        rows = []
+        # Spacer between tab bar and first row
+        rows.append(dbc.Row([dbc.Col(html.Div(style={'height': '15px'}), width=12)]))
+        for i in range(0, len(cards), 2):
+            row_children = [dbc.Col(cards[i], width=6)]
+            if i + 1 < len(cards):
+                row_children.append(dbc.Col(cards[i + 1], width=6))
+            else:
+                row_children.append(dbc.Col(html.Div(), width=6))
+            rows.append(dbc.Row(row_children))
+            rows.append(dbc.Row([dbc.Col(html.Div(style={'height': '15px'}), width=12)]))
+        # Add a small padding at the top of the container to separate from tabs
+        return dbc.Container(rows, fluid=True, style={"paddingTop": "10px"})
+
+    # Non-plot tabs use pre-built content
+    if tab == "description":
+        return gp.update_gps_content(tab), analysis_options, plotts_value
+    
+    # Animation tab has its own options and rendering
     if tab == "animation":
-        p = 1
-    return gp.update_gps_content(tab), gps_options[p]
+        opts = animation_options
+        selected = [v for v in to_list(plotts_value) if v in [o['value'] for o in opts]]
+        if len(selected) == 0:
+            selected = [opts[0]['value']]
+        
+        # Build video players for selected videos
+        video_map = {
+            'video_tec': 'assets/allmodel-Gannon_storm_TEC.mp4',
+            'video_tec_change': 'assets/allmodel-Gannon_storm_TEC_change.mp4',
+            'video_tec_gradient': 'assets/allmodel-Gannon_storm_TEC_gradient.mp4',
+            'video_3d_error': 'assets/allmodel-Gannon_storm_3D_error_SPP.mp4',
+            'video_2d_error': 'assets/allmodel-Gannon_storm_2D_error_SPP.mp4',
+            'video_up_error': 'assets/allmodel-Gannon_storm_Up_error_SPP.mp4',
+        }
+        
+        children = []
+        for v in selected:
+            if v in video_map:
+                video_player = html.Video(
+                    controls=True,
+                    autoPlay=False,
+                    loop=True,
+                    style={
+                        "width": "80%",
+                        "padding": "20px",
+                        "backgroundColor": "black",
+                        "margin": "0 auto",
+                        "display": "block",
+                        "height": "auto",
+                        "maxHeight": "70vh"
+                    },
+                    children=[
+                        html.Source(src=video_map[v], type="video/mp4")
+                    ]
+                )
+                children.append(video_player)
+        
+        # Display videos in full width container (not in card grid to avoid cutoff)
+        if len(children) > 0:
+            video_container = html.Div(
+                children=children,
+                style={
+                    "padding": "20px",
+                    "backgroundColor": "black",
+                    "width": "100%"
+                }
+            )
+        else:
+            video_container = html.Div("Select videos and click Render", style={"padding": "20px"})
+        
+        return [video_container], opts, selected
+
+    # Pick which dropdown options to display for this tab
+    opts = analysis_options if tab == "dashboard" else skill_options
+
+    # Filter selected plots to current tab's options
+    selected = [v for v in to_list(plotts_value) if v in [o['value'] for o in opts]]
+    if len(selected) == 0:
+        selected = [opts[0]['value']]
+
+    # Resolve storm year
+    if isinstance(yearids, list) and len(yearids) > 0:
+        yearid = yearids[0]
+    else:
+        yearid = yearids
+    try:
+        year_int = int(str(yearid)[:4]) if yearid is not None else 2021
+    except Exception:
+        year_int = 2021
+
+    # Resolve selected model names for UT-LAT plots
+    selected_models = resolve_models(multi_value)
+
+    # Build selected figures (auto-render, no button required)
+    children = []
+    for v in selected:
+        if v == 'dstkp':
+            fig = sppp_plots.sppp_dst_kp_plot()
+            children.append(dcc.Graph(style=dstyles[3], figure=fig))
+        elif v == 'tec_utlat':
+            fig = sppp_plots.get_tec_utlat_figure(model_names=selected_models)
+            children.append(dcc.Graph(style=dstyles[3], figure=fig))
+        elif v == 'tec_rmse_utlat':
+            fig = sppp_plots.get_tec_rmse_utlat_figure(model_names=selected_models)
+            children.append(dcc.Graph(style=dstyles[3], figure=fig))
+        elif v == 'tec_gradient_utlat':
+            fig = sppp_plots.get_tec_gradient_utlat_figure(model_names=selected_models)
+            children.append(dcc.Graph(style=dstyles[3], figure=fig))
+        elif v == 'tec_gradient_rmse_utlat':
+            fig = sppp_plots.get_tec_gradient_rmse_utlat_figure(model_names=selected_models)
+            children.append(dcc.Graph(style=dstyles[3], figure=fig))
+        elif v == 'relative_tec_change':
+            fig = sppp_plots.get_relative_tec_change_figure(model_names=selected_models)
+            children.append(dcc.Graph(style=dstyles[3], figure=fig))
+        elif v == 'gnss_3d_utlat':
+            fig = sppp_plots.get_gnss_error_utlat_figure("3D", model_names=selected_models)
+            children.append(dcc.Graph(style=dstyles[3], figure=fig))
+        elif v == 'gnss_2d_utlat':
+            fig = sppp_plots.get_gnss_error_utlat_figure("2D", model_names=selected_models)
+            children.append(dcc.Graph(style=dstyles[3], figure=fig))
+        elif v == 'gnss_u_utlat':
+            fig = sppp_plots.get_gnss_error_utlat_figure("U", model_names=selected_models)
+            children.append(dcc.Graph(style=dstyles[3], figure=fig))
+        elif v == 'tec_rmse_ms':
+            fig = sppp_plots.get_tec_rmse_metric_scatter()
+            children.append(dcc.Graph(style=dstyles[3], figure=fig))
+        elif v == 'ppp3d_ms':
+            fig = sppp_plots.get_ppp3d_metric_scatter()
+            children.append(dcc.Graph(style=dstyles[3], figure=fig))
+        elif v == 'tec_rmse_bars':
+            fig = sppp_plots.get_tec_rmse_metric_bars()
+            children.append(dcc.Graph(style=dstyles[3], figure=fig))
+        elif v == 'tec_tss_bars':
+            fig = sppp_plots.get_tec_tss_metric_bars()
+            children.append(dcc.Graph(style=dstyles[3], figure=fig))
+        elif v == 'ssim_bars':
+            fig = sppp_plots.get_ssim_metric_bars()
+            children.append(dcc.Graph(style=dstyles[3], figure=fig))
+        elif v == 'pos_3d_rmse_bars':
+            fig = sppp_plots.get_positioning_rmse_metric_bars(error_type="3D")
+            children.append(dcc.Graph(style=dstyles[3], figure=fig))
+        elif v == 'pos_2d_rmse_bars':
+            fig = sppp_plots.get_positioning_rmse_metric_bars(error_type="2D")
+            children.append(dcc.Graph(style=dstyles[3], figure=fig))
+        elif v == 'pos_u_rmse_bars':
+            fig = sppp_plots.get_positioning_rmse_metric_bars(error_type="U")
+            children.append(dcc.Graph(style=dstyles[3], figure=fig))
+
+    grid = as_card_grid(children)
+    return [grid], opts, selected
     
 @app.callback(
         Output("tabs-display", "children"),
@@ -430,7 +709,7 @@ def update_graph(multi, yearids, task, plot, obs):
         else: obs_op = obs_options[0]
 
 
-    fig1=dstKpPlot.dst_kp_plot(int(year), dst_scatter_map['dst_'+year])
+    fig1=get_imv_dstkp_fig(int(year))
     chosen_year = np.load('data/MTEC_'+yearid+'_storm.npz')
 
     # These are conditionals to set up the TEC plot children. They are specially set up to  
@@ -441,7 +720,7 @@ def update_graph(multi, yearids, task, plot, obs):
     if year == '2013': obs_op = obs_options[1]
     else: obs_op = obs_options[0]
 
-    child1 = dcc.Graph(style=dstyles[3], figure=globeDistrPlot.c2_map_plot(dst_scatter_map['c2_lon'], dst_scatter_map['c2_lat'], dst_scatter_map['II_list']))
+    child1 = dcc.Graph(style=dstyles[3], figure=get_imv_globedistr_fig())
     plot_options = ['DEF_F1', 'DK_F','DEF_F2', 'MS_F', 'SN_F1', 'SN_F2', 'RCC','SC_F']
     if obs == 'FC2':
         # A list of all possible selected graphs.

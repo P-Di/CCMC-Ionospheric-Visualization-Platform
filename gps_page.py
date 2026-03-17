@@ -52,7 +52,7 @@ options_list = [[
 
 
 
-base = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, children=[  
+base = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0', 'overflowX': 'hidden'}, children=[
     html.Div(
         id='ion-main-menu-button',
         children=html.Img(src='assets/menu-icon.svg', width="60px")
@@ -83,14 +83,20 @@ base = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, children
                             {'label': 'Ionosphere Model Validation', 'value': 'IMV'},
                             {'label': 'Thermosphere Neutral Density Assessment', 'value': "TNDA"},
                             {'label': 'Ray Tracing', 'value': 'RT', 'disabled': True},
-                            {'label': 'GPS Positioning', 'value': 'GPS'}
-                        ], 
-                        value = 'IMV'
+                            {'label': 'Single Frequency GNSS PPP', 'value': 'GPS'}
+                        ],
+                        # When entering the GNSS PPP page, keep the project selector
+                        # showing the GNSS PPP project (fixes UI showing IMV).
+                        value='GPS'
                     ),
                     html.Div(children=[html.B(children='Storm ID')], style=dstyles[2]),
-                    dcc.Dropdown(id='year', options=[
-                        {'label': '2013-03-TP-01', 'value': '201303'},
-                        {'label': '2021-11-TP-01', 'value': '202111'}], multi=True, value = '202111'),
+                    dcc.Dropdown(
+                        id='year',
+                        options=[{'label': '2024-05-TP-02', 'value': '2024-05-TP-02'}],
+                        value='2024-05-TP-02',
+                        multi=False,
+                        disabled=True
+                    ),
                     html.Div(children=[html.B(children='Observation')], style=dstyles[2]),
                     dcc.Dropdown(id='observation', options=[                        
                         {'label': 'GNSS Rinex Data', 'value': 'A'},
@@ -112,16 +118,27 @@ base = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, children
                         ),
                     html.Div(children=[html.B(children='Plot')], style=dstyles[2]),
                     html.Div(dcc.Dropdown(
-                    id='plotts',
-                    options=[
-                        {'label': 'Dst_kp Indices', 'value': 'A'},
-                        {'label': 'TEC RMSE Metric Score', 'value': 'B'},
-                        {'label': 'SF PPP 3D Error Metric Score', 'value': 'C'}
+                        id='plotts',
+                        options=[
+                            {'label': 'Dst_kp Index', 'value': 'dstkp'},
+                            {'label': 'TEC (UT vs Latitude)', 'value': 'tec_utlat'},
+                            {'label': 'TEC RMSE (UT vs Latitude)', 'value': 'tec_rmse_utlat'},
+                            {'label': 'TEC Gradient (UT vs Latitude)', 'value': 'tec_gradient_utlat'},
+                            {'label': 'TEC Gradient RMSE (UT vs Latitude)', 'value': 'tec_gradient_rmse_utlat'},
+                            {'label': 'Relative TEC Change (UT vs Latitude)', 'value': 'relative_tec_change'},
+                            {'label': 'GNSS 3D Error (UT vs Latitude)', 'value': 'gnss_3d_utlat'},
+                            {'label': 'GNSS 2D Error (UT vs Latitude)', 'value': 'gnss_2d_utlat'},
+                            {'label': 'GNSS Up Error (UT vs Latitude)', 'value': 'gnss_u_utlat'},
+                            {'label': 'TEC RMSE Bars', 'value': 'tec_rmse_bars'},
+                            {'label': 'TEC TSS Bars', 'value': 'tec_tss_bars'},
+                            {'label': 'SSIM Bars', 'value': 'ssim_bars'},
+                            {'label': '3D Positioning RMSE Bars', 'value': 'pos_3d_rmse_bars'},
+                            {'label': '2D Positioning RMSE Bars', 'value': 'pos_2d_rmse_bars'},
+                            {'label': 'Up Positioning RMSE Bars', 'value': 'pos_u_rmse_bars'}
                         ],
                         multi=True,
-                        value='A',
-
-                        ))
+                        value='dstkp',
+                    ))
                     
                 ],
                 id="ion-data-selection-menu", 
@@ -148,14 +165,14 @@ base = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, children
                         id='text_overlay',
                         children=[
                             html.P(
-                                "CCMC ITMAP-Ionosphere-Thermosphere Model Assessment and Validation Platform", 
-                                id='text_box', 
+                                "CCMC ITMAP-Ionosphere-Thermosphere Model Assessment and Validation Platform",
+                                id='text_box',
                                 style={
                                     "zIndex": "4",
-                                    'color': 'white', 
+                                    'color': 'white',
                                     'background-color': 'black',
-                                    'font-size': '38px', 
-                                    'overflowX': 'hidden', 
+                                    'font-size': '38px',
+                                    'overflowX': 'hidden',
                                     'white-space': 'nowrap',
                                     'padding-left': '5px',
                                     'padding-top': '9px',
@@ -167,37 +184,36 @@ base = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, children
                     )
                 ],
                 style={
-                    "zIndex": "3", 
-                    'padding': '0', 
-                    'margin': '0', 
-                    'width': '100%', 
-                    'height': '100%', 
-                    'position': 'relative', 
-                    'margin-left' : '20%',
-                    'overflowX': 'hidden', 
-                    'width':'100%'
+                    "zIndex": "3",
+                    'padding': '0',
+                    'margin': '0',
+                    'width': '81%',
+                    'height': '100%',
+                    'position': 'relative',
+                    'margin-left' : '19%',
+                    'overflowX': 'hidden'
                 }
             ),
     # Format the window on the left of the webpage to include all the dropdown menus.
     #Format the right 80% of the page, which are created from different graphs that are appended to the children of the rows and columns using a callback.
     dcc.Loading(
         
-        html.Div(style={'margin-left' : '20%'},children=[ 
+        html.Div(style={'margin-left' : '19%', 'width': '81%', 'overflowX': 'hidden'},children=[
         dcc.Tabs(
             id="tabs",
             style={"zIndex": "1"},
             value="description",
             children=[
-                dcc.Tab(label="Description", value="description", style={"background-color": "white", "color": "#e59b1c"}, 
+                dcc.Tab(label="Description", value="description", style={"background-color": "white", "color": "#e59b1c"},
                     selected_style={"background-color": "#e59b1c", "color": "white", "border": "none"}),
-                    dcc.Tab(label="Animation", value="animation", style={"background-color": "white", "color": "#e59b1c"}, 
+                    dcc.Tab(label="Animation", value="animation", style={"background-color": "white", "color": "#e59b1c"},
                     selected_style={"background-color": "#e59b1c", "color": "white", "border": "none"}),
-                dcc.Tab(label="Analysis Dashboard", value="dashboard", style={"background-color": "white", "color": "#e59b1c"}, 
+                dcc.Tab(label="Analysis Dashboard", value="dashboard", style={"background-color": "white", "color": "#e59b1c"},
                     selected_style={"background-color": "#e59b1c", "color": "white", "border": "none"}),
-                dcc.Tab(label="Skill Score", value="skill", style={"background-color": "white", "color": "#e59b1c"}, 
+                dcc.Tab(label="Skill Score", value="skill", style={"background-color": "white", "color": "#e59b1c"},
                     selected_style={"background-color": "#e59b1c", "color": "white", "border": "none"}),
             ]),
-            html.Div(id="tabs-display2") 
+            html.Div(id="tabs-display2")
         ])),
     ]),
             html.Footer(
@@ -205,11 +221,12 @@ base = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, children
             children=[html.A("Accessibility", href='https://www.nasa.gov/accessibility', target="_blank"), html.Span(children =" | ")          
 ,html.A("Privacy Policy", href='https://www.nasa.gov/privacy/', target="_blank"), html.Span(children =" | Curators: Paul DiMarzio, Joseph Sypal, and Dr. Min-Yang Chou | NASA Official: Maria Kuznetsova")],
             style={
-                'margin-left' : '20%',
+                'margin-left' : '19%',
+                'width': '81%',
                 "textAlign": "center",
                 "padding": "10px",
                 "backgroundColor": "#f1f1f1",
-                "position": "relative", 
+                "position": "relative",
                 "bottom": 0})])
 
 
@@ -223,7 +240,7 @@ def update_gps_content(tab):
         return gps_layout
     elif tab == "animation":
         return gps_animation
-    elif tab == "analysis":
+    elif tab == "dashboard":
         return gps_analysis
-    elif tab == "skillscore":
+    elif tab == "skill":
         return gps_skillscore
