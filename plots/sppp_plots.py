@@ -54,7 +54,7 @@ def load_tec_rmse_npz():
       - 'TEC_UTLAT': dict(model -> 2D array [lat x ut])
       - 'model_latidx': 1D array of latitudes
     """
-    path = "MCHUp/MCHUp2/TEC_rmse_UTLAT_map.npz"
+    path = "data/MCHUp2/TEC_rmse_UTLAT_map.npz"
     data = np.load(path, allow_pickle=True)
     RMSE_UTLAT = data["RMSE_UTLAT"].item()
     TEC_UTLAT = data["TEC_UTLAT"].item()
@@ -73,7 +73,7 @@ def load_error_utlat_npz():
       - 'ERROR_E_UTLAT' : dict(model -> 2D array [lat x ut])
       - 'ERROR_N_UTLAT' : dict(model -> 2D array [lat x ut])
     """
-    path = "MCHUp/MCHUp2/ERROR_UTLAT_map_75125W_60min_SPP.npz"
+    path = "data/MCHUp2/ERROR_UTLAT_map_75125W_60min_SPP.npz"
     data = np.load(path, allow_pickle=True)
     ERROR_3D = data["ERROR_3D_UTLAT"].item()
     ERROR_2D = data["ERROR_2D_UTLAT"].item()
@@ -93,7 +93,7 @@ def load_tec_gradient_npz():
       - 'TEC_gradient_UTLAT': dict(model -> 2D array [lat x ut])
       - 'model_latidx': 1D array of latitudes
     """
-    path = "MCHUp/MCHUp2/TEC_gradient_UTLAT_map.npz"
+    path = "data/MCHUp2/TEC_gradient_UTLAT_map.npz"
     data = np.load(path, allow_pickle=True)
     TEC_gradient_UTLAT = data["TEC_gradient_UTLAT"].item()
     model_latidx = data["model_latidx"]
@@ -112,7 +112,7 @@ def load_metric_scores_csv():
     Second level are phases: 'quiet phase', 'main phase', 'recovery phase', 'main+recovery'
     Index are model names.
     """
-    path = "MCHUp/MCHUp2/metric_scores_SPP.csv"
+    path = "data/MCHUp2/metric_scores_SPP.csv"
     df = pd.read_csv(path, header=[0, 1], index_col=0)
     return df
 
@@ -126,7 +126,7 @@ def load_tec_anomaly_scores_csv():
     Second level are phases: 'Main phase', 'Recovery phase', 'Main+Recovery'
     Index are model names.
     """
-    path = "MCHUp/MCHUp2/TEC_anomaly_scores.csv"
+    path = "data/MCHUp2/TEC_anomaly_scores.csv"
     df = pd.read_csv(path, header=[0, 1], index_col=0)
     return df
 
@@ -311,7 +311,7 @@ def tec_utlat_figure(date_range_str="2024/05/09-05/12", model_names=None):
 def tec_rmse_utlat_figure(date_range_str="2024/05/09-05/12", model_names=None):
     """
     Builds a grid of TEC RMSE (TECU) heatmaps vs UT and Latitude,
-    for models defined in RMSE_MODELS, using MCHUp/TEC_rmse_UTLAT_map.npz.
+    for models defined in RMSE_MODELS, using data/TEC_rmse_UTLAT_map.npz.
     model_names: optional iterable of model keys to display (use RMSE_MODELS names).
     """
     RMSE_UTLAT, _, model_latidx = load_tec_rmse_npz()
@@ -395,7 +395,7 @@ def gnss_error_utlat_figure(kind="3D", date_range_str="2024/05/09-05/12", model_
     """
     Builds a grid of GNSS positioning error heatmaps vs UT and Latitude.
     kind: '3D', '2D', 'U', 'E', or 'N'
-    Uses MCHUp/MCHUp2/ERROR_UTLAT_map_75125W_60min_SPP.npz.
+    Uses data/MCHUp2/ERROR_UTLAT_map_75125W_60min_SPP.npz.
     model_names: optional iterable of model keys to display (use ERROR_MODELS names).
     """
     ERROR_3D, ERROR_2D, ERROR_U, ERROR_E, ERROR_N, model_latidx = load_error_utlat_npz()
@@ -1370,14 +1370,14 @@ def positioning_rmse_metric_bars(error_type="3D"):
 
 def sppp_dst_kp_plot():
     """
-    Build DST/KP figure for Single Frequency GNSS PPP using MCHUp/MCHUp2/kp_dst.txt
+    Build DST/KP figure for Single Frequency GNSS PPP using data/MCHUp2/kp_dst.txt
     Two stacked subplots with shaded main phase region, matching notebook style.
     """
     import os
     from plotly.subplots import make_subplots
     from datetime import datetime, timedelta
 
-    path = "MCHUp/MCHUp2/kp_dst.txt"
+    path = "data/MCHUp2/kp_dst.txt"
     with open(path, "r") as f:
         text = f.readlines()
 
