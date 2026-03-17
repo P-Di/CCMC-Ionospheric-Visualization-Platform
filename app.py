@@ -176,9 +176,7 @@ for i in TITLES:
         
 # Begin Dash App
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], title="ITMAP", suppress_callback_exceptions=True)
-mathjax = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML'
 app.config.suppress_callback_exceptions = True
-app.scripts.append_script({ 'external_url' : mathjax })
 #Define the layout: Set the background to a light gray, delete all margines.
 ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0'}, children=[  
     html.Div(
