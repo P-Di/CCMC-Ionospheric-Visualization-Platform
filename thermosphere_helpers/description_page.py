@@ -1,6 +1,5 @@
 import dash_bootstrap_components as dbc
-from dash import html
-import dash_core_components as dcc
+from dash import html, dcc
 
 description_page = html.Div(
     [
@@ -14,6 +13,7 @@ description_page = html.Div(
                         html.Li(html.A("Challenges", href="#challenges", className="TOC-link")),
                         html.Li(html.A("Campaign Objective", href="#objectives", className="TOC-link")),
                         html.Li(html.A("Methodology", href="#methodology", className="TOC-link")),
+                        html.Li(html.A("Benchmark", href="#benchmark", className="TOC-link")),
                         html.Li(html.A("Raw Model Output", href="#raw-output-link", className="TOC-link")),
                         html.Li(html.A("References", href="#references", className="TOC-link"))
                     ],
@@ -28,32 +28,32 @@ description_page = html.Div(
                     [
                         html.H1("About"),
                         html.Div([
-                            html.Span([
+                            html.Div([
                                 "ISWAT Team ID: ",
                                 html.A("G2A-01", href="https://www.iswat-cospar.org/g2a-01", target="_blank")
                             ]),
                             html.Br(),
-                            "Team Leads:",
-                            html.Ul([
-                                html.Li([
-                                    "Sean Bruinsma (CNES, Toulouse, France), ", 
-                                    html.A("sean.bruinsma@cnes.fr", href="mailto:sean.bruinsma@cnes.fr", target="_blank")
-                                ]),
-                                html.Li([
-                                    "Jia Yue (NASA/GSFC, USA), ",
-                                    html.A("jia.yue@nasa.gov", href="mailto:jia.yue@nasa.gov", target="_blank")
-                                ]),
-                                html.Li([
-                                    "Jack Wang (NASA/GSFC, USA), ",
-                                    html.A("jack.c.wang@nasa.gov", href="mailto:jack.c.wang@nasa.gov", target="_blank")
-                                ])
+                            "Team Lead:",
+                            html.Div([
+                                "Sean Bruinsma (CNES, Toulouse, France), ", 
+                                html.A("sean.bruinsma@cnes.fr", href="mailto:sean.bruinsma@cnes.fr", target="_blank")
                             ]),
-                            html.Span([
+                            html.Br(),
+                            "Team members contributing to this Score Board:",
+                            html.Div([
+                                "Jia Yue (NASA/GSFC, USA), ",
+                                html.A("jia.yue@nasa.gov", href="mailto:jia.yue@nasa.gov", target="_blank")
+                            ]),
+                            html.Div([
+                                "Jack Wang (NASA/GSFC, USA), ",
+                                html.A("jack.c.wang@nasa.gov", href="mailto:jack.c.wang@nasa.gov", target="_blank")
+                            ]),
+                            html.Br(),
+                            html.Div([
                                 "Communications: See the ",
                                 html.A("ISWAT G2A-01 team page", href="https://www.iswat-cospar.org/g2a-01", target="_blank"),
                                 " for an up-to-date list of participants and latest news about the working team."
                             ]),
-                            html.Br(),
                             html.Br()
                         ]),
                     ],
@@ -375,6 +375,21 @@ description_page = html.Div(
                 ),
                 html.Div(
                     [
+                        html.H1("Benchmark"),
+                        html.P(
+                            """
+                            Benchmark storms are identified when ap index >=132 (equivalent to Kp >= 7o) and are
+                            included in the benchmark analysis only when sufficient observation data are available.
+                            Each benchmark event is required to exhibit a single peak in the ap time series (Single
+                            Peak Storm). Phase definitions follow the same procedure as in Methodology, ensuring
+                            consistency with the general storm‐phase framework.
+                            """
+                        ),
+                    ],
+                    id="benchmark"
+                ),
+                html.Div(
+                    [
                         html.H1("Raw Model Output"),
                         html.Span([
                             "The raw model output for the models validated on the webpage is availiable at ",
@@ -415,8 +430,11 @@ description_page = html.Div(
                     id="references"
                 )
             ],
-            id="content"
+            className="content",
+            id="thermosphere-content",
         )    
     ],
     id="description-page"
 )
+
+

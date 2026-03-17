@@ -1,3 +1,4 @@
+from os import wait
 from dash import html
 
 
@@ -95,9 +96,36 @@ def gen_SWARM_A_data():
             Swarm comprises a constellation of three satellites in near-polar low orbits to obtain
             better and more varied measurements. The Swarm mission was launched from
             Plesetsk Cosmodrome on 22 November 2013. Swarm A and C form the lower pair of
-
             satellites flying side-by-side (1.4° separation in longitude at the equator) at an altitude of
             462 km (initial altitude) and at 87.35° inclination angle.
+            """
+        ),
+        html.H2("Data Source", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P([
+            "TU Delft (",
+            html.A("ftp://thermosphere.tudelft.nl", href="ftp://thermosphere.tudelft.nl", target="_blank"), 
+            "); PI: Christian Siemes, ",
+            html.A("c.siemes@tudelft.nl", href="mailto:c.siemes@tudelft.nl", target="_blank")
+        ]),
+        html.H2("Density Retrieval Method", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("Derived using precision orbit determination"),
+        html.H2("Data Version", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("Version_01"),
+        html.H2("More Information", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P(html.A("https://earth.esa.int/eogateway/missions/swarm", 
+                      href="https://earth.esa.int/eogateway/missions/swarm", target="_blank")),
+        html.P(html.A("http://thermosphere.tudelft.nl/", href="http://thermosphere.tudelft.nl/", target="_blank"))
+    ], className="data-source-metadata")
+
+
+def gen_SWARM_B_data():
+    return html.Div([
+        html.H1("SWARM-B Description", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P(
+            """
+            Swarm comprises a constellation of three satellites in near-polar low orbits to obtain
+            better and more varied measurements. The Swarm mission was launched from
+            Plesetsk Cosmodrome on 22 November 2013. 
             """
         ),
         html.H2("Data Source", style={"font-size": "20px", "font-weight": "bold"}),
@@ -253,7 +281,7 @@ def gen_DTM2013_01_data():
         ),
         html.H2("Solution Type", style={"font-size": "20px", "font-weight": "bold"}),
         html.P("Semiempirical"),
-        html.H2("Sollution Drivers", style={"font-size": "20px", "font-weight": "bold"}),
+        html.H2("Solution Drivers", style={"font-size": "20px", "font-weight": "bold"}),
         html.P("F30; Kp"),
         html.H2("Version Number", style={"font-size": "20px", "font-weight": "bold"}),
         html.P("2013"),
@@ -424,4 +452,40 @@ def gen_GITM_01_data():
         html.P("2.5°, 5°, 0.25 scale height, 10 mins"),
         html.H2("More Information", style={"font-size": "20px", "font-weight": "bold"}),
         html.A("https://ccmc.gsfc.nasa.gov/models/GITM~21.11/", href="https://ccmc.gsfc.nasa.gov/models/GITM~21.11/", target="_blank")
+    ], className="data-source-metadata")
+
+def gen_WAM_IPE_data():
+    return html.Div([
+        html.H1("WAMIPE-01 Description", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P(
+            """
+            WAM is a physics-based whole atmosphere model and an extension of the global
+            spectral model dynamical core, GFS, extending to approximately 3x10^-7 Pa. The
+            WAM system is used to quantify the impact of lower atmosphere weather on the
+            upper atmosphere and ionosphere, as well as the response to solar and
+            geomagnetic activity. WAM is coupled one-way to IPE.
+            """
+        ),
+        html.H2("Caveat", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P(
+            """
+            Caveat: In the CCMC Runs-on-Request setting, WAM-IPE is free-running without
+            data assimilation. There is nothing constraining the lower atmosphere as in the
+            operational WAM-IPE Forecast System (WFS).
+            """
+        ),
+        html.H2("Solution Type", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("First Principle"),
+        html.H2("Solution Drivers", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P(
+            """
+            F10.7; Kp index; IMF Solar wind speed and density; By; Bz
+            """
+        ),
+        html.H2("Version Number", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("1.25"),
+        html.H2("Resolution (latitude, longitude, vertical, output cadence)", style={"font-size": "20px", "font-weight": "bold"}),
+        html.P("2°, 4°, quarter scale height, 20 mins"),
+        html.H2("More Information", style={"font-size": "20px", "font-weight": "bold"}),
+        html.A("https://ccmc.gsfc.nasa.gov/models/WAM-IPE~1.2", href="https://ccmc.gsfc.nasa.gov/models/WAM-IPE~1.2/", target="_blank")
     ], className="data-source-metadata")

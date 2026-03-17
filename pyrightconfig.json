@@ -1,0 +1,8 @@
+{
+  "typeCheckingMode": "basic",
+  "venvPath": "./",
+  "venv": ".venv",
+  "pythonVersion": "3.12",
+  "pythonPath": "./.venv/bin/python"
+}
+

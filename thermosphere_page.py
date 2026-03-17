@@ -12,7 +12,7 @@ import json, os
 import pandas as pd
 
 # Modules to create the dash layout
-from dash import html, dcc, dash_table 
+from dash import html, dcc, dash_table
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 
@@ -60,11 +60,24 @@ image_paths = ['assets/CCMC.png', 'assets/airflow1.jpg', "assets/options-icon.sv
 dashboard_data_dir = "data/thermosphere_data"
 benchmark_data_dir = "data/benchmark_scores"
 
-satellites = ["CHAMP", "GOCE", "GRACE-A", "SWARM-A", "GRACE-FO"]
+satellites = ["CHAMP", "GOCE", "GRACE-A", "SWARM-A", "SWARM-B", "GRACE-FO"]
 satellite_opts = list(map(options_from_list, satellites))
 satellite_labels = list(map(generate_labels, satellites))
 
-models = ["MSISE00-01", "MSIS20-01", "JB2008-01", "DTM2013-01", "DTM2020-01", "GITM-01", "TIEGCM-Weimer-01", "TIEGCM-Heelis-01", "WACCMX-Weimer-01", "WACCMX-Heelis-01"]
+models = [
+    "MSISE00", 
+    "MSIS20", 
+    "JB2008", 
+    "DTM2013", 
+    "DTM2020", 
+    "GITM", 
+    "TIEGCM-Weimer", 
+    "TIEGCM-Heelis", 
+    "WACCMX-Weimer",
+    "WACCMX-Heelis", 
+    "CTIPe",
+    "WAMIPE"
+]
 model_opts = list(map(options_from_list, models))
 model_labels = list(map(generate_labels, models))
 
@@ -380,7 +393,14 @@ def format_data(data_dir: str) -> dict:
                 for satellite in data["events"][key]["satellites"]:
                     for phase in data["events"][key]["satellites"][satellite]:
                         # select the keys we want and append the data to the coorisponding list in the dictionary 
-                        formatted_data["model"].append(data["solution"])
+
+                        # remove the -01 from the model solution labels (if it exists)
+                        if "-01" in data["solution"]:
+                            begin = data["solution"].find("-01")
+                            formatted_data["model"].append(data["solution"][0:begin])
+                        else:
+                            formatted_data["model"].append(data["solution"])
+
                         formatted_data["TP"].append(data["events"][key]["TP"])
                         formatted_data["category"].append(data["events"][key]["category"])
                         formatted_data["satellite"].append(satellite)
@@ -493,10 +513,16 @@ def update_content(tab, parameter):
                             ],
                             id="thermosphere-main-plot-title",
                         ),
-                        dcc.Graph(
-                            id="skills-by-event-plot"
+                        html.Div(
+                            className="stats-wrapper",
+                            children=[
+                                dcc.Graph(
+                                    id="skills-by-event-plot",
+                                    style={"height": "770px"},
+                                ),
+                                html.Div(id="main-plot-stats", className="stats")
+                            ]
                         ),
-                        html.Div(id="main-plot-stats", className="stats")
                     ]),
                     html.Div([ # Data table showing average parameter value for each phase for each model
                         html.Span(html.Strong("Skills By Phase")),
@@ -508,7 +534,13 @@ def update_content(tab, parameter):
                             },
                             style_cell={
                                 "text-align": "center"
-                            } 
+                            },
+                            style_cell_conditional=[{
+                                "if": {
+                                    "column_id": "total"
+                                }, 
+                                "border-right": "3px solid black"
+                            }]
                         )
                     ]),
                     # This div is a target for the "update_plots" callback and will be populated with plotly graphs for each model plotted against phase
@@ -557,12 +589,17 @@ def update_content(tab, parameter):
                             ],
                             id="bench-main-plot-title",
                         ),
-                        dcc.Graph(
-                            id="skills-by-event-plot",
-                            figure=main_plot,
-                            style={"height": "650px"}
-                        ),
-                        html.Div(id="bench-main-stats", className="stats", children=formatted_bench_main_stats, style={"top": "315px"})
+                        html.Div(
+                            className="stats-wrapper",
+                            children=[
+                                dcc.Graph(
+                                    id="skills-by-event-plot",
+                                    figure=main_plot,
+                                    style={"height": "770px"}
+                                ),
+                                html.Div(id="bench-main-stats", className="stats", children=formatted_bench_main_stats, style={"top": "315px"})
+                            ]
+                        )
                     ]),
                     html.Div([
                         html.Span(html.Strong(f"Skills By Phase: {parameter}")),
@@ -575,6 +612,12 @@ def update_content(tab, parameter):
                             style_cell={
                                 "text-align": "center"
                             },
+                            style_cell_conditional=[{
+                                "if": {
+                                    "column_id": "total"
+                                }, 
+                                "border-right": "3px solid black",
+                            }],
                             data=table_data 
                         )
                     ]),
