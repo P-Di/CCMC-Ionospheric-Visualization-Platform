@@ -5,6 +5,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from datetime import datetime, timedelta
 import logging
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -183,7 +184,11 @@ def _phase_dropdown_menu(buttons):
 
 
 def _make_grid_title(model: str, date_range_str: str):
-    return f"{model} {date_range_str}"
+    if date_range_str:
+        match = re.search(r"\b(\d{4})\b", str(date_range_str))
+        if match:
+            return f"{match.group(1)} {model}"
+    return model
 
 
 def _ensure_range(zmin, zmax):
