@@ -187,10 +187,9 @@ base = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0', 'overflow
                     "zIndex": "3",
                     'padding': '0',
                     'margin': '0',
-                    'width': '81%',
+                    'width': '100%',
                     'height': '100%',
                     'position': 'relative',
-                    'margin-left' : '19%',
                     'overflowX': 'hidden'
                 }
             ),
@@ -198,7 +197,7 @@ base = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0', 'overflow
     #Format the right 80% of the page, which are created from different graphs that are appended to the children of the rows and columns using a callback.
     dcc.Loading(
         
-        html.Div(style={'margin-left' : '19%', 'width': '81%', 'overflowX': 'hidden'},children=[
+        html.Div(style={'width': '100%', 'overflowX': 'hidden'},children=[
         dcc.Tabs(
             id="tabs",
             style={"zIndex": "1"},
@@ -221,8 +220,6 @@ base = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0', 'overflow
             children=[html.A("Accessibility", href='https://www.nasa.gov/accessibility', target="_blank"), html.Span(children =" | ")          
 ,html.A("Privacy Policy", href='https://www.nasa.gov/privacy/', target="_blank"), html.Span(children =" | Curators: Paul DiMarzio, Joseph Sypal, and Dr. Min-Yang Chou | NASA Official: Maria Kuznetsova")],
             style={
-                'margin-left' : '19%',
-                'width': '81%',
                 "textAlign": "center",
                 "padding": "10px",
                 "backgroundColor": "#f1f1f1",

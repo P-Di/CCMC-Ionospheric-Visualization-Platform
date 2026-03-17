@@ -156,6 +156,31 @@ ERROR_MODELS = [
 PHASES = ["quiet phase", "main phase", "recovery phase"]
 PHASES_EXTENDED = ["quiet phase", "main phase", "recovery phase", "main+recovery"]
 
+PHASE_LABELS = {
+    "quiet phase": "Quiet",
+    "main phase": "Main",
+    "recovery phase": "Recovery",
+    "main+recovery": "Main + Recovery",
+}
+
+
+def _display_phase_label(phase: str) -> str:
+    return PHASE_LABELS.get(phase.strip().lower(), phase.title())
+
+
+def _phase_dropdown_menu(buttons):
+    return dict(
+        buttons=buttons,
+        direction="down",
+        pad={"l": 10, "t": 10, "r": 10, "b": 4},
+        showactive=True,
+        x=-0.25,
+        xanchor="left",
+        y=1.15,
+        yanchor="top",
+        font=dict(size=13),
+    )
+
 
 def _make_grid_title(model: str, date_range_str: str):
     return f"{model} {date_range_str}"
@@ -964,11 +989,10 @@ def tec_rmse_metric_bars():
     buttons = []
     for i, ph in enumerate(PHASES_EXTENDED):
         visibility = [j == i for j in range(len(PHASES_EXTENDED))]
-        title_suffix = " (weighted)" if ph == "main+recovery" else ""
         buttons.append(
             dict(
                 args=[{"visible": visibility}],
-                label=ph + title_suffix,
+                label=_display_phase_label(ph),
                 method="update"
             )
         )
@@ -981,16 +1005,7 @@ def tec_rmse_metric_bars():
         height=500,
         margin=dict(l=160, r=80, t=70, b=50),
         updatemenus=[
-            dict(
-                buttons=buttons,
-                direction="down",
-                pad={"l": 10, "t": 10},
-                showactive=True,
-                x=-0.25,
-                xanchor="left",
-                y=1.15,
-                yanchor="top"
-            )
+            _phase_dropdown_menu(buttons)
         ]
     )
     
@@ -1059,7 +1074,7 @@ def tec_tss_metric_bars():
         colors = list(reversed(colors))
 
         visible = True if len(trace_phases) == 0 else False
-        trace_phases.append(phase)
+        trace_phases.append(_display_phase_label(phase))
 
         fig.add_trace(
             go.Bar(
@@ -1088,33 +1103,21 @@ def tec_tss_metric_bars():
         visibility = [j == i for j in range(len(trace_phases))]
         buttons.append(
             dict(
-                args=[
-                    {"visible": visibility},
-                    {"title": {"text": f"TEC TSS – {ph}", "x": 0.5, "xanchor": "center"}},
-                ],
+                args=[{"visible": visibility}],
                 label=ph,
                 method="update",
             )
         )
 
     fig.update_layout(
-        title=dict(text=f"TEC TSS – {trace_phases[0]}", x=0.5, xanchor="center"),
+        title=dict(text="TEC TSS", x=0.5, xanchor="center"),
         showlegend=False,
         plot_bgcolor="white",
         paper_bgcolor="white",
         height=500,
         margin=dict(l=160, r=80, t=70, b=50),
         updatemenus=[
-            dict(
-                buttons=buttons,
-                direction="down",
-                pad={"l": 10, "t": 10},
-                showactive=True,
-                x=-0.25,
-                xanchor="left",
-                y=1.15,
-                yanchor="top",
-            )
+            _phase_dropdown_menu(buttons)
         ],
     )
 
@@ -1177,7 +1180,7 @@ def ssim_metric_bars():
             x_vals = list(reversed(list(x_vals))) if len(x_vals) else []
 
         visible = True if len(trace_phases) == 0 else False
-        trace_phases.append(phase)
+        trace_phases.append(_display_phase_label(phase))
 
         fig.add_trace(
             go.Bar(
@@ -1205,33 +1208,21 @@ def ssim_metric_bars():
         visibility = [j == i for j in range(len(trace_phases))]
         buttons.append(
             dict(
-                args=[
-                    {"visible": visibility},
-                    {"title": {"text": f"SSIM – {ph}", "x": 0.5, "xanchor": "center"}},
-                ],
+                args=[{"visible": visibility}],
                 label=ph,
                 method="update",
             )
         )
 
     fig.update_layout(
-        title=dict(text=f"SSIM – {trace_phases[0]}", x=0.5, xanchor="center"),
+        title=dict(text="SSIM", x=0.5, xanchor="center"),
         showlegend=False,
         plot_bgcolor="white",
         paper_bgcolor="white",
         height=500,
         margin=dict(l=160, r=80, t=70, b=50),
         updatemenus=[
-            dict(
-                buttons=buttons,
-                direction="down",
-                pad={"l": 10, "t": 10},
-                showactive=True,
-                x=-0.25,
-                xanchor="left",
-                y=1.15,
-                yanchor="top",
-            )
+            _phase_dropdown_menu(buttons)
         ],
     )
 
@@ -1307,7 +1298,7 @@ def positioning_rmse_metric_bars(error_type="3D"):
         colors = list(reversed(colors))
 
         visible = True if len(trace_phases) == 0 else False
-        trace_phases.append(phase)
+        trace_phases.append(_display_phase_label(phase))
 
         fig.add_trace(
             go.Bar(
@@ -1334,13 +1325,10 @@ def positioning_rmse_metric_bars(error_type="3D"):
     buttons = []
     for i, ph in enumerate(trace_phases):
         visibility = [j == i for j in range(len(trace_phases))]
-        title_suffix = " (weighted)" if ph == "main+recovery" else ""
+        title_suffix = " (w)" if ph == "main+recovery" else ""
         buttons.append(
             dict(
-                args=[
-                    {"visible": visibility},
-                    {"title": {"text": f"{title_text} – {ph}{title_suffix}", "x": 0.5, "xanchor": "center"}},
-                ],
+                args=[{"visible": visibility}],
                 label=ph + title_suffix,
                 method="update",
             )
@@ -1348,25 +1336,16 @@ def positioning_rmse_metric_bars(error_type="3D"):
 
     # Initial title uses first available trace phase
     init_ph = trace_phases[0]
-    init_suffix = " (weighted)" if init_ph == "main+recovery" else ""
+    init_suffix = " (w)" if init_ph == "main+recovery" else ""
     fig.update_layout(
-        title=dict(text=f"{title_text} – {init_ph}{init_suffix}", x=0.5, xanchor="center"),
+        title=dict(text=title_text, x=0.5, xanchor="center"),
         showlegend=False,
         plot_bgcolor="white",
         paper_bgcolor="white",
         height=500,
         margin=dict(l=160, r=80, t=70, b=50),
         updatemenus=[
-            dict(
-                buttons=buttons,
-                direction="down",
-                pad={"l": 10, "t": 10},
-                showactive=True,
-                x=-0.25,
-                xanchor="left",
-                y=1.15,
-                yanchor="top",
-            )
+            _phase_dropdown_menu(buttons)
         ],
     )
 
@@ -1702,3 +1681,4 @@ def warm_caches():
 def start_warm_cache_thread():
     t = threading.Thread(target=warm_caches, daemon=True)
     t.start()
+

@@ -125,12 +125,12 @@ gps_layout = html.Div(style={'marginTop': '30px'},
                     style={"list-style-type": "none"}
                 )
             ],
-            className="TOC"
+            className="gps-toc"
         ),
         html.Div(
             [
                 # Anchor (no spacer — content starts immediately)
-                html.Div(id="about"),
+                html.Div(id="about", style={"scrollMarginTop": "140px"}),
 
                 # ── Introduction ──────────────────────────────────────────────
                 html.Div(
@@ -170,7 +170,8 @@ gps_layout = html.Div(style={'marginTop': '30px'},
                             style={'textAlign': 'center', 'fontStyle': 'italic'}
                         ),
                     ],
-                    id="introduction"
+                    id="introduction",
+                    style={"scrollMarginTop": "140px"}
                 ),
 
                 # ── Vertical TEC ──────────────────────────────────────────────
@@ -208,7 +209,8 @@ gps_layout = html.Div(style={'marginTop': '30px'},
                             style={'textAlign': 'center', 'fontStyle': 'italic'}
                         ),
                     ],
-                    id="vertical-tec"
+                    id="vertical-tec",
+                    style={"scrollMarginTop": "140px"}
                 ),
 
                 # ── Storm-Induced TEC Anomaly ─────────────────────────────────
@@ -223,7 +225,7 @@ gps_layout = html.Div(style={'marginTop': '30px'},
                         html.Img(
                             className="description-fig",
                             src="assets/deltTEC.png",
-                            style={'height': '40px', 'width': 'auto', 'display': 'block', 'margin': '8px auto'},
+                            style={'height': '35px', 'width': 'auto', 'display': 'block', 'margin': '8px auto'},
                             alt="Relative TEC change formula"
                         ),
                         html.P(
@@ -269,7 +271,8 @@ gps_layout = html.Div(style={'marginTop': '30px'},
                             style={'textAlign': 'center', 'fontStyle': 'italic'}
                         ),
                     ],
-                    id="tec-anomaly"
+                    id="tec-anomaly",
+                    style={"scrollMarginTop": "140px"}
                 ),
 
                 # ── GNSS SPP ──────────────────────────────────────────────────
@@ -311,7 +314,8 @@ gps_layout = html.Div(style={'marginTop': '30px'},
                             style={'textAlign': 'center', 'fontStyle': 'italic'}
                         ),
                     ],
-                    id="gnss-spp"
+                    id="gnss-spp",
+                    style={"scrollMarginTop": "140px"}
                 ),
 
                 # ── Metrics and Skill Score ───────────────────────────────────
@@ -333,7 +337,7 @@ gps_layout = html.Div(style={'marginTop': '30px'},
                         html.Img(
                             className="description-fig",
                             src="assets/RMSE.png",
-                            style={'height': '60px', 'width': 'auto', 'display': 'block', 'margin': '8px auto'},
+                            style={'height': '47px', 'width': 'auto', 'display': 'block', 'margin': '8px auto'},
                             alt="RMSE formula"
                         ),
                         html.P(
@@ -356,7 +360,7 @@ gps_layout = html.Div(style={'marginTop': '30px'},
                         html.Img(
                             className="description-fig",
                             src="assets/TSS.png",
-                            style={'height': '70px', 'width': 'auto', 'display': 'block', 'margin': '8px auto'},
+                            style={'height': '50px', 'width': 'auto', 'display': 'block', 'margin': '8px auto'},
                             alt="TSS formula"
                         ),
                         html.P(
@@ -377,19 +381,30 @@ gps_layout = html.Div(style={'marginTop': '30px'},
                         html.Img(
                             className="description-fig",
                             src="assets/SSIM.png",
-                            style={'height': '30px', 'width': 'auto', 'display': 'block', 'margin': '8px auto'},
+                            style={'height': '25px', 'width': 'auto', 'display': 'block', 'margin': '8px auto'},
                             alt="SSIM formula"
                         ),
                         html.P([
                             "where ",
+                            html.I(
+                            "l(obs, model) ="),
                             html.Img(src="assets/l.png", style={'height': '40px', 'width': 'auto', 'verticalAlign': 'middle', 'margin': '0 4px'}, alt="l formula"),
                             ", ",
+                            html.I("c(obs, model) ="),
                             html.Img(src="assets/c.png", style={'height': '40px', 'width': 'auto', 'verticalAlign': 'middle', 'margin': '0 4px'}, alt="c formula"),
                             ", and ",
+                            html.I("s(obs, model) ="),
                             html.Img(src="assets/s.png", style={'height': '40px', 'width': 'auto', 'verticalAlign': 'middle', 'margin': '0 4px'}, alt="s formula"),
-                            ". l(obs, model) is the luminance term that measures similarity in mean amplitudes (\u03bc); "
-                            "c(obs, model) is the contrast term that measures similarity in standard deviation (\u03c3); "
-                            "s(obs, model) is the structure term that uses covariance (\u03c3",
+                            ". ",
+                            html.I(
+                            "l(obs, model) "),
+                             " is the luminance term that measures similarity in mean amplitudes (\u03bc); ",
+                            html.I(
+                            "c(obs, model) "),
+                            " is the contrast term that measures similarity in standard deviation (\u03c3); ",
+                            html.I(
+                            "s(obs, model) "),
+                            " is the structure term that uses covariance (\u03c3",
                             html.Sub("obs,model"),
                             ") to compare the similarity of spatial structures. "
                             "\u03b1, \u03b2, and \u03b3 are parameters used to adjust the relative importance of the three components, "
@@ -398,7 +413,8 @@ gps_layout = html.Div(style={'marginTop': '30px'},
                             "and values at or below 0 denoting no structural resemblance."
                         ]),
                     ],
-                    id="metrics"
+                    id="metrics",
+                    style={"scrollMarginTop": "140px"}
                 ),
 
                 # ── Models Included ───────────────────────────────────────────
@@ -490,7 +506,8 @@ gps_layout = html.Div(style={'marginTop': '30px'},
                             "system (90\u20132000 km)."
                         ]),
                     ],
-                    id="model"
+                    id="model",
+                    style={"scrollMarginTop": "140px"}
                 ),
 
                 # ── References ────────────────────────────────────────────────
@@ -553,11 +570,13 @@ gps_layout = html.Div(style={'marginTop': '30px'},
                             "Processing, 13(4), 600\u2013612."
                         ),
                     ],
-                    id="references"
+                    id="references",
+                    style={"scrollMarginTop": "140px"}
                 ),
             ],
+            className="gps-content",
             id="content"
         )
     ],
-    id="description-page"
+    id="gps-description-page"
 )

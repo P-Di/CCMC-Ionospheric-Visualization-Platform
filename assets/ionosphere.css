@@ -5,7 +5,8 @@
 
 
 @media screen and (max-width: 900px) {
-    #ionosphere-page {
+    #ionosphere-page,
+    #gps-page {
         margin-left: 0px;
     }
 
@@ -36,11 +37,13 @@
 
     #ion-footer {
         width: 100%;
+        margin-left: 0px;
     }
 }
 
 @media screen and (min-width: 900px) {
-    #ionosphere-page {
+    #ionosphere-page,
+    #gps-page {
         margin-left: 370px;
     }
 
@@ -57,13 +60,10 @@
     }
 
     #ion-footer {
-        width: 80%;
+        width: calc(100% - 370px);
+        margin-left: 370px;
     }
 
-    #description-page {
-        margin-top: 40px;
-    }
-    
     #ionosphere-content {
         margin-top: 121px;
     }
@@ -76,4 +76,56 @@
     z-index: 10;
     background-color: #f4f6f7;
     overflow-y: scroll;
+}
+.TOC-link {
+    text-decoration: none;
+}
+
+#gps-description-page {
+    background-color: #f4f6f7;
+    line-height: 1.6;
+    margin-top: 0px;
+    padding-top: 45px;
+}
+
+.gps-content {
+    background-color: white;
+    margin: 20px;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+@media screen and (max-width: 900px) {
+    .gps-toc {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 900px) {
+    #gps-description-page {
+        display: flex;
+        align-items: flex-start;
+        padding-top: 50px;
+    }
+
+    .gps-toc {
+        display: block;
+        background-color: white;
+        width: 200px;
+        margin: 20px;
+        margin-top: 0px;
+        padding-left: 10px;
+        padding-top: 10px;
+        padding-bottom: 1px;
+        border-radius: 10px;
+        position: sticky;
+        top: 10px;
+        flex: 0 0 200px;
+    }
+
+    .gps-content {
+        flex: 1;
+        min-width: 0;
+        margin-top: 0px;
+    }
 }
