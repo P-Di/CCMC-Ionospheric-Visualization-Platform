@@ -3,7 +3,7 @@ import plotly.graph_objects as go
 def c2_map_plot(c2_lo, c2_la, II):
     fig = go.Figure()
     color = ['blue', 'orange', 'green']
-    names = ['quiet time: ', 'main phase: ', 'recovery phase: ']
+    names = ['Quiet time: ', 'Main phase: ', 'Recovery phase: ']
     for p in np.arange(0,3): 
         fig.add_trace(go.Scattergeo(lon=c2_lo[II[p]], lat=c2_la[II[p]],name = names[p]+str(len(c2_lo[II[p]])), marker=dict(color=color[p], size=3)))
     fig.update_layout(title="F7/C2 data distribution during the 2021 November Storm",title_x=0.5, legend=dict(orientation = 'h', x=0, y=1, xanchor='left', yanchor='top', font=dict(size=14)))

@@ -1,6 +1,6 @@
 # CCMC-Ionospheric-Visualization-Platform
 
-Dash application for browsing CCMC ionosphere, thermosphere, and GNSS analysis products.
+Dash application for browsing CCMC ionosphere, thermosphere, and GNSS validation projects.
 
 ## Setup
 

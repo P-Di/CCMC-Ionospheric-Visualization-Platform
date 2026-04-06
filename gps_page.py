@@ -83,7 +83,7 @@ base = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '0', 'overflow
                             {'label': 'Ionosphere Model Validation', 'value': 'IMV'},
                             {'label': 'Thermosphere Neutral Density Assessment', 'value': "TNDA"},
                             {'label': 'Ray Tracing', 'value': 'RT', 'disabled': True},
-                            {'label': 'Single Frequency GNSS PPP', 'value': 'GPS'}
+                            {'label': 'GNSS Positioning', 'value': 'GPS'}
                         ],
                         # When entering the GNSS PPP page, keep the project selector
                         # showing the GNSS PPP project (fixes UI showing IMV).

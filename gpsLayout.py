@@ -129,7 +129,7 @@ gps_layout = html.Div(style={'marginTop': '30px'},
         ),
         html.Div(
             [
-                # Anchor (no spacer — content starts immediately)
+                
                 html.Div(id="about", style={"scrollMarginTop": "140px"}),
 
                 # ── Introduction ──────────────────────────────────────────────
@@ -280,27 +280,108 @@ gps_layout = html.Div(style={'marginTop': '30px'},
                     [
                         html.H2("Model Performance in Single-Frequency GNSS Single Point Positioning"),
                         html.P(
-                            "To assess the practical utility of the ionospheric models in a real-world technological "
-                            "application, GNSS SPP is processed in kinematic mode. Single-frequency positioning is "
-                            "highly sensitive to ionospheric delay errors. The GNSS positioning technique can be "
-                            "used as a technological metric to evaluate the model performance and their practical "
-                            "effectiveness in GNSS applications, as the ionosphere is the primary error source of "
-                            "GNSS positioning."
+                            "To assess the practical utility of the ionospheric models in technological application, we process GNSS "
+                            "SPP in kinematic mode using the GNSS Laboratory Tool Suite (gLAB) v6.0.0 (Sanz et al., 2013; Ib\u00e1\u00f1ez et "
+                            "al., 2018). We utilize the GNSS code measurement (P) from SOPAC and CORS networks over the U.S. "
+                            "during 9\u201312 May 2024. The use of SPP over SF precise point positioning (SF-PPP) avoids the masking of "
+                            "ionospheric model errors by float ambiguity parameters or cycle slips during extreme space weather (Yang "
+                            "and Morton, 2025)."
                         ),
                         html.P(
-                            "Both the 2D and 3D positioning errors (Figure 4) are employed as diagnostic metrics. "
-                            "For GNSS positioning, horizontal positioning accuracy is particularly sensitive to spatial "
-                            "TEC gradients, which induce differential ionospheric delays among satellites and "
-                            "degrade the relative geometry of the SPP solution. Consequently, the 2D positioning "
-                            "error serves as a technologically relevant metric to assess the model\u2019s capability to "
-                            "capture TEC gradients."
+                            "The raw GNSS observation equations for the L1 P measurement can be expressed as follows:"
                         ),
                         html.P(
-                            "In contrast, the 3D positioning error incorporates both vertical and horizontal positioning "
-                            "uncertainties, with the vertical component being strongly influenced by the absolute "
-                            "slant TEC along the satellite-receiver paths. Therefore, the 3D positioning error provides "
-                            "an effective indicator of the models\u2019 ability to represent large-scale TEC enhancements "
-                            "and storm-time ionospheric responses."
+                            [
+                                html.I("P = r + c(\u03b4t"),
+                                html.Sub("r"),
+                                html.I(" \u2212 \u03b4t"),
+                                html.Sup("s"),
+                                html.I(") + I + T + d"),
+                                html.Sub("cd"),
+                                html.I(" + \u03b5"),
+
+                            ],
+                            style={"textAlign": "center", "margin": "10px 0", "fontSize": "1.1em"}
+                        ),
+                        html.P(
+                            [
+                                "where r denotes the geometric distance between GNSS and receiver, \u03b4t",
+                                html.Sup("s"),
+                                " and \u03b4t",
+                                html.Sub("r"),
+                                " are the satellite and receiver clock errors, I denotes the ionospheric delay, "
+                                "T denotes the troposphere delay, d",
+                                html.Sub("cd"),
+                                " denotes code hardware delay bias for both receiver and satellite, "
+                                "and \u03b5 represents noise and multipath effects."
+                            ]
+                        ),
+                        html.P(
+                            "Our processing strategy applies a priori corrections to remove known error sources and isolate "
+                            "the ionospheric component. The troposphere delay (T) is corrected using the UNB3 model (Collins and Langley, "
+                            "1997). Precise satellite orbit and clock corrections from the International GNSS Service (IGS) are applied, "
+                            "along with standard models for antenna phase center offsets, solid Earth tides, and relativistic effects. The "
+                            "ionospheric delay (I) is corrected using slant TEC (sTEC) predictions for each evaluated model:"
+                        ),
+                        html.P(
+                            [
+                                html.I("I = 40.3 sTEC / f\u00b2"),
+                            ],
+                            style={"textAlign": "center", "margin": "10px 0", "fontSize": "1.1em"}
+                        ),
+                        html.P(
+                            "where sTEC is the slant TEC along the line-of-sight and f is the signal frequency."
+                        ),
+                        html.P(
+                            [
+                                "After applying these corrections, the corrected code (P",
+                                html.Sub("m"),
+                                ") measurement is simplified to:"
+                            ]
+                        ),
+                        html.P(
+                            [
+                                html.I("P"),
+                                html.Sub(html.I("m")),
+                                html.I(" = r + c\u03b4t"),
+                                html.Sub("r"),
+                                html.I(" + \u03b5"),
+                            ],
+                            style={"textAlign": "center", "margin": "10px 0", "fontSize": "1.1em"}
+                        ),
+                        html.P(
+                            [
+                                "The resulting P",
+                                html.Sub("m"),
+                                " is further linearized using the first-order Taylor expansion and solved epoch-by-epoch "
+                                "using the Least Squares (LS) method. The state vector ",
+                                html.I("x\u0302"),
+                                " = [\u03b4x, \u03b4y, \u03b4z, c\u03b4t",
+                                html.Sub("r"),
+                                "]",
+                                html.Sup("T"),
+                                " is estimated as:"
+                            ]
+                        ),
+                        html.P(
+                            [
+                                html.I("x\u0302 = (H"),
+                                html.Sup("T"),
+                                html.I("H)"),
+                                html.Sup("\u22121"),
+                                html.I("H"),
+                                html.Sup("T"),
+                                html.I("z"),
+                            ],
+                            style={"textAlign": "center", "margin": "10px 0", "fontSize": "1.1em"}
+                        ),
+                        html.P(
+                            [
+                                "where z is the vector of residuals and H is the Jacobian Matrix. The estimated corrections ",
+                                html.I("x\u0302"),
+                                " are applied iteratively to update the initial guess of receiver position and "
+                                "clock offset until convergence is achieved."
+                            ]
                         ),
                         html.Img(
                             className="description-fig",

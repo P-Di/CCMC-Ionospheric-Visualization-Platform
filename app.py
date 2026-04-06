@@ -209,7 +209,7 @@ ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '
                             {'label': 'Ionosphere Model Validation', 'value': 'IMV'},
                             {'label': 'Thermosphere Neutral Density Assessment', 'value': "TNDA"},
                             {'label': 'Ray Tracing', 'value': 'RT', 'disabled': True},
-                            {'label': 'Single Frequency GNSS PPP', 'value': 'GPS'}
+                            {'label': 'GNSS Positioning', 'value': 'GPS'}
                         ], 
                         value = 'IMV'
                     ),
@@ -380,6 +380,7 @@ def gps_tabs(tab, plotts_value, yearids, multi_value):
         {'label': '3D Error', 'value': 'video_3d_error'},
         {'label': '2D Error', 'value': 'video_2d_error'},
         {'label': 'Up Error', 'value': 'video_up_error'},
+        {'label': 'SPP TIDs', 'value': 'video_spp_tids'},
     ]
 
     # Helper: normalize lists
@@ -464,6 +465,7 @@ def gps_tabs(tab, plotts_value, yearids, multi_value):
             'video_3d_error': 'assets/allmodel-Gannon_storm_3D_error_SPP.mp4',
             'video_2d_error': 'assets/allmodel-Gannon_storm_2D_error_SPP.mp4',
             'video_up_error': 'assets/allmodel-Gannon_storm_Up_error_SPP.mp4',
+            'video_spp_tids': 'assets/allmodel-Gannon_storm_SPP_TIDs-2.mp4',
         }
         
         children = []
