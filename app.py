@@ -310,7 +310,7 @@ ionosphere_layout = html.Div(style = {'backgroundColor':'#f4f6f7  ', 'margin': '
             html.Footer(
             id="ion-footer",
             children=[html.A("Accessibility", href='https://www.nasa.gov/accessibility', target="_blank"), html.Span(children =" | ")          
-,html.A("Privacy Policy", href='https://www.nasa.gov/privacy/', target="_blank"), html.Span(children =" | Curators: Paul DiMarzio, Joseph Sypal, and Dr. Min-Yang Chou | NASA Official: Maria Kuznetsova")],
+,html.A("Privacy Policy", href='https://www.nasa.gov/privacy/', target="_blank"), html.Span(children =" | Curators: Dr. Min-Yang Chou and Jack Wang | NASA Official: Leila Mays")],
             style={
                 'margin-left' : '20%',
                 "textAlign": "center",
